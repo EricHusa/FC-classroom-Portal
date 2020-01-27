@@ -12,7 +12,7 @@
     (env)$ python app.py
     ```
 
-   *It will be live at* [http://localhost:5000](http://localhost:5000)
+   **It will be live at** [http://localhost:5000](http://localhost:5000)
 
 2. Run the Vue web app in a separate terminal:
 
@@ -22,4 +22,4 @@
     $ npm run serve
     ```
 
-    *It will be live at* [http://localhost:8080](http://localhost:8080)
+    **It will be live at** [http://localhost:8080](http://localhost:8080)
