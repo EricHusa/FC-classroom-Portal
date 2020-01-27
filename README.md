@@ -17,7 +17,7 @@
 2. Run the Vue web app in a separate terminal:
 
     ```sh
-    $ cd client
+    $ cd web
     $ npm install
     $ npm run serve
     ```
