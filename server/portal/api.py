@@ -9,8 +9,8 @@ api = Blueprint('api', __name__)
 
 
 @api.route('/test/<string:example>/')
-def say_hello(example):
-    response = {'msg': "You submitted: {}".format(example)}
+def tester(example):
+    response = {'msg': "You sent: {}".format(example)}
     return jsonify(response)
 
 
