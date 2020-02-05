@@ -13,7 +13,7 @@
     (env)$ python server.py
     ```
 
-   **It will be live at** [http://localhost:5000](http://localhost:5000)
+   **It will be live at** [http://localhost:5000](http://localhost:5000) (_note: this points to nothing at the moment_)
 
     Test it by making a call to the test endpoint
     > http://localhost:5000/api/test/itWorks/
