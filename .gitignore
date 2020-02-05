@@ -2,6 +2,7 @@
 node_modules/
 server/env/
 venv
+venv/lib/python3.7/site-packages
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
