@@ -1,19 +1,25 @@
 # Classroom Portal for Academic Food Computers
 
-### Dev setup
+## Dev setup
 
+### Backend:
 1. Run Flask server in a terminal:
 
     ```sh
     $ cd server
     $ python3 -m venv env
     $ source env/bin/activate
-    (env)$ pip install -r dependencies.txt
-    (env)$ python app.py
+    (env)$ pip install -r requirements.txt
+    (env)$ python server.py
     ```
 
    **It will be live at** [http://localhost:5000](http://localhost:5000)
 
+    Test it by making a call to the test endpoint
+    > http://localhost:5000/api/test/itWorks/
+                    
+                                                                                                                                                                                                                                                                                                                                 
+### Frontend
 2. Run the Vue web app in a separate terminal:
 
     ```sh
@@ -23,3 +29,5 @@
     ```
 
     **It will be live at** [http://localhost:8080](http://localhost:8080)
+    
+    _Currently there is no database, so use the student and teacher buttons to login_
