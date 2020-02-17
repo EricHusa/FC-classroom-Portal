@@ -23,7 +23,7 @@
             </template>
             <b-dropdown-item href="#">Settings</b-dropdown-item>
             <b-dropdown-item href="#">School</b-dropdown-item>
-            <b-dropdown-item href="#">Sign Out</b-dropdown-item>
+            <b-dropdown-item><router-link to="/login">Sign out</router-link></b-dropdown-item>
           </b-nav-item-dropdown>
         </b-navbar-nav>
       </b-navbar>
@@ -62,7 +62,7 @@
   text-align: center;
 }
 
-#nav li > a {
+#nav li a {
   color: #007bff;
 }
 

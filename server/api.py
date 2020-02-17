@@ -3,7 +3,8 @@ from functools import wraps
 from datetime import datetime, timedelta
 import jwt
 
-from .models import db, User
+from models import db, User, Role, Example
+# from app import db
 
 api = Blueprint('api', __name__)
 
@@ -12,6 +13,17 @@ api = Blueprint('api', __name__)
 def tester(example):
     response = {'msg': "You sent: {}".format(example)}
     return jsonify(response)
+
+
+@api.route('/testdb/')
+def dbtester():
+    roles = Role.query.all()
+    return jsonify([r.to_dict() for r in roles])
+
+
+@api.route('/', methods=['GET'])
+def index():
+    return jsonify("welcome")
 
 
 def token_required(f):

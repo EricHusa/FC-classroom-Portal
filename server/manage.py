@@ -1,16 +1,13 @@
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
-from portal.app import create_app
-from portal.models import db
+from app import app, db
 
-app = create_app()
+app.config.from_object('config.BaseConfig')  # or app.config.from_object(os.environ['APP_SETTINGS'])
 
 migrate = Migrate(app, db)
 manager = Manager(app)
-
-# provide a migration utility command
-manager.add_command('db', MigrateCommand)
+manager.add_command('db', MigrateCommand)  # provide a migration utility command
 
 
 # enable python shell with application context
