@@ -3,7 +3,9 @@ import VueRouter from "vue-router";
 // import Router from 'vue-router'
 import Home from "../views/Home.vue";
 import Login from "../components/Login.vue";
+import Settings from "../views/Settings.vue";
 import store from "../store";
+import Assignment from "../views/Assignment";
 
 Vue.use(VueRouter);
 
@@ -24,6 +26,16 @@ const routes = [
         next("/home");
       }
     }
+  },
+  {
+    path: "/settings",
+    name: "settings",
+    component: Settings
+  },
+  {
+    path: "/view_assignment",
+    name: "viewAssignment",
+    component: Assignment
   },
   {
     path: "/home",
