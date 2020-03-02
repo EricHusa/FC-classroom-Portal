@@ -19,15 +19,13 @@ export default {
           id: 63174627868,
           title: "Predict How Many Days",
           end_date: "03/25/2020",
-          status: "incomplete",
-          action: "submit"
+          status: "incomplete"
         },
         {
           id: 63174627867,
           title: "Smell the Flower",
           end_date: "03/05/2020",
-          status: "complete",
-          action: "review"
+          status: "complete"
         }
       ],
       headers: [
