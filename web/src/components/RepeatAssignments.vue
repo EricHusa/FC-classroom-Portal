@@ -6,7 +6,7 @@
       </template>
       <template v-slot:cell(action)="data">
         <!-- `data.value` is the value after formatted by the Formatter -->
-        <router-link to="/settings" tag="button">{{data.item.action}}</router-link>
+        <router-link :to="`/view_assignment/${data.item.id}`" tag="button">{{setButton(data.item.status)}}</router-link>
       </template>
     </b-table>
   </div>
@@ -19,22 +19,22 @@ export default {
     return {
       assignments: [
         {
+          id: 31728637862,
           title: "Daily Check-in",
           frequency: "1",
-          status: "incomplete",
-          action: "submit"
+          status: "incomplete"
         },
         {
+          id: 31728637863,
           title: "Height Measurement",
           frequency: "2",
-          status: "incomplete",
-          action: "submit"
+          status: "incomplete"
         },
         {
+          id: 31728637864,
           title: "Color Observation",
           frequency: "7",
-          status: "complete",
-          action: "view"
+          status: "complete"
         }
       ],
       headers: [
@@ -51,6 +51,15 @@ export default {
         name: "viewAssignment",
         params: { id: assignment.id }
       });
+    },
+    setButton: function(status){
+      if(status == 'incomplete')
+      {
+        return "submit"
+      }
+      else{
+        return "review"
+      }
     }
   },
   mounted() {

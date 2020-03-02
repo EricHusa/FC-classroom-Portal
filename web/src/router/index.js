@@ -33,7 +33,7 @@ const routes = [
     component: Settings
   },
   {
-    path: "/view_assignment",
+    path: "/view_assignment/:id",
     name: "viewAssignment",
     component: Assignment
   },

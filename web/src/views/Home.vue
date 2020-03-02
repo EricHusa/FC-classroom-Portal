@@ -25,7 +25,7 @@
           <b-tab title="Data">
             <b-card-text>Tab contents 3</b-card-text>
           </b-tab>
-          <b-tab title="Images">
+          <b-tab title="Images" :disabled=false>
             <div>
               <b-card-text>Image things will go here</b-card-text>
             </div>
