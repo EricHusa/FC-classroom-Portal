@@ -3,8 +3,8 @@
     <div>
       <b-card no-body>
         <b-tabs card justified>
-          <b-tab title="Experiment" active>
-            <b-card-text>Tab contents 1</b-card-text>
+          <b-tab title="Experiment">
+            <Experiments />
           </b-tab>
           <b-tab title="Assignments">
             <br />
@@ -39,9 +39,17 @@
 <script>
 import SingleAssignments from "../components/SingleAssignments.vue";
 import RepeatAssignments from "../components/RepeatAssignments";
+import Experiments from "../components/Experiments";
+
 export default {
   name: "Single_Assignments",
-  components: { SingleAssignments, RepeatAssignments }
+  components: { SingleAssignments, RepeatAssignments, Experiments }
+  // data: () => ({
+  //   id: this.assignment_id,}),
+  // methods: {
+  //   beforeMount: function() {
+  //     this.active_tab = this.$route.params.tab;
+  // }
 };
 </script>
 

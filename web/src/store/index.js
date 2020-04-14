@@ -96,7 +96,7 @@ const getters = {
   },
   isAuthenticatedTest(state) {
     if (state.role == "teacher" || state.role == "student") {
-      alert("Logging in as " + state.role);
+      // alert("Logging in as " + state.role);
       return true;
     } else {
       return false;

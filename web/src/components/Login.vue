@@ -11,7 +11,7 @@
     <section class="section">
       <div class="container">
         <div class="field">
-          <label class="label  is-large" for="email">Email:</label>
+          <label class="label  is-large" for="email">Username:</label>
           <div class="control">
             <input
               type="email"
@@ -32,7 +32,7 @@
             />
           </div>
         </div>
-
+        <br />
         <div class="control">
           <button class="button is-large is-primary" @click="authenticate">
             Student
@@ -73,6 +73,7 @@ export default {
     }
   },
   mounted() {
+    this.$store.dispatch("dev", "guest");
     EventBus.$on("failedRegistering", msg => {
       this.errorMsg = msg;
     });
