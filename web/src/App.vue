@@ -16,15 +16,22 @@
         >
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto settings-dropdown">
-          <b-nav-item-dropdown right>
+          <b-nav-item-dropdown
+            :disabled="this.$store.state.role == 'guest'"
+            right
+          >
             <!-- Using 'button-content' slot -->
             <template v-slot:button-content>
               <b-icon icon="person-fill" style="color: white;"></b-icon>
             </template>
-            <b-dropdown-item>
-              <router-link to="/settings">Settings</router-link>
+            <b-dropdown-item :disabled="this.$store.state.role == 'student'">
+              <router-link to="/settings">
+                <div v-bind:style="setButton()">Settings</div></router-link
+              >
             </b-dropdown-item>
-            <b-dropdown-item href="#">School</b-dropdown-item>
+            <b-dropdown-item href="#">
+              <router-link to="/settings">School</router-link>
+            </b-dropdown-item>
             <b-dropdown-item
               ><router-link to="/login">Sign out</router-link></b-dropdown-item
             >
@@ -70,7 +77,19 @@
   color: #007bff;
 }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
+/*#nav a.router-link-exact-active {*/
+/*  color: #42b983;*/
+/*}*/
 </style>
+
+<script>
+export default {
+  methods: {
+    setButton: function() {
+      if (this.$store.state.role == "student") {
+        return "color: gray;";
+      }
+    }
+  }
+};
+</script>

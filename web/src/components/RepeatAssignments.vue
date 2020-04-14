@@ -2,11 +2,13 @@
   <div>
     <b-table :fields="headers" :items="assignments">
       <template v-slot:cell(frequency)="data">
-        {{data.item.frequency}} days
+        {{ data.item.frequency }} days
       </template>
       <template v-slot:cell(action)="data">
         <!-- `data.value` is the value after formatted by the Formatter -->
-        <router-link :to="`/view_assignment/${data.item.id}`" tag="button">{{setButton(data.item.status)}}</router-link>
+        <router-link :to="`/view_assignment/${data.item.id}`" tag="button">{{
+          setButton(data.item.status)
+        }}</router-link>
       </template>
     </b-table>
   </div>
@@ -43,7 +45,7 @@ export default {
         { key: "status", label: "Status" },
         { key: "action", label: "Action" }
       ]
-    }
+    };
   },
   methods: {
     view: function(assignment) {
@@ -52,13 +54,11 @@ export default {
         params: { id: assignment.id }
       });
     },
-    setButton: function(status){
-      if(status == 'incomplete')
-      {
-        return "submit"
-      }
-      else{
-        return "review"
+    setButton: function(status) {
+      if (status == "incomplete") {
+        return "submit";
+      } else {
+        return "review";
       }
     }
   },

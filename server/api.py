@@ -15,7 +15,7 @@ def tester(example):
     return jsonify(response)
 
 
-@api.route('/testdb/')
+@api.route('/roles/')
 def dbtester():
     roles = Role.query.all()
     return jsonify([r.to_dict() for r in roles])
