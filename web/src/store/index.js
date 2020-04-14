@@ -19,7 +19,8 @@ const state = {
   jwt: "",
   experiments: [],
   currentExperiment: {},
-  role: "guest"
+  role: "guest",
+  device: ""
 };
 
 const actions = {
@@ -57,6 +58,9 @@ const actions = {
   },
   dev(context, value) {
     context.commit("setRole", value);
+  },
+  device(context, value) {
+    context.commit("setDevice", value);
   }
 };
 
@@ -79,6 +83,9 @@ const mutations = {
   },
   setRole(state, payload) {
     state.role = payload;
+  },
+  setDevice(state, payload) {
+    state.device = payload;
   }
 };
 

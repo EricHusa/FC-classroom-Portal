@@ -19,6 +19,23 @@ export function getExperiment(experimentId) {
 }
 
 export default {
+  getClasses: function () {
+      return [
+        {
+          name: "Class 1",
+          id: "232139",
+          students: ['JJ9','WB2','WT23','BB10','CK30']
+        },
+        {
+          name: "Class 2",
+          id: "635260",
+          students: ['DB12','NB5','AD28','JB1']
+        }
+      ]
+    },
+  getSchool: function () {
+      return "1199802"
+    },
   getAssignments(frequency) {
     let repeating = {
       assignments: [

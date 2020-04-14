@@ -24,7 +24,9 @@
             <b-dropdown-item>
               <router-link to="/settings">Settings</router-link>
             </b-dropdown-item>
-            <b-dropdown-item href="#">School</b-dropdown-item>
+            <b-dropdown-item>
+              <router-link to="/school">Settings</router-link>
+            </b-dropdown-item>
             <b-dropdown-item
               ><router-link to="/login">Sign out</router-link></b-dropdown-item
             >

@@ -6,6 +6,7 @@ import Login from "../components/Login.vue";
 import Settings from "../views/Settings.vue";
 import store from "../store";
 import Assignment from "../views/Assignment";
+import School from "../views/School";
 
 Vue.use(VueRouter);
 
@@ -31,6 +32,11 @@ const routes = [
     path: "/settings",
     name: "settings",
     component: Settings
+  },
+  {
+    path: "/school",
+    name: "school",
+    component: School
   },
   {
     path: "/view_assignment/:id",
