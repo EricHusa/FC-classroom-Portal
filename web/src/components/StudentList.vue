@@ -4,6 +4,7 @@
       <div><b-button v-b-toggle.collapse-1 class="m-1" variant="primary" :disabled="this.$store.state.activeClass == null">Add students</b-button>
       <b-collapse id="collapse-1">
           <b-form @submit="onSubmit">
+
             <b-input size="sm" style="margin-bottom: 1%;"
               id="form-first-name"
               v-model="form.fname"
@@ -44,7 +45,6 @@
       :bordered="true"
     >
       <template v-slot:cell(action)="props">
-        <!-- `data.value` is the value after formatted by the Formatter -->
         <router-link
           :to="`/device/${device}/account/${props.item.username}`"
           tag="button"
@@ -57,11 +57,12 @@
 </template>
 
 <script>
+import api from "../api/index.js";
 export default {
   name: "StudentList",
   props: {
     device: String,
-    currClass: String,
+    currClass: Number,
     students: Array,
     headers: Array
   },
@@ -75,14 +76,6 @@ export default {
           }
       }
   },
-   // computed: {
-   //    validate() {
-   //      return this.form.fname.indexOf(" ") === -1 &&
-   //              this.form.lname.indexOf(" ") === -1 &&
-   //              this.form.username.indexOf(" ") === -1 &&
-   //              this.form.password.indexOf(" ") === -1
-   //    }
-   //  },
     methods: {
       validate() {
         return this.form.fname.indexOf(" ") === -1 &&
@@ -98,8 +91,8 @@ export default {
             if (!this.validate()) {
                 alert('spaces are not allowed in input')
             } else {
+                api.addStudent(JSON.parse(JSON.stringify(this.form)), this.$store.state.activeClass)
                 this.students.push(JSON.parse(JSON.stringify(this.form)))
-
                 this.form.fname = null
                 this.form.lname = null
                 this.form.username = ''

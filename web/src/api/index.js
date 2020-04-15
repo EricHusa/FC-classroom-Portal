@@ -3,22 +3,22 @@ import axios from "axios";
 const API_URL = process.env.API_URL;
 
 //sample database data
-  const students = [
-        {fname: "Jon", lname: "Joe", username: "JJ09", password: "Peaches"},
-        {fname: "Will", lname: "Billy", username: "WB02", password: "Cake"},
-        {fname: "Drew", lname: "Blue", username: "DB12", password: "Orange"},
-        {fname: "Bob", lname: "Builder", username: "BB5", password: "Cloud"}
-      ]
+let students = [
+  {fname: "Jon", lname: "Joe", username: "JJ09", password: "Peaches"},
+  {fname: "Will", lname: "Billy", username: "WB02", password: "Cake"},
+  {fname: "Drew", lname: "Blue", username: "DB12", password: "Orange"},
+  {fname: "Bob", lname: "Builder", username: "BB5", password: "Cloud"}
+];
 
-  const classes = [
+let classes = [
       {
         name: "Class 1",
-        id: "23213931",
+        id: 23213931,
         students: ["JJ09", "WB02"]
       },
       {
         name: "Class 2",
-        id: "63526050",
+        id: 63526050,
         students: ["DB12", "BB5"]
       }
     ]
@@ -50,6 +50,13 @@ export default {
   getClass: function(classId){
     return classes.find(c => c.id === classId)
   },
+  addClass: function(){
+    classes.push({
+        name: "Class".concat(' ', (classes.length + 1).toString()),
+        id: this.generateId(),
+        students: []
+      })
+  },
   generateId: function() {
     let str =  Math.floor(Math.random() * 100000000 + 9999999).toString()
     return parseInt(str.substring(0,8));
@@ -74,6 +81,11 @@ export default {
       // alert(JSON.stringify(classStudents[0]))
       return classStudents
     }
+  },
+  addStudent: function(student, classId){
+    students.push(student)
+    let currentClass = classes.find(c => c.id === classId)
+    currentClass.students.push(student.username)
   },
   getAssignments(frequency) {
     let repeating = {

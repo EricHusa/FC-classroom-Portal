@@ -1,5 +1,17 @@
 <template>
-  <div class="about">
-    <h1>This is the student view</h1>
+  <div>
+    <div>
+      <b-row>
+        <b-col>
+          <button><router-link to="/school">Back</router-link></button>
+        </b-col>
+        <b-col>
+          <button><router-link to="/home">Home</router-link></button>
+        </b-col>
+      </b-row>
+    </div>
   </div>
 </template>
+
+<script>
+  </script>
