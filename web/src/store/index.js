@@ -5,6 +5,7 @@ import Vuex from "vuex";
 import {
   getExperiment,
   getExperiments,
+  getDevice,
   newExperiment,
   authenticate,
   register
@@ -19,7 +20,9 @@ const state = {
   jwt: "",
   experiments: [],
   currentExperiment: {},
-  role: "guest"
+  role: "guest",
+  device: "777",
+  activeClass: null
 };
 
 const actions = {
@@ -57,6 +60,11 @@ const actions = {
   },
   dev(context, value) {
     context.commit("setRole", value);
+  },
+  device() {
+    return getDevice().then(response => {
+      state.device = response;
+    });
   }
 };
 

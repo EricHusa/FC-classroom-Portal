@@ -29,8 +29,8 @@
                 <div v-bind:style="setButton()">Settings</div></router-link
               >
             </b-dropdown-item>
-            <b-dropdown-item href="#">
-              <router-link to="/settings">School</router-link>
+            <b-dropdown-item>
+              <router-link to="/school">School</router-link>
             </b-dropdown-item>
             <b-dropdown-item
               ><router-link to="/login">Sign out</router-link></b-dropdown-item
