@@ -57,6 +57,14 @@ export default {
         students: []
       })
   },
+  deleteClass: function(classId){
+    let index = classes.map(function(e) { return e.id; }).indexOf(classId);
+    classes.splice(index, 1);
+  },
+  updateClass: function(classId, val){
+    let index = classes.map(function(e) { return e.id; }).indexOf(classId);
+    classes[index].name = val;
+  },
   generateId: function() {
     let str =  Math.floor(Math.random() * 100000000 + 9999999).toString()
     return parseInt(str.substring(0,8));
@@ -70,15 +78,11 @@ export default {
     }
     else {
       let currentClass = classes.find(c => c.id === classId)
-      // alert(JSON.stringify(currClass.students))
-      // let students = Array.from(students[x], x => x + x)
       let studentIds = currentClass.students
       let classStudents = []
-      // alert(JSON.stringify(currentClass.students))
       studentIds.forEach(function (id) {
         classStudents.push(students.find(s => s.username === id));
       });
-      // alert(JSON.stringify(classStudents[0]))
       return classStudents
     }
   },

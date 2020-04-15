@@ -1,8 +1,35 @@
 <template>
   <div>
+      <b-form inline>
+        <label class="sr-only" for="inline-form-class-name">Name</label>
+        <b-input v-model="className"
+         trim
+          id="inline-form-class-name"
+          class="mb-2 mr-sm-2 mb-sm-0"
+          :placeholder="getClassName(currClass)"
+        ></b-input>
+        <b-button variant="warning" @click="updateClassName(currClass, className)" >Rename class</b-button>
+      </b-form>
+      <!--      <b-overlay :show="true" rounded="sm" variant="danger">-->
+        <b-table
+          :fields="headers"
+          :items="students"
+          :striped="true"
+          :bordered="true"
+        >
+          <template v-slot:cell(action)="props">
+            <router-link
+              :to="`/device/${device}/account/${props.item.username}`"
+              tag="button"
+              >Update</router-link
+            >
+          </template>
+        </b-table>
+    <!--      </b-overlay>-->
 <!--      <div >{{ currClass }}</div>-->
-      <div><b-button v-b-toggle.collapse-1 class="m-1" variant="primary" :disabled="this.$store.state.activeClass == null">Add students</b-button>
-      <b-collapse id="collapse-1">
+      <div><div><b-button style="float: left;" v-b-toggle.add-student class="m-1" variant="primary" :disabled="this.$store.state.activeClass == null">Add students</b-button>
+      <b-button style="float: right;" variant="danger" @click="deleteClass(currClass)" :disabled="this.$store.state.activeClass == null">Delete class</b-button></div>
+          <b-collapse id="add-student">
           <b-form @submit="onSubmit">
 
             <b-input size="sm" style="margin-bottom: 1%;"
@@ -35,24 +62,9 @@
               placeholder="Password"
             ></b-input>
 
-            <b-button type="submit" variant="success">Add</b-button>
+            <b-button type="submit" variant="success" :disabled="this.$store.state.activeClass == null">Add</b-button>
           </b-form>
       </b-collapse></div>
-    <b-table
-      :fields="headers"
-      :items="students"
-      :striped="true"
-      :bordered="true"
-    >
-      <template v-slot:cell(action)="props">
-        <router-link
-          :to="`/device/${device}/account/${props.item.username}`"
-          tag="button"
-          >Update</router-link
-        >
-      </template>
-    </b-table>
-    {{ this.$store.state.activeClass }}
   </div>
 </template>
 
@@ -73,7 +85,8 @@ export default {
               lname: null,
               username: '',
               password: ''
-          }
+          },
+          className: ''
       }
   },
     methods: {
@@ -83,8 +96,14 @@ export default {
                 this.form.username.indexOf(" ") === -1 &&
                 this.form.password.indexOf(" ") === -1
       },
-       isActive(){
-          return this.$store.state.activeClass == null
+       getClassName(id){
+          return api.getClass(id).name
+       },
+       updateClassName(id, name){
+          if(name.length > 0){
+              api.updateClass(id, name)
+          }
+          this.className = ''
        },
         onSubmit(evt) {
             evt.preventDefault()
@@ -102,6 +121,12 @@ export default {
                     this.show = true
                 })
             }
+        },
+        deleteClass(id) {
+           if(confirm("Are you sure you want to delete this class? Note that this does not delete accounts in the class")){
+               api.deleteClass(id)
+               this.$store.state.activeClass = null
+           }
         }
     }
 };

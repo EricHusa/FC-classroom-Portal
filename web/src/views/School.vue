@@ -4,10 +4,13 @@
     <br />
     <b-row>
       <b-col cols="6" md="4"
-        ><b-button class="m-1" variant="success" @click="addClass">Create a new class</b-button>
+        >
+        <b-button class="m-1" variant="success" @click="addClass">Create a new class</b-button>
+        <b-collapse id="edit-class-name">
+          </b-collapse>
         <br />
         <b-list-group v-for="item in classes" :key="item.name">
-          <b-list-group-item button @click="setClass(item.id)" :active="item.id==currClass">{{
+          <b-list-group-item button @click="setClass(item.id)" :active="item.id==currClass" variant="secondary">{{
             item.name
           }}</b-list-group-item>
         </b-list-group>
