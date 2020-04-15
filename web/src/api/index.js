@@ -4,24 +4,24 @@ const API_URL = process.env.API_URL;
 
 //sample database data
 let students = [
-  {fname: "Jon", lname: "Joe", username: "JJ09", password: "Peaches"},
-  {fname: "Will", lname: "Billy", username: "WB02", password: "Cake"},
-  {fname: "Drew", lname: "Blue", username: "DB12", password: "Orange"},
-  {fname: "Bob", lname: "Builder", username: "BB5", password: "Cloud"}
+  { fname: "Jon", lname: "Joe", username: "JJ09", password: "Peaches" },
+  { fname: "Will", lname: "Billy", username: "WB02", password: "Cake" },
+  { fname: "Drew", lname: "Blue", username: "DB12", password: "Orange" },
+  { fname: "Bob", lname: "Builder", username: "BB5", password: "Cloud" }
 ];
 
 let classes = [
-      {
-        name: "Class 1",
-        id: 23213931,
-        students: ["JJ09", "WB02"]
-      },
-      {
-        name: "Class 2",
-        id: 63526050,
-        students: ["DB12", "BB5"]
-      }
-    ]
+  {
+    name: "Class 1",
+    id: 23213931,
+    students: ["JJ09", "WB02"]
+  },
+  {
+    name: "Class 2",
+    id: 63526050,
+    students: ["DB12", "BB5"]
+  }
+];
 
 export function authenticate(userData) {
   return axios.post(`${API_URL}/login/`, userData);
@@ -47,49 +47,56 @@ export default {
   getClasses: function() {
     return classes;
   },
-  getClass: function(classId){
-    return classes.find(c => c.id === classId)
+  getClass: function(classId) {
+    return classes.find(c => c.id === classId);
   },
-  addClass: function(){
+  addClass: function() {
     classes.push({
-        name: "Class".concat(' ', (classes.length + 1).toString()),
-        id: this.generateId(),
-        students: []
-      })
+      name: "Class".concat(" ", (classes.length + 1).toString()),
+      id: this.generateId(),
+      students: []
+    });
   },
-  deleteClass: function(classId){
-    let index = classes.map(function(e) { return e.id; }).indexOf(classId);
+  deleteClass: function(classId) {
+    let index = classes
+      .map(function(e) {
+        return e.id;
+      })
+      .indexOf(classId);
     classes.splice(index, 1);
   },
-  updateClass: function(classId, val){
-    let index = classes.map(function(e) { return e.id; }).indexOf(classId);
+  updateClass: function(classId, val) {
+    let index = classes
+      .map(function(e) {
+        return e.id;
+      })
+      .indexOf(classId);
     classes[index].name = val;
   },
   generateId: function() {
-    let str =  Math.floor(Math.random() * 100000000 + 9999999).toString()
-    return parseInt(str.substring(0,8));
+    let str = Math.floor(Math.random() * 100000000 + 9999999).toString();
+    return parseInt(str.substring(0, 8));
   },
   getUser: function(id) {
-    return students[id]
+    return students[id];
   },
   getStudents: function(classId) {
-    if (classId == null){
-      return []
-    }
-    else {
-      let currentClass = classes.find(c => c.id === classId)
-      let studentIds = currentClass.students
-      let classStudents = []
-      studentIds.forEach(function (id) {
+    if (classId == null) {
+      return [];
+    } else {
+      let currentClass = classes.find(c => c.id === classId);
+      let studentIds = currentClass.students;
+      let classStudents = [];
+      studentIds.forEach(function(id) {
         classStudents.push(students.find(s => s.username === id));
       });
-      return classStudents
+      return classStudents;
     }
   },
-  addStudent: function(student, classId){
-    students.push(student)
-    let currentClass = classes.find(c => c.id === classId)
-    currentClass.students.push(student.username)
+  addStudent: function(student, classId) {
+    students.push(student);
+    let currentClass = classes.find(c => c.id === classId);
+    currentClass.students.push(student.username);
   },
   getAssignments(frequency) {
     let repeating = {

@@ -60,7 +60,9 @@ export default {
     authenticate() {
       // this.$store.dispatch('login', { email: this.email, password: this.password })
       //   .then(() => this.$router.push('/'))
-      this.$store.dispatch("device", "student").then(() => this.$router.push("/"));
+      this.$store
+        .dispatch("device", "student")
+        .then(() => this.$router.push("/"));
       this.$store.dispatch("dev", "student").then(() => this.$router.push("/"));
 
       //alert('Hello ')

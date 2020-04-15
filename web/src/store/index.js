@@ -62,7 +62,8 @@ const actions = {
     context.commit("setRole", value);
   },
   device() {
-    return getDevice().then(response => {state.device = response
+    return getDevice().then(response => {
+      state.device = response;
     });
   }
 };
@@ -104,7 +105,7 @@ const getters = {
   },
   getRole(state) {
     return state.role;
-  },
+  }
 };
 
 // export default new Vuex.Store({

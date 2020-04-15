@@ -3,23 +3,26 @@
     <button><router-link to="/home">Home</router-link></button>
     <br />
     <b-row>
-      <b-col cols="6" md="4"
+      <b-col cols="6" md="4">
+        <b-button class="m-1" variant="success" @click="addClass"
+          >Create a new class</b-button
         >
-        <b-button class="m-1" variant="success" @click="addClass">Create a new class</b-button>
-        <b-collapse id="edit-class-name">
-          </b-collapse>
+        <b-collapse id="edit-class-name"> </b-collapse>
         <br />
         <b-list-group v-for="item in classes" :key="item.name">
-          <b-list-group-item button @click="setClass(item.id)" :active="item.id==currClass" variant="secondary">{{
-            item.name
-          }}</b-list-group-item>
+          <b-list-group-item
+            button
+            @click="setClass(item.id)"
+            :active="item.id == currClass"
+            variant="secondary"
+            >{{ item.name }}</b-list-group-item
+          >
         </b-list-group>
         <br />
         Your class list
       </b-col>
 
-      <b-col cols="12" md="8"
-        >
+      <b-col cols="12" md="8">
         <StudentList
           v-bind:students="students"
           v-bind:headers="headers"
@@ -53,21 +56,21 @@ export default {
     };
   },
   methods: {
-      config: function () {
-        this.$router.push({name:"start_crop"})
-      },
+    config: function() {
+      this.$router.push({ name: "start_crop" });
+    },
     addClass() {
-       api.addClass()
-       this.classes = api.getClasses()
+      api.addClass();
+      this.classes = api.getClasses();
     },
     setClass(id) {
-        this.students = api.getStudents(id)
-        this.$store.state.activeClass = id
-        this.currClass = id
+      this.students = api.getStudents(id);
+      this.$store.state.activeClass = id;
+      this.currClass = id;
     }
   },
   mounted() {
-    this.classes = api.getClasses()
+    this.classes = api.getClasses();
   }
 };
 </script>
