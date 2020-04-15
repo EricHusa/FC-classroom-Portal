@@ -5,6 +5,7 @@ import Vuex from "vuex";
 import {
   getExperiment,
   getExperiments,
+  getDevice,
   newExperiment,
   authenticate,
   register
@@ -20,7 +21,8 @@ const state = {
   experiments: [],
   currentExperiment: {},
   role: "guest",
-  device: ""
+  device: "777",
+  activeClass: null
 };
 
 const actions = {
@@ -57,10 +59,13 @@ const actions = {
     return newExperiment(survey, context.state.jwt.token);
   },
   dev(context, value) {
+    // alert('Hello ');
     context.commit("setRole", value);
   },
-  device(context, value) {
-    context.commit("setDevice", value);
+  device() {
+    // alert('value');
+    return getDevice().then(response => {state.device = response
+    });
   }
 };
 
@@ -72,6 +77,11 @@ const mutations = {
   setExperiment(state, payload) {
     state.currentExperiment = payload.experiment;
   },
+  // setDevice(state, payload) {
+  //   alert('payload');
+  //   state.device = payload.device;
+  //   alert("device " + state.device);
+  // },
   setUserData(state, payload) {
     //console.log("setUserData payload = ", payload);
     state.userData = payload.userData;
@@ -83,9 +93,6 @@ const mutations = {
   },
   setRole(state, payload) {
     state.role = payload;
-  },
-  setDevice(state, payload) {
-    state.device = payload;
   }
 };
 
@@ -104,7 +111,10 @@ const getters = {
   },
   getRole(state) {
     return state.role;
-  }
+  },
+  // listClasses(){
+  //   return getClasses()
+  // }
 };
 
 // export default new Vuex.Store({

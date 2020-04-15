@@ -4,20 +4,24 @@
     <br />
     <b-row>
       <b-col cols="6" md="4"
-        >Classes
+        ><b-button class="m-1" variant="success" @click="addClass">Create a new class</b-button>
+        <br />
         <b-list-group v-for="item in classes" :key="item.name">
-          <b-list-group-item button @click="sendMessage">{{item.name}}</b-list-group-item>
+          <b-list-group-item button @click="setClass(item.id)">{{
+            item.name
+          }}</b-list-group-item>
         </b-list-group>
         <br />
-        <b-button variant="success">Create a new class</b-button>
+        Your class list
       </b-col>
 
       <b-col cols="12" md="8"
-        >Students
+        >
         <StudentList
           v-bind:students="students"
           v-bind:headers="headers"
           v-bind:device="device"
+          v-bind:currClass="currClass"
         />
       </b-col>
     </b-row>
@@ -26,26 +30,14 @@
 
 <script>
 import StudentList from "../components/StudentList.vue";
-// import api from "../api/index.js";
+// import getDevice from "../api";
+import api from "../api/index.js";
 export default {
   name: "School",
   components: { StudentList },
   data() {
     return {
-      students: [
-        {
-          fname: "Jono",
-          lname: "Joe",
-          username: "JJ09",
-          password: "Peaches"
-        },
-        {
-          fname: "Will",
-          lname: "Billy",
-          username: "WB02",
-          password: "Cake"
-        }
-      ],
+      students: api.getStudents(this.$store.state.activeClass),
       headers: [
         { key: "fname", label: "First Name" },
         { key: "lname", label: "Last Name" },
@@ -54,26 +46,49 @@ export default {
         { key: "action", label: "Action" }
       ],
       device: this.$store.state.device,
-      classes: [{}]
+      classes: [{}],
+      currClass: "Select a class"
     };
   },
   methods: {
-      sendMessage() {
-          this.school = '7762326'
-      }
+      config: function () {
+        this.$router.push({name:"start_crop"})
+      },
+    addClass() {
+      this.classes.push({
+        name: "New Class",
+        id: api.generateId(),
+        students: []
+      })
+    },
+    setClass(id) {
+        this.students = api.getStudents(id)
+        // let i;
+        // for (i in students) {
+        //   this.students.push(api.getUser(students[i]));
+        // }
+        this.$store.state.activeClass = id
+        this.currClass = "Class: ".concat(id)
+    }
   },
-  mounted () {
-  // api.getClasses()
-  //       .then(response => {
-  //         this.classes = response })
-  //       .catch(() => {
-  //         this.classes = [{}]})
+  mounted() {
+    this.classes = api.getClasses()
+    // if (this.$store.state.currClass != null){
+    //   this.currClass = this.$store.state.currClass
+    //   this.students = this.$store.state.currClass
+    // }
 
-  // api.getSchool()
-  //       .then(response => {
-  //         this.school = response })
-  //       .catch(() => {
-  //         this.school = "446521"})
+    // this.$store.dispatch('listClasses')
+    // getClasses()
+    //       .then(response => {
+    //         this.classes = response })
+    //       .catch(() => {
+    //         this.classes = [{}]})
+    // getDevice()
+    //       .then(response => {
+    //         this.school = response })
+    //       .catch(() => {
+    //         this.school = "446521"})
   }
 };
 </script>

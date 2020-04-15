@@ -2,6 +2,27 @@ import axios from "axios";
 
 const API_URL = process.env.API_URL;
 
+//sample database data
+  const students = [
+        {fname: "Jon", lname: "Joe", username: "JJ09", password: "Peaches"},
+        {fname: "Will", lname: "Billy", username: "WB02", password: "Cake"},
+        {fname: "Drew", lname: "Blue", username: "DB12", password: "Orange"},
+        {fname: "Bob", lname: "Builder", username: "BB5", password: "Cloud"}
+      ]
+
+  const classes = [
+      {
+        name: "Class 1",
+        id: "23213931",
+        students: ["JJ09", "WB02"]
+      },
+      {
+        name: "Class 2",
+        id: "63526050",
+        students: ["DB12", "BB5"]
+      }
+    ]
+
 export function authenticate(userData) {
   return axios.post(`${API_URL}/login/`, userData);
 }
@@ -18,24 +39,42 @@ export function getExperiment(experimentId) {
   return axios.get(`${API_URL}/experiments/${experimentId}/`);
 }
 
+export function getDevice() {
+  return "1199802";
+}
+
 export default {
-  getClasses: function () {
-      return [
-        {
-          name: "Class 1",
-          id: "232139",
-          students: ['JJ9','WB2','WT23','BB10','CK30']
-        },
-        {
-          name: "Class 2",
-          id: "635260",
-          students: ['DB12','NB5','AD28','JB1']
-        }
-      ]
-    },
-  getSchool: function () {
-      return "1199802"
-    },
+  getClasses: function() {
+    return classes;
+  },
+  getClass: function(classId){
+    return classes.find(c => c.id === classId)
+  },
+  generateId: function() {
+    let str =  Math.floor(Math.random() * 100000000 + 9999999).toString()
+    return parseInt(str.substring(0,8));
+  },
+  getUser: function(id) {
+    return students[id]
+  },
+  getStudents: function(classId) {
+    if (classId == null){
+      return []
+    }
+    else {
+      let currentClass = classes.find(c => c.id === classId)
+      // alert(JSON.stringify(currClass.students))
+      // let students = Array.from(students[x], x => x + x)
+      let studentIds = currentClass.students
+      let classStudents = []
+      // alert(JSON.stringify(currentClass.students))
+      studentIds.forEach(function (id) {
+        classStudents.push(students.find(s => s.username === id));
+      });
+      // alert(JSON.stringify(classStudents[0]))
+      return classStudents
+    }
+  },
   getAssignments(frequency) {
     let repeating = {
       assignments: [
