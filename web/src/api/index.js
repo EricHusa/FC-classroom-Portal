@@ -79,7 +79,7 @@ export default {
     let str = Math.floor(Math.random() * 100000000 + 9999999).toString();
     return parseInt(str.substring(0, 8));
   },
-  getStudents: function(classId=null) {
+  getStudents: function(classId = null) {
     if (classId == null) {
       return students;
     } else {
@@ -93,30 +93,34 @@ export default {
     }
   },
   getStudentCheckboxes: function(classId) {
-    if(classId != null){
-    let newList = []
-    let modifiedStudent = {}
-    let currentClass = classes.find(c => c.id === classId);
-    let i
-    for (i in students){
-      let student = students[i]
-      modifiedStudent = { text: student.username + ', ' + student.fname + ' ' + student.lname, value: student.id, disabled: currentClass.students.includes(student.id)}
-      newList.push(modifiedStudent)
+    if (classId != null) {
+      let newList = [];
+      let modifiedStudent = {};
+      let currentClass = classes.find(c => c.id === classId);
+      let i;
+      for (i in students) {
+        let student = students[i];
+        modifiedStudent = {
+          text: student.username + ", " + student.fname + " " + student.lname,
+          value: student.id,
+          disabled: currentClass.students.includes(student.id)
+        };
+        newList.push(modifiedStudent);
+      }
+      return newList;
     }
-    return newList
-  }},
+  },
   getStudent: function(studentId) {
     return students.find(c => c.id === studentId);
   },
   createStudent: function(student) {
-    studentIdCounter += 1
-    student.id = studentIdCounter
+    studentIdCounter += 1;
+    student.id = studentIdCounter;
     students.push(student);
     // this.$store.state.studentList = this.getStudents()
-    return student
+    return student;
   },
   addStudent: function(studentId, classId) {
-    alert("Adding student " + studentId + " to class " + classId)
     let currentClass = classes.find(c => c.id === classId);
     currentClass.students.push(studentId);
   },
@@ -127,11 +131,11 @@ export default {
       })
       .indexOf(studentId);
 
-    let student = students[index]
-    student.fname = values.fname
-    student.lname = values.lname
-    student.username = values.username
-    student.password = values.password
+    let student = students[index];
+    student.fname = values.fname;
+    student.lname = values.lname;
+    student.username = values.username;
+    student.password = values.password;
   },
 
   deleteStudent: function(studentId) {
@@ -144,14 +148,14 @@ export default {
     students.splice(index, 1);
     //Remove student from their classes
     let i;
-    for(i in classes){
-        let c = classes[i]
-        if (c.students.includes(studentId)){
-          c.students.splice(c.students.indexOf(studentId),1)
-        }
+    for (i in classes) {
+      let c = classes[i];
+      if (c.students.includes(studentId)) {
+        c.students.splice(c.students.indexOf(studentId), 1);
       }
+    }
 
-    this.$store.state.studentList = this.getStudents()
+    this.$store.state.studentList = this.getStudents();
   },
 
   getAssignments(frequency) {

@@ -8,9 +8,7 @@
       :bordered="true"
     >
       <template v-slot:cell(action)="props">
-        <router-link
-          :to="`/student/${props.item.id}`"
-          tag="button"
+        <router-link :to="`/student/${props.item.id}`" tag="button"
           >Update</router-link
         >
       </template>
@@ -38,8 +36,7 @@ export default {
       className: ""
     };
   },
-  methods: {
-  }
+  methods: {}
 };
 </script>
 

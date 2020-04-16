@@ -1,28 +1,16 @@
 <template>
   <b-container fluid>
-    <b-alert
-      :show="updateAlert"
-      dismissible
-      fade
-      variant="success"
-    >
+    <b-alert :show="updateAlert" dismissible fade variant="success">
       Student account updated
     </b-alert>
-    <b-alert
-      :show="deleteAlert"
-      dismissible
-      fade
-      variant="success"
-    >
+    <b-alert :show="deleteAlert" dismissible fade variant="success">
       Student account deleted
     </b-alert>
-    This is for {{form.username}}
+    This is for {{ form.username }}
     <br />
     <b-row class="my-1" v-for="item in headers" :key="item">
       <b-col sm="3">
-        <label :for="`form-${item.label}`"
-          >{{ item.label }}:</label
-        >
+        <label :for="`form-${item.label}`">{{ item.label }}:</label>
       </b-col>
       <b-col sm="9">
         <b-form-input
@@ -32,7 +20,7 @@
         ></b-form-input>
       </b-col>
     </b-row>
-       <b-row>
+    <b-row>
       <b-col sm="3"></b-col>
       <b-col sm="9">
         <b-button
@@ -49,19 +37,19 @@
           >Delete student</b-button
         >
       </b-col>
-           </b-row>
+    </b-row>
   </b-container>
 </template>
 
 <script>
-  import api from "../api/index.js";
-  export default {
-    data() {
+import api from "../api/index.js";
+export default {
+  data() {
     return {
-        student: {},
-    updateAlert: 0,
-    deleteAlert: 0,
-    form: {
+      student: {},
+      updateAlert: 0,
+      deleteAlert: 0,
+      form: {
         fname: null,
         lname: null,
         username: "",
@@ -73,33 +61,30 @@
         { key: "username", label: "Username" },
         { key: "password", label: "Password" }
       ]
-      }},
-      methods: {
-      updateStudent(){
-        api.updateStudent(this.student.id, this.form)
-        this.updateAlert = 3
-      },
-        deleteStudent(){
-        if (
-        confirm(
-          "Are you sure you want to delete this student account?"
-        )
-      ) {
-          api.deleteStudent(this.student.id)
-          // this.deleteAlert = 3
-          this.$router.push('/school')
-        }
-        }
-      },
+    };
+  },
+  methods: {
+    updateStudent() {
+      api.updateStudent(this.student.id, this.form);
+      this.updateAlert = 3;
+    },
+    deleteStudent() {
+      if (confirm("Are you sure you want to delete this student account?")) {
+        api.deleteStudent(this.student.id);
+        // this.deleteAlert = 3
+        this.$router.push("/school");
+      }
+    }
+  },
   beforeMount: function() {
     this.studentId = parseInt(this.$route.params.id);
   },
-    mounted() {
+  mounted() {
     this.student = api.getStudent(this.studentId);
-    this.form.fname = this.student.fname
-    this.form.lname = this.student.lname
-    this.form.username = this.student.username
-    this.form.password = this.student.password
+    this.form.fname = this.student.fname;
+    this.form.lname = this.student.lname;
+    this.form.username = this.student.username;
+    this.form.password = this.student.password;
   }
 };
 </script>
