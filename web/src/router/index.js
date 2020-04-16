@@ -7,6 +7,7 @@ import Settings from "../views/Settings.vue";
 import store from "../store";
 import Assignment from "../views/Assignment";
 import School from "../views/School";
+import Student from "../views/Student";
 
 Vue.use(VueRouter);
 
@@ -44,11 +45,15 @@ const routes = [
     component: Assignment
   },
   {
+    path: "/student/:id",
+    name: "viewAccount",
+    component: Student
+  },
+  {
     path: "/home",
-    name: "landing",
+    name: "home",
     component: Home
   }
-
   // {
   //   path: "/teacher",
   //   name: "teacher",
