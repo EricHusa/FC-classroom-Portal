@@ -4,22 +4,24 @@ const API_URL = process.env.API_URL;
 
 //sample database data
 let students = [
-  { fname: "Jon", lname: "Joe", username: "JJ09", password: "Peaches" },
-  { fname: "Will", lname: "Billy", username: "WB02", password: "Cake" },
-  { fname: "Drew", lname: "Blue", username: "DB12", password: "Orange" },
-  { fname: "Bob", lname: "Builder", username: "BB5", password: "Cloud" }
+  { fname: "Jon", lname: "Joe", username: "JJ09", password: "Peaches", id: 1 },
+  { fname: "Will", lname: "Billy", username: "WB02", password: "Cake", id: 2 },
+  { fname: "Drew", lname: "Blue", username: "DB12", password: "Orange", id: 3 },
+  { fname: "Bob", lname: "Builder", username: "BB5", password: "Cloud", id: 4 }
 ];
+
+let studentIdCounter = students.length;
 
 let classes = [
   {
     name: "Class 1",
     id: 23213931,
-    students: ["JJ09", "WB02"]
+    students: [1, 2]
   },
   {
     name: "Class 2",
     id: 63526050,
-    students: ["DB12", "BB5"]
+    students: [3, 4]
   }
 ];
 
@@ -77,27 +79,81 @@ export default {
     let str = Math.floor(Math.random() * 100000000 + 9999999).toString();
     return parseInt(str.substring(0, 8));
   },
-  getUser: function(id) {
-    return students[id];
-  },
-  getStudents: function(classId) {
+  getStudents: function(classId=null) {
     if (classId == null) {
-      return [];
+      return students;
     } else {
       let currentClass = classes.find(c => c.id === classId);
       let studentIds = currentClass.students;
       let classStudents = [];
       studentIds.forEach(function(id) {
-        classStudents.push(students.find(s => s.username === id));
+        classStudents.push(students.find(s => s.id === id));
       });
       return classStudents;
     }
   },
-  addStudent: function(student, classId) {
-    students.push(student);
+  getStudentCheckboxes: function(classId) {
+    if(classId != null){
+    let newList = []
+    let modifiedStudent = {}
     let currentClass = classes.find(c => c.id === classId);
-    currentClass.students.push(student.username);
+    let i
+    for (i in students){
+      let student = students[i]
+      modifiedStudent = { text: student.username + ', ' + student.fname + ' ' + student.lname, value: student.id, disabled: currentClass.students.includes(student.id)}
+      newList.push(modifiedStudent)
+    }
+    return newList
+  }},
+  getStudent: function(studentId) {
+    return students.find(c => c.id === studentId);
   },
+  createStudent: function(student) {
+    studentIdCounter += 1
+    student.id = studentIdCounter
+    students.push(student);
+    // this.$store.state.studentList = this.getStudents()
+    return student
+  },
+  addStudent: function(studentId, classId) {
+    alert("Adding student " + studentId + " to class " + classId)
+    let currentClass = classes.find(c => c.id === classId);
+    currentClass.students.push(studentId);
+  },
+  updateStudent: function(studentId, values) {
+    let index = students
+      .map(function(e) {
+        return e.id;
+      })
+      .indexOf(studentId);
+
+    let student = students[index]
+    student.fname = values.fname
+    student.lname = values.lname
+    student.username = values.username
+    student.password = values.password
+  },
+
+  deleteStudent: function(studentId) {
+    //Delete student from student list
+    let index = students
+      .map(function(e) {
+        return e.id;
+      })
+      .indexOf(studentId);
+    students.splice(index, 1);
+    //Remove student from their classes
+    let i;
+    for(i in classes){
+        let c = classes[i]
+        if (c.students.includes(studentId)){
+          c.students.splice(c.students.indexOf(studentId),1)
+        }
+      }
+
+    this.$store.state.studentList = this.getStudents()
+  },
+
   getAssignments(frequency) {
     let repeating = {
       assignments: [

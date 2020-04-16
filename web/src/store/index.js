@@ -22,7 +22,8 @@ const state = {
   currentExperiment: {},
   role: "guest",
   device: "777",
-  activeClass: null
+  activeClass: null,
+  studentList: []
 };
 
 const actions = {
