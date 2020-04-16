@@ -6,7 +6,6 @@
     <b-alert :show="deleteAlert" dismissible fade variant="success">
       Student account deleted
     </b-alert>
-    This is for {{ form.username }}
     <br />
     <b-row class="my-1" v-for="item in headers" :key="item">
       <b-col sm="3">

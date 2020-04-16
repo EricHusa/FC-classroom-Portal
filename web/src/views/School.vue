@@ -206,7 +206,8 @@ export default {
       if (!this.validate()) {
         alert("spaces are not allowed in input");
       } else {
-        api.createStudent(JSON.parse(JSON.stringify(this.form)));
+        try{api.createStudent(JSON.parse(JSON.stringify(this.form)));}
+        catch(err){alert(err)}
         this.form.fname = null;
         this.form.lname = null;
         this.form.username = "";
