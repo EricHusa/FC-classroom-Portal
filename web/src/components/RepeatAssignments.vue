@@ -40,9 +40,9 @@ export default {
         }
       ],
       headers: [
-        { key: "title", label: "Title" },
-        { key: "frequency", label: "Frequency" },
-        { key: "status", label: "Status" },
+        { key: "title", label: "Title", sortable: true },
+        { key: "frequency", label: "Frequency", sortable: true },
+        { key: "status", label: "Status", sortable: true },
         { key: "action", label: "Action" }
       ]
     };

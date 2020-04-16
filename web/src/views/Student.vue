@@ -56,9 +56,9 @@ export default {
         password: ""
       },
       headers: [
-        { key: "fname", label: "First Name" },
-        { key: "lname", label: "Last Name" },
-        { key: "username", label: "Username" },
+        { key: "fname", label: "First Name", sortable: true },
+        { key: "lname", label: "Last Name", sortable: true },
+        { key: "username", label: "Username", sortable: true },
         { key: "password", label: "Password" }
       ]
     };
