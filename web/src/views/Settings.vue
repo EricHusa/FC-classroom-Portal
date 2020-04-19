@@ -1,16 +1,20 @@
 <template>
-  <div class="center">
-    <ScopeSelector />
-    <br />
-    <button><router-link to="/home">Home</router-link></button>
+  <div>
+    <NavBar />
+    <div class="center">
+      <ScopeSelector />
+      <br />
+      <button><router-link to="/home">Home</router-link></button>
+    </div>
   </div>
 </template>
 
 <script>
 import ScopeSelector from "../components/ScopeSelector";
+import NavBar from "../components/NavBar";
 export default {
   name: "Settings",
-  components: { ScopeSelector }
+  components: { ScopeSelector, NavBar }
 };
 </script>
 

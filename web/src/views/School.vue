@@ -1,5 +1,6 @@
 <template>
   <div>
+    <NavBar />
     <b-card no-body>
       <b-tabs card justified>
         <b-tab title="Student List">
@@ -144,8 +145,9 @@
 <script>
 import StudentList from "../components/StudentList.vue";
 import api from "../api/index.js";
+import NavBar from "../components/NavBar";
 export default {
-  components: { StudentList },
+  components: { StudentList, NavBar },
   data() {
     return {
       currStudents: api.getStudents(this.$store.state.activeClass),
@@ -206,8 +208,11 @@ export default {
       if (!this.validate()) {
         alert("spaces are not allowed in input");
       } else {
-        try{api.createStudent(JSON.parse(JSON.stringify(this.form)));}
-        catch(err){alert(err)}
+        try {
+          api.createStudent(JSON.parse(JSON.stringify(this.form)));
+        } catch (err) {
+          alert(err);
+        }
         this.form.fname = null;
         this.form.lname = null;
         this.form.username = "";

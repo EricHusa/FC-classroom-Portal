@@ -111,23 +111,21 @@ export default {
     }
   },
   getStudent: function(studentId) {
-    let student =  students.find(c => c.id === studentId);
-    if(!student) {
-      alert("This account does not exist")
-    }
-    else {
-      return student
+    let student = students.find(c => c.id === studentId);
+    if (!student) {
+      alert("This account does not exist");
+    } else {
+      return student;
     }
   },
   createStudent: function(student) {
-    for(let index in students){
-        if (students[index].username==student.username){
-          throw "That username already exists"
-        }
+    for (let index in students) {
+      if (students[index].username == student.username) {
+        throw "That username already exists";
+      }
     }
-    alert('does not end btw')
-    if(student.username)
-    studentIdCounter += 1;
+    alert("does not end btw");
+    if (student.username) studentIdCounter += 1;
     student.id = studentIdCounter;
     students.push(student);
     // this.$store.state.studentList = this.getStudents()
