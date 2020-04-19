@@ -1,5 +1,6 @@
 <template>
   <b-container fluid>
+    <NavBar />
     <b-layout align-start justify-center fill-height>
       <b-card class="card">
         <b-card-text>
@@ -64,7 +65,9 @@
 </template>
 
 <script>
+import NavBar from "../components/NavBar";
 export default {
+  components: { NavBar },
   data: () => ({
     id: this.assignment_id,
     date: "",

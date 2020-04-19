@@ -1,44 +1,5 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <!--    <div id="nav">-->
-      <!--      <router-link to="/student">Student</router-link> |-->
-      <!--      <router-link to="/teacher">Teacher</router-link>-->
-      <!--      <h2>Food Computer Portal<b-icon icon="person-fill"></b-icon></h2>-->
-      <!--    </div>-->
-      <b-navbar toggleable="lg" class="navbar navbar-expand-sm">
-        <!--          <a href="#"><h2>Food Computer Portal</h2></a>-->
-        <b-navbar-brand
-          class="nav navbar-nav flex-fill justify-content-center"
-          href="#"
-          style="margin-right: 0px;margin-left: 63px;"
-          ><h3>Food Computer Portal</h3></b-navbar-brand
-        >
-        <!-- Right aligned nav items -->
-        <b-navbar-nav class="ml-auto settings-dropdown">
-          <b-nav-item-dropdown
-            :disabled="this.$store.state.role == 'guest'"
-            right
-          >
-            <!-- Using 'button-content' slot -->
-            <template v-slot:button-content>
-              <b-icon icon="person-fill" style="color: white;"></b-icon>
-            </template>
-            <b-dropdown-item :disabled="this.$store.state.role == 'student'">
-              <router-link to="/settings">
-                <div v-bind:style="setButton()">Settings</div></router-link
-              >
-            </b-dropdown-item>
-            <b-dropdown-item>
-              <router-link to="/school">School</router-link>
-            </b-dropdown-item>
-            <b-dropdown-item
-              ><router-link to="/login">Sign out</router-link></b-dropdown-item
-            >
-          </b-nav-item-dropdown>
-        </b-navbar-nav>
-      </b-navbar>
-    </div>
     <router-view />
   </div>
 </template>
@@ -83,13 +44,16 @@
 </style>
 
 <script>
+import NavOptions from "./constants/NavOptions.ts";
 export default {
-  methods: {
-    setButton: function() {
-      if (this.$store.state.role == "student") {
-        return "color: gray;";
-      }
-    }
+  data() {
+    return {
+      options: NavOptions[this.$store.state.role],
+      roley: this.$store.state.role
+    };
+  },
+  mounted: function() {
+    //this.options = NavOptions[this.$store.state.role];
   }
 };
 </script>

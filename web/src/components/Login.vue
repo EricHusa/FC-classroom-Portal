@@ -1,5 +1,6 @@
 <template>
   <div>
+    <NavBar />
     <section class="hero is-primary">
       <div class="hero-body">
         <div class="container has-text-centered">
@@ -48,7 +49,9 @@
 
 <script>
 import { EventBus } from "../utils";
+import NavBar from "./NavBar";
 export default {
+  components: { NavBar },
   data() {
     return {
       email: "",

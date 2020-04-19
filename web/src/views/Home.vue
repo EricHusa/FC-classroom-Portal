@@ -1,5 +1,6 @@
 <template>
   <div>
+    <NavBar />
     <div>
       <b-card no-body>
         <b-tabs card justified>
@@ -40,10 +41,11 @@
 import SingleAssignments from "../components/SingleAssignments.vue";
 import RepeatAssignments from "../components/RepeatAssignments";
 import Experiments from "../components/Experiments";
+import NavBar from "../components/NavBar";
 
 export default {
   name: "Single_Assignments",
-  components: { SingleAssignments, RepeatAssignments, Experiments }
+  components: { SingleAssignments, RepeatAssignments, Experiments, NavBar }
   // data: () => ({
   //   id: this.assignment_id,}),
   // methods: {
