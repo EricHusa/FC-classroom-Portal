@@ -21,7 +21,7 @@ const state = {
   experiments: [],
   currentExperiment: {},
   role: "guest",
-  device: "777",
+  device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c",
   activeClass: null,
   studentList: []
 };

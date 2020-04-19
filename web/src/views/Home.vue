@@ -28,7 +28,7 @@
           </b-tab>
           <b-tab title="Images" :disabled="false">
             <div>
-              <b-card-text>Image things will go here</b-card-text>
+              <ImageViewer />
             </div>
           </b-tab>
         </b-tabs>
@@ -42,10 +42,11 @@ import SingleAssignments from "../components/SingleAssignments.vue";
 import RepeatAssignments from "../components/RepeatAssignments";
 import Experiments from "../components/Experiments";
 import NavBar from "../components/NavBar";
+import ImageViewer from "../components/ImageViewer";
 
 export default {
   name: "Single_Assignments",
-  components: { SingleAssignments, RepeatAssignments, Experiments, NavBar }
+  components: { SingleAssignments, RepeatAssignments, Experiments, NavBar, ImageViewer }
   // data: () => ({
   //   id: this.assignment_id,}),
   // methods: {
