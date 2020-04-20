@@ -14,7 +14,7 @@
                       :header-bg-variant="getVariant(item.id, 'header')"
                       :header="item.title"
                       header-border-variant="secondary"
-                      style="max-width: 20rem; max-height: 20rem;"
+                      style="max-width: 13rem; max-height: 14rem; min-width: 13rem; min-height: 14rem;"
                     >
                       <b-card-text>{{ item.description }}</b-card-text>
                       <b-form-radio-group buttons>
@@ -25,11 +25,19 @@
                           button-variant="default"
                           size="lg"
                           :checked="item.id == activeExperiment.id"
-                          ><b-button @click="setExpi(item.id)" variant="primary">Select experiment</b-button></b-form-radio
+                          style="vertical-align: sub;"
+                          >
+                          <b-button @click="setExpi(item.id)" variant="primary">Select experiment</b-button></b-form-radio
                         ></b-form-radio-group
                       >
                     </b-card>
                   </b-card-group>
+                  <b-card
+                      border-variant="secondary"
+                      bg-variant="success"
+                      header="Create Experiment"
+                      style="max-width: 13rem; max-height: 14rem; min-width: 13rem; min-height: 14rem;"
+                  ><b-card-text><b-button  @click="setExpi()" variant="success"><b-icon icon="plus-square-fill" font-scale="5"></b-icon></b-button></b-card-text></b-card>
                 </b-card-group>
               </b-col>
               <b-col sm="6">
@@ -88,7 +96,7 @@ export default {
   data() {
     return {
       experiments: [],
-      activeExperiment: { title: "You have no experiments" },
+      activeExperiment: {},
       experimentForm: {
         title: null,
         description: null,
@@ -105,18 +113,23 @@ export default {
     if(this.experiments.length > 0) {
       this.setExpi(this.experiments[0].id)
     }
+    else{this.setExpi(null)}
   },
     methods: {
-      setExpi(id) {
+      setExpi(id=null) {
           this.activeExperiment = api.getExperiment(id)
           this.$store.state.currentExperiment = this.activeExperiment
           for(let k in this.experimentForm){
             this.experimentForm[k] = this.activeExperiment[k]
           }
+          this.experiments = api.getExperiments(
+      this.$store.state.role,
+      this.$store.state.currentUser
+    );
       },
       getVariant(id, type){
         if(id==this.activeExperiment.id){
-          return "success"
+          return "info"
         }
         else{
           if(type=="header") {
