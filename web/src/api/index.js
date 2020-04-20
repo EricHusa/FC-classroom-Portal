@@ -11,19 +11,19 @@ let students = [
 
 let experiments = [
   {
-    name: "Example",
+    title: "Example",
     description: "This is a sample experiment",
     plant: "basil",
-    start_date: "2020-03-15 14:15:00",
+    start_date: "2020-03-15",
     teacher: 34589798,
     students: [1, 4],
     id: 38782347
   },
   {
-    name: "Another",
+    title: "Another",
     description: "Another example experiment",
     plant: "tomato",
-    start_date: "2020-03-18 11:30:00",
+    start_date: "2020-03-18",
     teacher: 34589798,
     students: [1, 2, 3],
     id: 16847325
@@ -218,6 +218,17 @@ export default {
       }
     }
     return { name: "Select an experiment" };
+  },
+  updateExperiment: function(id, values) {
+    for (let e in experiments) {
+      let exp = experiments[e];
+      if (exp.id == id) {
+        for (let k in values){
+          exp[k] = values[k]
+        };
+        break;
+      }
+    }
   },
 
   getAssignments(frequency) {

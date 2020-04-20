@@ -12,7 +12,7 @@
                     <b-card
                       :border-variant="getVariant(item.id, 'border')"
                       :header-bg-variant="getVariant(item.id, 'header')"
-                      :header="item.name"
+                      :header="item.title"
                       header-border-variant="secondary"
                       style="max-width: 20rem; max-height: 20rem;"
                     >
@@ -33,7 +33,7 @@
                 </b-card-group>
               </b-col>
               <b-col sm="6">
-                <ExperimentViewer v-bind:experiment="activeExperiment"/>
+                <ExperimentViewer v-bind:experiment="activeExperiment" v-bind:form="experimentForm"/>
               </b-col>
             </b-row>
           </b-tab>
@@ -88,7 +88,13 @@ export default {
   data() {
     return {
       experiments: [],
-      activeExperiment: { name: "You have no experiments" }
+      activeExperiment: { title: "You have no experiments" },
+      experimentForm: {
+        title: null,
+        description: null,
+        plant: null,
+        start_date: null
+      }
     };
   },
   beforeMount() {
@@ -104,6 +110,9 @@ export default {
       setExpi(id) {
           this.activeExperiment = api.getExperiment(id)
           this.$store.state.currentExperiment = this.activeExperiment
+          for(let k in this.experimentForm){
+            this.experimentForm[k] = this.activeExperiment[k]
+          }
       },
       getVariant(id, type){
         if(id==this.activeExperiment.id){
