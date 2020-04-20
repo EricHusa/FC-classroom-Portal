@@ -1,5 +1,6 @@
 <template>
   <b-container fluid>
+    <NavBar />
     <b-alert :show="updateAlert" dismissible fade variant="success">
       Student account updated
     </b-alert>
@@ -42,7 +43,9 @@
 
 <script>
 import api from "../api/index.js";
+import NavBar from "../components/NavBar";
 export default {
+  components: { NavBar },
   data() {
     return {
       student: {},

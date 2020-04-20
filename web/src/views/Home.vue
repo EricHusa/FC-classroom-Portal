@@ -5,7 +5,45 @@
       <b-card no-body>
         <b-tabs card justified>
           <b-tab title="Experiment">
-            <Experiments />
+            <b-row>
+              <b-col sm="6">
+                <b-card-group deck>
+                  <b-card-group v-for="item in experiments" :key="item.name">
+                    <b-card
+                      :border-variant="getVariant(item.id, 'border')"
+                      :header-bg-variant="getVariant(item.id, 'header')"
+                      :header="item.title"
+                      header-border-variant="secondary"
+                      style="max-width: 13rem; max-height: 14rem; min-width: 13rem; min-height: 14rem;"
+                    >
+                      <b-card-text>{{ item.description }}</b-card-text>
+                      <b-form-radio-group buttons>
+                        <b-form-radio
+                          :id="`exp-select-${item.id}`"
+                          :value=item.id
+                          disabled
+                          button-variant="default"
+                          size="lg"
+                          :checked="item.id == activeExperiment.id"
+                          style="vertical-align: sub;"
+                          >
+                          <b-button @click="setExpi(item.id)" variant="primary">Select experiment</b-button></b-form-radio
+                        ></b-form-radio-group
+                      >
+                    </b-card>
+                  </b-card-group>
+                  <b-card
+                      border-variant="secondary"
+                      bg-variant="success"
+                      header="Create Experiment"
+                      style="max-width: 13rem; max-height: 14rem; min-width: 13rem; min-height: 14rem;"
+                  ><b-card-text><b-button  @click="setExpi()" variant="success"><b-icon icon="plus-square-fill" font-scale="5"></b-icon></b-button></b-card-text></b-card>
+                </b-card-group>
+              </b-col>
+              <b-col sm="6">
+                <ExperimentViewer v-bind:experiment="activeExperiment" v-bind:form="experimentForm"/>
+              </b-col>
+            </b-row>
           </b-tab>
           <b-tab title="Assignments">
             <br />
@@ -28,7 +66,8 @@
           </b-tab>
           <b-tab title="Images" :disabled="false">
             <div>
-              <ImageViewer />
+              <ImageViewer
+              />
             </div>
           </b-tab>
         </b-tabs>
@@ -40,19 +79,68 @@
 <script>
 import SingleAssignments from "../components/SingleAssignments.vue";
 import RepeatAssignments from "../components/RepeatAssignments";
-import Experiments from "../components/Experiments";
+// import Experiments from "../components/Experiments";
 import NavBar from "../components/NavBar";
 import ImageViewer from "../components/ImageViewer";
-
+import api from "../api/index.js";
+import ExperimentViewer from "../components/ExperimentViewer";
 export default {
-  name: "Single_Assignments",
-  components: { SingleAssignments, RepeatAssignments, Experiments, NavBar, ImageViewer }
-  // data: () => ({
-  //   id: this.assignment_id,}),
-  // methods: {
-  //   beforeMount: function() {
-  //     this.active_tab = this.$route.params.tab;
-  // }
+  name: "HomePage",
+  components: {
+    SingleAssignments,
+    RepeatAssignments,
+    NavBar,
+    ImageViewer,
+    ExperimentViewer
+  },
+  data() {
+    return {
+      experiments: [],
+      activeExperiment: {},
+      experimentForm: {
+        title: null,
+        description: null,
+        plant: null,
+        start_date: null
+      }
+    };
+  },
+  beforeMount() {
+    this.experiments = api.getExperiments(
+      this.$store.state.role,
+      this.$store.state.currentUser
+    );
+    if(this.experiments.length > 0) {
+      this.setExpi(this.experiments[0].id)
+    }
+    else{this.setExpi(null)}
+  },
+    methods: {
+      setExpi(id=null) {
+          this.activeExperiment = api.getExperiment(id)
+          this.$store.state.currentExperiment = this.activeExperiment
+          for(let k in this.experimentForm){
+            this.experimentForm[k] = this.activeExperiment[k]
+          }
+          this.experiments = api.getExperiments(
+      this.$store.state.role,
+      this.$store.state.currentUser
+    );
+      },
+      getVariant(id, type){
+        if(id==this.activeExperiment.id){
+          return "info"
+        }
+        else{
+          if(type=="header") {
+            return "light"
+          }
+          else{
+            return "secondary"
+          }
+        }
+      }
+    }
 };
 </script>
 

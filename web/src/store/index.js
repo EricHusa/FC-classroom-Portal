@@ -23,7 +23,8 @@ const state = {
   role: "guest",
   device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c",
   activeClass: null,
-  studentList: []
+  studentList: [],
+  currentUser: null
 };
 
 const actions = {
@@ -61,6 +62,7 @@ const actions = {
   },
   dev(context, value) {
     context.commit("setRole", value);
+    context.commit("setUser");
   },
   device() {
     return getDevice().then(response => {
@@ -88,6 +90,9 @@ const mutations = {
   },
   setRole(state, payload) {
     state.role = payload;
+  },
+  setUser(state) {
+    state.currentUser = 34589798;
   }
 };
 

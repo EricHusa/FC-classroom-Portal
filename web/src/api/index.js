@@ -1,5 +1,4 @@
 import axios from "axios";
-
 const API_URL = process.env.API_URL;
 
 //sample database data
@@ -9,6 +8,29 @@ let students = [
   { fname: "Drew", lname: "Blue", username: "DB12", password: "Orange", id: 3 },
   { fname: "Bob", lname: "Builder", username: "BB5", password: "Cloud", id: 4 }
 ];
+
+let experiments = [
+  {
+    title: "Example",
+    description: "This is a sample experiment",
+    plant: "basil",
+    start_date: "2020-03-15",
+    teacher: 34589798,
+    students: [1, 4],
+    id: 38782347
+  },
+  {
+    title: "Another",
+    description: "Another example experiment",
+    plant: "tomato",
+    start_date: "2020-03-18",
+    teacher: 34589798,
+    students: [1, 2, 3],
+    id: 16847325
+  }
+];
+
+// let teachers = [{fname: "Mr", lname: "Teacher", username: "mrT", password: "admin", id: 34589798}]
 
 let studentIdCounter = students.length;
 
@@ -33,19 +55,27 @@ export function register(userData) {
   return axios.post(`${API_URL}/register/`, userData);
 }
 
-export function getExperiments() {
-  return axios.get(`${API_URL}/experiments/`);
-}
+// export function getExperiments() {
+//   return axios.get(`${API_URL}/experiments/`);
+// }
 
-export function getExperiment(experimentId) {
-  return axios.get(`${API_URL}/experiments/${experimentId}/`);
-}
+// export function getExperiment(experimentId) {
+//   return axios.get(`${API_URL}/experiments/${experimentId}/`);
+// }
 
 export function getDevice() {
   return "1199802";
 }
 
 export default {
+  getToday:  function(){
+    let today = new Date();
+    let dd = String(today.getDate()).padStart(2, '0');
+    let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    let yyyy = today.getFullYear();
+    today = yyyy + "-" + mm + '-' + dd
+    return today
+  },
   getClasses: function() {
     return classes;
   },
@@ -92,18 +122,22 @@ export default {
       return classStudents;
     }
   },
-  getStudentCheckboxes: function(classId) {
-    if (classId != null) {
+  getStudentCheckboxes: function(scopeId=null) {
+    if (scopeId != null) {
       let newList = [];
       let modifiedStudent = {};
-      let currentClass = classes.find(c => c.id === classId);
-      let i;
-      for (i in students) {
+      // let currentScope
+      // if(type == "experiment") {
+      //   currentScope = experiments.find(c => c.id === scopeId);
+      // }
+      // else {
+      //   currentScope = classes.find(c => c.id === scopeId);
+      // }
+      for (let i in students) {
         let student = students[i];
         modifiedStudent = {
           text: student.username + ", " + student.fname + " " + student.lname,
-          value: student.id,
-          disabled: currentClass.students.includes(student.id)
+          value: student.id
         };
         newList.push(modifiedStudent);
       }
@@ -158,8 +192,7 @@ export default {
       .indexOf(studentId);
     students.splice(index, 1);
     //Remove student from their classes
-    let i;
-    for (i in classes) {
+    for (let i in classes) {
       let c = classes[i];
       if (c.students.includes(studentId)) {
         c.students.splice(c.students.indexOf(studentId), 1);
@@ -167,6 +200,82 @@ export default {
     }
 
     this.$store.state.studentList = this.getStudents();
+  },
+
+  getExperiments: function(type, id) {
+    let expList = [];
+    if (type == "teacher") {
+      for (let e in experiments) {
+        let exp = experiments[e];
+        if (exp.teacher == id) {
+          expList.push(exp);
+        }
+      }
+    } else if (type == "students") {
+      for (let e in experiments) {
+        let exp = experiments[e];
+        if (exp.students.includes(id)) {
+          expList.push(exp);
+        }
+      }
+    }
+    return expList;
+  },
+  getExperiment: function(id) {
+    for (let e in experiments) {
+      let exp = experiments[e];
+      if (exp.id == id) {
+        return exp;
+      }
+    }
+    let today = this.getToday();
+    return { title: "New Experiment", start_date: today };
+  },
+  createExperiment: function(values, teacher) {
+    let newExperiment = {}
+    for (let v in values) {
+      newExperiment[v]=values[v]
+    }
+    newExperiment.teacher = teacher
+    newExperiment.students = []
+    newExperiment.id = this.generateId()
+
+    experiments.push(newExperiment)
+    return newExperiment;
+  },
+  updateExperiment: function(id, values) {
+    for (let e in experiments) {
+      let exp = experiments[e];
+      if (exp.id == id) {
+        for (let k in values){
+          exp[k] = values[k]
+        };
+        break;
+      }
+    }
+  },
+  changeExperimentInvolvement: function(expId, studentId) {
+    let index = experiments
+      .map(function(e) {
+        return e.id;
+      })
+      .indexOf(expId);
+
+    let exp = experiments[index]
+    if (exp.students.includes(studentId)) {
+        exp.students.splice(exp.students.indexOf(studentId), 1);
+      }
+    else{
+      exp.students.push(studentId)
+    }
+  },
+  deleteExperiment: function(experimentId) {
+    let index = experiments
+      .map(function(e) {
+        return e.id;
+      })
+      .indexOf(experimentId);
+    experiments.splice(index, 1);
   },
 
   getAssignments(frequency) {
