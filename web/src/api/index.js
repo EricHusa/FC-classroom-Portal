@@ -1,5 +1,4 @@
 import axios from "axios";
-
 const API_URL = process.env.API_URL;
 
 //sample database data
@@ -9,6 +8,29 @@ let students = [
   { fname: "Drew", lname: "Blue", username: "DB12", password: "Orange", id: 3 },
   { fname: "Bob", lname: "Builder", username: "BB5", password: "Cloud", id: 4 }
 ];
+
+let experiments = [
+  {
+    name: "Example",
+    description: "This is a sample experiment",
+    plant: "basil",
+    start_date: "2020-03-15 14:15:00",
+    teacher: 34589798,
+    students: [1, 4],
+    id: 38782347
+  },
+  {
+    name: "Another",
+    description: "Another example experiment",
+    plant: "tomato",
+    start_date: "2020-03-18 11:30:00",
+    teacher: 34589798,
+    students: [1, 2, 3],
+    id: 16847325
+  }
+];
+
+// let teachers = [{fname: "Mr", lname: "Teacher", username: "mrT", password: "admin", id: 34589798}]
 
 let studentIdCounter = students.length;
 
@@ -33,9 +55,9 @@ export function register(userData) {
   return axios.post(`${API_URL}/register/`, userData);
 }
 
-export function getExperiments() {
-  return axios.get(`${API_URL}/experiments/`);
-}
+// export function getExperiments() {
+//   return axios.get(`${API_URL}/experiments/`);
+// }
 
 export function getExperiment(experimentId) {
   return axios.get(`${API_URL}/experiments/${experimentId}/`);
@@ -167,6 +189,35 @@ export default {
     }
 
     this.$store.state.studentList = this.getStudents();
+  },
+
+  getExperiments: function(type, id) {
+    let expList = [];
+    if (type == "teacher") {
+      for (let e in experiments) {
+        let exp = experiments[e];
+        if (exp.teacher == id) {
+          expList.push(exp);
+        }
+      }
+    } else if (type == "students") {
+      for (let e in experiments) {
+        let exp = experiments[e];
+        if (exp.students.includes(id)) {
+          expList.push(exp);
+        }
+      }
+    }
+    return expList;
+  },
+  getExperiment: function(id) {
+    for (let e in experiments) {
+      let exp = experiments[e];
+      if (exp.id == id) {
+        return exp;
+      }
+    }
+    return { name: "Select an experiment" };
   },
 
   getAssignments(frequency) {
