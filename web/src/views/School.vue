@@ -70,6 +70,8 @@
             </b-col>
 
             <b-col cols="12" md="8">
+              <b-overlay :show="!currClass">
+              <div>
               <b-container fluid>
                 <b-form inline style="float: left;">
                   <b-input
@@ -134,6 +136,15 @@
                   </b-collapse>
                 </b-col>
               </b-row>
+                </div>
+                <template v-slot:overlay>
+                  <b-icon
+                        icon="exclamation-circle"
+                        font-scale="2"
+                      ></b-icon>
+                  <p>Select or create a class</p>
+                  </template>
+                  </b-overlay>
             </b-col>
           </b-row>
         </b-tab>
@@ -161,6 +172,7 @@ export default {
       ],
       classes: [{}],
       className: "",
+      classDeleted: false,
       selectedStudents: [],
       form: {
         fname: null,
@@ -201,6 +213,7 @@ export default {
         )
       ) {
         api.deleteClass(id);
+        this.currClass = null
         this.$store.state.activeClass = null;
       }
     },

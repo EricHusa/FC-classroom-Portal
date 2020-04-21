@@ -132,6 +132,10 @@ export default {
   margin-bottom: 1rem;
 }
 
+.btn{
+  margin: 0.5rem;
+}
+
 .error-msg {
   color: red;
   font-weight: bold;
