@@ -36,6 +36,7 @@
     menu-class="w-100"
     variant="light"
     style="width: 95%; margin: auto;"
+    :disabled="checkRole()"
     block>
       <b-dropdown-form>
          <b-form-checkbox-group
@@ -127,7 +128,7 @@ export default {
           }
     },
       createExperiment() {
-      this.experiment = api.createExperiment(this.form, this.$store.state.currentUser);
+      this.experiment = api.createExperiment(this.form, this.$store.state.currentUser.id);
       alert(this.experiment.id)
       this.updateAlert = 3;
     },

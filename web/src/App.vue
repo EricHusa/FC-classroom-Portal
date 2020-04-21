@@ -48,8 +48,7 @@ import NavOptions from "./constants/NavOptions.ts";
 export default {
   data() {
     return {
-      options: NavOptions[this.$store.state.role],
-      roley: this.$store.state.role
+      options: NavOptions[this.$store.state.role]
     };
   },
   mounted: function() {

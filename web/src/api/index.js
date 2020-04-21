@@ -1,12 +1,13 @@
 import axios from "axios";
+import ErrorMessages from "../constants/ErrorMessages.ts";
 const API_URL = process.env.API_URL;
 
 //sample database data
 let students = [
-  { fname: "Jon", lname: "Joe", username: "JJ09", password: "Peaches", id: 1 },
-  { fname: "Will", lname: "Billy", username: "WB02", password: "Cake", id: 2 },
-  { fname: "Drew", lname: "Blue", username: "DB12", password: "Orange", id: 3 },
-  { fname: "Bob", lname: "Builder", username: "BB5", password: "Cloud", id: 4 }
+  { fname: "Jon", lname: "Joe", username: "JJ09", password: "Peaches", id: 1, teacher: "a" },
+  { fname: "Will", lname: "Billy", username: "WB02", password: "Cake", id: 2, teacher: "a" },
+  { fname: "Drew", lname: "Blue", username: "DB12", password: "Orange", id: 3, teacher: "a" },
+  { fname: "Bob", lname: "Cob", username: "b", password: "c", id: 4, teacher: "a" }
 ];
 
 let experiments = [
@@ -15,7 +16,7 @@ let experiments = [
     description: "This is a sample experiment",
     plant: "basil",
     start_date: "2020-03-15",
-    teacher: 34589798,
+    teacher: "a",
     students: [1, 4],
     id: 38782347
   },
@@ -24,13 +25,13 @@ let experiments = [
     description: "Another example experiment",
     plant: "tomato",
     start_date: "2020-03-18",
-    teacher: 34589798,
+    teacher: "a",
     students: [1, 2, 3],
     id: 16847325
   }
 ];
 
-// let teachers = [{fname: "Mr", lname: "Teacher", username: "mrT", password: "admin", id: 34589798}]
+ let teachers = [{fname: "Mr", lname: "Teacher", password: "a", id: "a"}]
 
 let studentIdCounter = students.length;
 
@@ -68,6 +69,34 @@ export function getDevice() {
 }
 
 export default {
+  login(role, userData){
+    if(role=="student"){
+      for(let i in students){
+        let user = students[i]
+        if(user.username == userData.username){
+          if(user.password == userData.password && user.teacher == userData.teacher){
+            return user
+          }
+        }
+      }
+      throw ErrorMessages.incorrectCredentials
+    }
+
+    if(role=="teacher"){
+      for(let i in teachers){
+        let user = teachers[i]
+        if(user.id == userData.username){
+          if(user.password == userData.password){
+            return user
+          }
+          else{
+            throw ErrorMessages.incorrectCredentials
+          }
+        }
+      }
+      throw ErrorMessages.incorrectCredentials
+    }
+  },
   getToday:  function(){
     let today = new Date();
     let dd = String(today.getDate()).padStart(2, '0');
@@ -202,16 +231,16 @@ export default {
     this.$store.state.studentList = this.getStudents();
   },
 
-  getExperiments: function(type, id) {
+  getExperiments: function(role, id) {
     let expList = [];
-    if (type == "teacher") {
+    if (role == "teacher") {
       for (let e in experiments) {
         let exp = experiments[e];
         if (exp.teacher == id) {
           expList.push(exp);
         }
       }
-    } else if (type == "students") {
+    } else if (role == "student") {
       for (let e in experiments) {
         let exp = experiments[e];
         if (exp.students.includes(id)) {

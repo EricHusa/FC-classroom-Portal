@@ -21,7 +21,6 @@
                         <b-form-radio
                           :id="`exp-select-${item.id}`"
                           :value=item.id
-                          disabled
                           button-variant="default"
                           size="lg"
                           :checked="item.id == activeExperiment.id"
@@ -32,12 +31,23 @@
                       >
                     </b-card>
                   </b-card-group>
+                  <b-overlay :show="role=='student'">
                   <b-card
                       border-variant="secondary"
                       bg-variant="success"
                       header="Create Experiment"
                       style="max-width: 13rem; max-height: 14rem; min-width: 13rem; min-height: 14rem;"
                   ><b-card-text><b-button  @click="setExpi()" variant="success"><b-icon icon="plus-square-fill" font-scale="5"></b-icon></b-button></b-card-text></b-card>
+                  <template v-slot:overlay>
+          <b-icon id="experiment-blocker" icon="x-circle-fill" font-scale="2"></b-icon>
+          <b-popover
+          target="experiment-blocker"
+          placement="bottom"
+          triggers="hover focus"
+          content="Only teachers can create experiments right now"
+        ></b-popover>
+      </template>
+                  </b-overlay>
                 </b-card-group>
               </b-col>
               <b-col sm="6">
@@ -95,6 +105,7 @@ export default {
   },
   data() {
     return {
+      role: this.$store.state.role,
       experiments: [],
       activeExperiment: {},
       experimentForm: {
@@ -108,7 +119,7 @@ export default {
   beforeMount() {
     this.experiments = api.getExperiments(
       this.$store.state.role,
-      this.$store.state.currentUser
+      this.$store.state.currentUser.id
     );
     if(this.experiments.length > 0) {
       this.setExpi(this.experiments[0].id)
@@ -124,7 +135,7 @@ export default {
           }
           this.experiments = api.getExperiments(
       this.$store.state.role,
-      this.$store.state.currentUser
+      this.$store.state.currentUser.id
     );
       },
       getVariant(id, type){
