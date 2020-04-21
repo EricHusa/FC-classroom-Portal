@@ -11,7 +11,7 @@
 
           <b-tabs card justified>
             <b-tab title="Student">
-              <b-row class="my-1" v-for="item in options" :key="item">
+              <b-row class="my-1" v-for="item in options" :key="item.key">
                 <label
                   :for="`student-login-form-${item.key}`"
                   class="login-label"
@@ -29,7 +29,7 @@
             </b-tab>
 
             <b-tab title="Teacher">
-              <b-row class="my-1" v-for="item in options.slice(1)" :key="item">
+              <b-row class="my-1" v-for="item in options.slice(1)" :key="item.key">
                 <label :for="`teacher-login-form-${item.key}`"
                   >{{ item.label }}:</label
                 >

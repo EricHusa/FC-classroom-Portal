@@ -82,7 +82,6 @@
                 ></b-form-checkbox-group>
               </b-form-group>
             </div>
-            <b-button @click="importStudents" variant="success">Add</b-button>
           </b-collapse>
         </b-collapse>
         <b-collapse

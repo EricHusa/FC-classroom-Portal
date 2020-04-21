@@ -12,7 +12,7 @@
         <b-nav-item-dropdown right>
           <b-dropdown-item
             v-for="item in options"
-            :key="item"
+            :key="item.name"
             :to="`${item.path}`"
           >
             {{ item.name }}
