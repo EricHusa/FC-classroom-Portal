@@ -69,7 +69,7 @@ const routes = [
         next("/");
       }
     }
-  },
+  }
 
   // {
   //   path: "/teacher",
@@ -96,12 +96,12 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   {
-      if (!store.getters.isAuthenticatedTest && to.fullPath!="/login") {
-        next("/login");
-      } else {
-        next();
-      }
+    if (!store.getters.isAuthenticatedTest && to.fullPath != "/login") {
+      next("/login");
+    } else {
+      next();
     }
-})
+  }
+});
 
 export default router;

@@ -20,38 +20,53 @@
                       <b-form-radio-group buttons>
                         <b-form-radio
                           :id="`exp-select-${item.id}`"
-                          :value=item.id
+                          :value="item.id"
                           button-variant="default"
                           size="lg"
                           :checked="item.id == activeExperiment.id"
                           style="vertical-align: sub;"
-                          >
-                          <b-button @click="setExpi(item.id)" variant="primary">Select experiment</b-button></b-form-radio
+                        >
+                          <b-button @click="setExpi(item.id)" variant="primary"
+                            >Select experiment</b-button
+                          ></b-form-radio
                         ></b-form-radio-group
                       >
                     </b-card>
                   </b-card-group>
-                  <b-overlay :show="role=='student'">
-                  <b-card
+                  <b-overlay :show="role == 'student'">
+                    <b-card
                       border-variant="secondary"
                       bg-variant="success"
                       header="Create Experiment"
                       style="max-width: 13rem; max-height: 14rem; min-width: 13rem; min-height: 14rem;"
-                  ><b-card-text><b-button  @click="setExpi()" variant="success"><b-icon icon="plus-square-fill" font-scale="5"></b-icon></b-button></b-card-text></b-card>
-                  <template v-slot:overlay>
-          <b-icon id="experiment-blocker" icon="x-circle-fill" font-scale="2"></b-icon>
-          <b-popover
-          target="experiment-blocker"
-          placement="bottom"
-          triggers="hover focus"
-          content="Only teachers can create experiments right now"
-        ></b-popover>
-      </template>
+                      ><b-card-text
+                        ><b-button @click="setExpi()" variant="success"
+                          ><b-icon
+                            icon="plus-square-fill"
+                            font-scale="5"
+                          ></b-icon></b-button></b-card-text
+                    ></b-card>
+                    <template v-slot:overlay>
+                      <b-icon
+                        id="experiment-blocker"
+                        icon="x-circle-fill"
+                        font-scale="2"
+                      ></b-icon>
+                      <b-popover
+                        target="experiment-blocker"
+                        placement="bottom"
+                        triggers="hover focus"
+                        content="Only teachers can create experiments right now"
+                      ></b-popover>
+                    </template>
                   </b-overlay>
                 </b-card-group>
               </b-col>
               <b-col sm="6">
-                <ExperimentViewer v-bind:experiment="activeExperiment" v-bind:form="experimentForm"/>
+                <ExperimentViewer
+                  v-bind:experiment="activeExperiment"
+                  v-bind:form="experimentForm"
+                />
               </b-col>
             </b-row>
           </b-tab>
@@ -76,8 +91,7 @@
           </b-tab>
           <b-tab title="Images" :disabled="false">
             <div>
-              <ImageViewer
-              />
+              <ImageViewer />
             </div>
           </b-tab>
         </b-tabs>
@@ -121,37 +135,36 @@ export default {
       this.$store.state.role,
       this.$store.state.currentUser.id
     );
-    if(this.experiments.length > 0) {
-      this.setExpi(this.experiments[0].id)
+    if (this.experiments.length > 0) {
+      this.setExpi(this.experiments[0].id);
+    } else {
+      this.setExpi(null);
     }
-    else{this.setExpi(null)}
   },
-    methods: {
-      setExpi(id=null) {
-          this.activeExperiment = api.getExperiment(id)
-          this.$store.state.currentExperiment = this.activeExperiment
-          for(let k in this.experimentForm){
-            this.experimentForm[k] = this.activeExperiment[k]
-          }
-          this.experiments = api.getExperiments(
-      this.$store.state.role,
-      this.$store.state.currentUser.id
-    );
-      },
-      getVariant(id, type){
-        if(id==this.activeExperiment.id){
-          return "info"
-        }
-        else{
-          if(type=="header") {
-            return "light"
-          }
-          else{
-            return "secondary"
-          }
+  methods: {
+    setExpi(id = null) {
+      this.activeExperiment = api.getExperiment(id);
+      this.$store.state.currentExperiment = this.activeExperiment;
+      for (let k in this.experimentForm) {
+        this.experimentForm[k] = this.activeExperiment[k];
+      }
+      this.experiments = api.getExperiments(
+        this.$store.state.role,
+        this.$store.state.currentUser.id
+      );
+    },
+    getVariant(id, type) {
+      if (id == this.activeExperiment.id) {
+        return "info";
+      } else {
+        if (type == "header") {
+          return "light";
+        } else {
+          return "secondary";
         }
       }
     }
+  }
 };
 </script>
 

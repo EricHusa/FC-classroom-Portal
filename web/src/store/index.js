@@ -68,9 +68,7 @@ const actions = {
       state.device = response;
     });
   },
-  clearState(){
-
-  }
+  clearState() {}
 };
 
 const mutations = {
@@ -111,7 +109,7 @@ const getters = {
     }
   },
   teacherStatus(state) {
-    return state.role == "teacher"
+    return state.role == "teacher";
   },
   getRole(state) {
     return state.role;
