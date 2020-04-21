@@ -107,7 +107,7 @@
 </template>
 
 <script>
-import ExperimentData from "../constants/ExperimentData.ts";
+import TableHeaders from "../constants/TableHeaders.ts";
 import api from "../api/index.js";
 export default {
   props: {
@@ -120,7 +120,7 @@ export default {
       deleteAlert: 0,
       deleted: null,
       selectedStudents: [1],
-      fields: ExperimentData.fields
+      fields: TableHeaders.experiments
     };
   },
   methods: {
@@ -151,7 +151,7 @@ export default {
       this.updateAlert = 3;
     },
     getStudentCheckboxes() {
-      return api.getStudentCheckboxes(this.experiment.id, "experiment");
+      return api.getStudentCheckboxes();
     },
     inExperiment(studentId) {
       if (this.experiment.students.includes(studentId)) {

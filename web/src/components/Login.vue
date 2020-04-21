@@ -29,13 +29,18 @@
             </b-tab>
 
             <b-tab title="Teacher">
-              <b-row class="my-1" v-for="item in options.slice(1)" :key="item.key">
+              <b-row
+                class="my-1"
+                v-for="item in options.slice(1)"
+                :key="item.key"
+              >
                 <label :for="`teacher-login-form-${item.key}`"
                   >{{ item.label }}:</label
                 >
                 <b-form-input
                   :id="`teacher-login-form-${item.key}`"
                   v-model="forms.teacher[item.key]"
+                  class="login-input"
                 ></b-form-input>
               </b-row>
               <b-button variant="success" @click="login('teacher')"
@@ -124,6 +129,10 @@ export default {
 </script>
 
 <style lang="scss">
+#teacher-login-form-password {
+  type: "password";
+}
+
 .login-label {
   text-decoration: underline;
 }
@@ -132,8 +141,9 @@ export default {
   margin-bottom: 1rem;
 }
 
-.btn{
-  margin: 0.5rem;
+.btn {
+  margin-right: 0.25rem;
+  margin-left: 0.25rem;
 }
 
 .error-msg {

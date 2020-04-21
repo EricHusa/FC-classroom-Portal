@@ -70,24 +70,74 @@
               </b-col>
             </b-row>
           </b-tab>
+
           <b-tab title="Assignments">
+            <div>
+              <b-row>
+                <b-col sm="6">
+                  <b-button v-b-toggle.assignment-creator variant="success"
+                    >New Assignment</b-button
+                  >
+                  <b-collapse id="assignment-creator"
+                    ><AssignmentCreator @assignmentCreated="createAssignment"
+                  /></b-collapse>
+                  <h3>Singular Assignments</h3>
+                  <div>
+                    <b-table :fields="assignmentHeaders" :items="addColors">
+                      <template v-slot:cell(comments)="data">
+                        <b-icon
+                          :id="`comment-notification-${data.item.id}`"
+                          icon="exclamation-circle"
+                          font-scale="2"
+                          :hidden="data.item.comments == null"
+                        ></b-icon>
+                        <b-popover
+                          :target="`comment-notification-${data.item.id}`"
+                          placement="bottom"
+                          triggers="hover focus"
+                          :content="data.item.comments"
+                        ></b-popover>
+                      </template>
+                      <template v-slot:cell(action)="row">
+                        <button>View</button>
+                        <b-button
+                          size="sm"
+                          @click="row.toggleDetails"
+                          class="mr-2"
+                          >Update</b-button
+                        >
+                      </template>
+                      <template v-slot:row-details="data">
+                        <b-card>
+                          <!--                          <b-card-text>{{data.item.id}}</b-card-text>-->
+                          <AssignmentCreator
+                            @assignmentCreated="updateAssignment"
+                            v-bind:currentValues="data.item"
+                          />
+                        </b-card>
+                      </template>
+                    </b-table>
+                  </div>
+                </b-col>
+                <b-col sm="6">
+                  <b-jumbotron header="Assignment details"></b-jumbotron>
+                </b-col>
+              </b-row>
+            </div>
+          </b-tab>
+
+          <b-tab title="Observations">
             <br />
             <div style="width: 100%; overflow: hidden;">
               <div style="width: 48%; float: left;">
-                <h3>Singular Observation</h3>
-                <SingleAssignments />
-              </div>
-              <!-- <Single_Assignments />-->
-              <div style="width: 48%; float: right;">
                 <h3>Repeating Observations</h3>
                 <RepeatAssignments />
               </div>
-              <!-- <Repeat_Assignments />-->
+              <div style="width: 48%; float: right;">
+                <b-jumbotron header="Observation details"></b-jumbotron>
+              </div>
             </div>
             <Assignments />
-          </b-tab>
-          <b-tab title="Data">
-            <b-card-text>Tab contents 3</b-card-text>
           </b-tab>
           <b-tab title="Images" :disabled="false">
             <div>
@@ -101,26 +151,28 @@
 </template>
 
 <script>
-import SingleAssignments from "../components/SingleAssignments.vue";
 import RepeatAssignments from "../components/RepeatAssignments";
-// import Experiments from "../components/Experiments";
 import NavBar from "../components/NavBar";
 import ImageViewer from "../components/ImageViewer";
 import api from "../api/index.js";
 import ExperimentViewer from "../components/ExperimentViewer";
+import AssignmentCreator from "../components/AssignmentCreator";
+import TableHeaders from "../constants/TableHeaders.ts";
 export default {
   name: "HomePage",
   components: {
-    SingleAssignments,
     RepeatAssignments,
     NavBar,
     ImageViewer,
-    ExperimentViewer
+    ExperimentViewer,
+    AssignmentCreator
   },
   data() {
     return {
       role: this.$store.state.role,
       experiments: [],
+      assignments: [],
+      assignmentHeaders: TableHeaders.assignments,
       activeExperiment: {},
       experimentForm: {
         title: null,
@@ -140,6 +192,26 @@ export default {
     } else {
       this.setExpi(null);
     }
+    this.assignments = api.getAssignments(
+      this.$store.state.role,
+      this.$store.state.currentUser.id
+    );
+  },
+  computed: {
+    addColors() {
+      let hmm = this.assignments.map(item => {
+        let tmp = item;
+        if (this.$store.state.role == "student") {
+          item.complete
+            ? (tmp._rowVariant = "success")
+            : (tmp._rowVariant = "warning");
+        }
+        let d = new Date(item.due_date);
+        tmp.due_date = d.toDateString();
+        return tmp;
+      });
+      return hmm;
+    }
   },
   methods: {
     setExpi(id = null) {
@@ -152,6 +224,13 @@ export default {
         this.$store.state.role,
         this.$store.state.currentUser.id
       );
+    },
+    createAssignment(values) {
+      api.createAssignment(values);
+    },
+
+    updateAssignment(values) {
+      api.createAssignment(values);
     },
     getVariant(id, type) {
       if (id == this.activeExperiment.id) {

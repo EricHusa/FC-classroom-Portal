@@ -71,80 +71,77 @@
 
             <b-col cols="12" md="8">
               <b-overlay :show="!currClass">
-              <div>
-              <b-container fluid>
-                <b-form inline style="float: left;">
-                  <b-input
-                    v-model="className"
-                    trim
-                    id="inline-form-class-name"
-                    class="mb-2 mr-sm-2 mb-sm-0"
-                    :disabled="!currClass"
-                    :placeholder="getClassName(currClass)"
-                  ></b-input>
-                  <b-button
-                    variant="warning"
-                    @click="updateClassName(currClass, className)"
-                    :disabled="!currClass"
-                    >Rename class</b-button
-                  >
-                </b-form>
-                <b-button
-                  style="float: right;"
-                  variant="danger"
-                  class="mb-2 mr-sm-2 mb-sm-0"
-                  @click="deleteClass(currClass)"
-                  :disabled="!currClass"
-                  >Delete class</b-button
-                >
-              </b-container>
-              <StudentList
-                v-bind:students="currStudents"
-                v-bind:headers="headers"
-                v-bind:currClass="currClass"
-              />
-              <b-row>
-                <b-col sm="3">
-                  <b-button
-                    v-b-toggle.import-student
-                    class="m-1"
-                    variant="primary"
-                    :disabled="!currClass"
-                    >Add existing students</b-button
-                  >
-                </b-col>
-                <b-col sm="9">
-                  <b-collapse id="import-student">
-                    <div style="text-align: center;">
-                      <b-form-group
-                        style="text-align: left; display: inline-block"
+                <div>
+                  <b-container fluid>
+                    <b-form inline style="float: left;">
+                      <b-input
+                        v-model="className"
+                        trim
+                        id="inline-form-class-name"
+                        class="mb-2 mr-sm-2 mb-sm-0"
+                        :disabled="!currClass"
+                        :placeholder="getClassName(currClass)"
+                      ></b-input>
+                      <b-button
+                        variant="warning"
+                        @click="updateClassName(currClass, className)"
+                        :disabled="!currClass"
+                        >Rename class</b-button
                       >
-                        <b-form-checkbox-group
-                          v-model="selectedStudents"
-                          :options="getStudentCheckboxes()"
-                          name="flavour-2a"
-                          stacked
-                        ></b-form-checkbox-group>
-                      </b-form-group>
-                    </div>
+                    </b-form>
                     <b-button
-                      @click="importStudents"
-                      variant="success"
+                      style="float: right;"
+                      variant="danger"
+                      class="mb-2 mr-sm-2 mb-sm-0"
+                      @click="deleteClass(currClass)"
                       :disabled="!currClass"
-                      >Add</b-button
+                      >Delete class</b-button
                     >
-                  </b-collapse>
-                </b-col>
-              </b-row>
+                  </b-container>
+                  <StudentList
+                    v-bind:students="currStudents"
+                    v-bind:headers="headers"
+                    v-bind:currClass="currClass"
+                  />
+                  <b-row>
+                    <b-col sm="3">
+                      <b-button
+                        v-b-toggle.import-student
+                        class="m-1"
+                        variant="primary"
+                        :disabled="!currClass"
+                        >Add existing students</b-button
+                      >
+                    </b-col>
+                    <b-col sm="9">
+                      <b-collapse id="import-student">
+                        <div style="text-align: center;">
+                          <b-form-group
+                            style="text-align: left; display: inline-block"
+                          >
+                            <b-form-checkbox-group
+                              v-model="selectedStudents"
+                              :options="getStudentCheckboxes()"
+                              name="flavour-2a"
+                              stacked
+                            ></b-form-checkbox-group>
+                          </b-form-group>
+                        </div>
+                        <b-button
+                          @click="importStudents"
+                          variant="success"
+                          :disabled="!currClass"
+                          >Add</b-button
+                        >
+                      </b-collapse>
+                    </b-col>
+                  </b-row>
                 </div>
                 <template v-slot:overlay>
-                  <b-icon
-                        icon="exclamation-circle"
-                        font-scale="2"
-                      ></b-icon>
+                  <b-icon icon="exclamation-circle" font-scale="2"></b-icon>
                   <p>Select or create a class</p>
-                  </template>
-                  </b-overlay>
+                </template>
+              </b-overlay>
             </b-col>
           </b-row>
         </b-tab>
@@ -213,7 +210,7 @@ export default {
         )
       ) {
         api.deleteClass(id);
-        this.currClass = null
+        this.currClass = null;
         this.$store.state.activeClass = null;
       }
     },
@@ -234,7 +231,7 @@ export default {
       }
     },
     getStudentCheckboxes() {
-      return api.getStudentCheckboxes(this.currClass);
+      return api.getStudentCheckboxes();
     },
     importStudents() {
       let i;

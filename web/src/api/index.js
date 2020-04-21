@@ -59,6 +59,31 @@ let experiments = [
   }
 ];
 
+let assignments = [
+  {
+    id: 35688201,
+    teacher: "a",
+    title: "Predict How Many Days",
+    description: "Predict how many days it takes the plant to grow 1 inch",
+    type: "number",
+    due_date: "2020-05-05",
+    assignees: [1, 2, 3, 4],
+    responses: [],
+    comments: null
+  },
+  {
+    id: 25674621,
+    teacher: "a",
+    title: "Give yourself a team role",
+    description: "Tell me what your role on the team is",
+    type: "text",
+    due_date: "2020-05-04",
+    assignees: [2, 4],
+    responses: [],
+    comments: "Congratulations, you will be the team's researcher"
+  }
+];
+
 let teachers = [{ fname: "Mr", lname: "Teacher", password: "a", id: "a" }];
 
 let studentIdCounter = students.length;
@@ -127,13 +152,13 @@ export default {
       throw ErrorMessages.incorrectCredentials;
     }
   },
-  getToday: function() {
-    let today = new Date();
-    let dd = String(today.getDate()).padStart(2, "0");
-    let mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
-    let yyyy = today.getFullYear();
-    today = yyyy + "-" + mm + "-" + dd;
-    return today;
+  getToday: function(d) {
+    let fullDate = new Date(d);
+    let dd = String(fullDate.getDate()).padStart(2, "0");
+    let mm = String(fullDate.getMonth() + 1).padStart(2, "0"); //January is 0!
+    let yyyy = fullDate.getFullYear();
+    fullDate = yyyy + "-" + mm + "-" + dd;
+    return fullDate;
   },
   getClasses: function() {
     return classes;
@@ -181,27 +206,25 @@ export default {
       return classStudents;
     }
   },
-  getStudentCheckboxes: function(scopeId = null) {
-    if (scopeId != null) {
-      let newList = [];
-      let modifiedStudent = {};
-      // let currentScope
-      // if(type == "experiment") {
-      //   currentScope = experiments.find(c => c.id === scopeId);
-      // }
-      // else {
-      //   currentScope = classes.find(c => c.id === scopeId);
-      // }
-      for (let i in students) {
-        let student = students[i];
-        modifiedStudent = {
-          text: student.username + ", " + student.fname + " " + student.lname,
-          value: student.id
-        };
-        newList.push(modifiedStudent);
-      }
-      return newList;
+  getStudentCheckboxes: function() {
+    let newList = [];
+    let modifiedStudent = {};
+    // let currentScope
+    // if(type == "experiment") {
+    //   currentScope = experiments.find(c => c.id === scopeId);
+    // }
+    // else {
+    //   currentScope = classes.find(c => c.id === scopeId);
+    // }
+    for (let i in students) {
+      let student = students[i];
+      modifiedStudent = {
+        text: student.username + ", " + student.fname + " " + student.lname,
+        value: student.id
+      };
+      newList.push(modifiedStudent);
     }
+    return newList;
   },
   getStudent: function(studentId) {
     let student = students.find(c => c.id === studentId);
@@ -287,7 +310,7 @@ export default {
         return exp;
       }
     }
-    let today = this.getToday();
+    let today = this.getToday(new Date());
     return { title: "New Experiment", start_date: today };
   },
   createExperiment: function(values, teacher) {
@@ -336,48 +359,28 @@ export default {
     experiments.splice(index, 1);
   },
 
-  getAssignments(frequency) {
-    let repeating = {
-      assignments: [
-        {
-          id: "1",
-          experiment: "ex1",
-          student: "12635",
-          name: "Height Measurement",
-          end_date: "05/25/2020",
-          date_recorded: "",
-          frequency: "7",
-          type: "int",
-          description: "Please record the height of the plant",
-          observation: "",
-          notes: ""
-        },
-        {
-          id: "2",
-          experiment: "ex1",
-          student: "12635",
-          name: "Color Observation",
-          end_date: "05/25/2020",
-          date_recorded: "",
-          frequency: "14",
-          type: "str",
-          description: "Please record the color of the plant",
-          observation: "",
-          notes: ""
+  getAssignments(role, userId) {
+    let assignmentList = [];
+    if (role == "teacher") {
+      for (let a in assignments) {
+        let assignment = assignments[a];
+        if (assignment.teacher == userId) {
+          assignmentList.push(assignment);
         }
-      ]
-    };
-
-    const singular = [
-      { title: "Smell the Flower", end_date: "03/05/2020", status: "complete" }
-    ];
-
-    if (frequency == "single") {
-      return singular;
-    } else if (frequency == "repeat") {
-      return JSON.parse(repeating);
-    } else return {};
-    //return axios.get(`${API_URL}/assignments/`);
+      }
+    } else if (role == "student") {
+      for (let a in assignments) {
+        let assignment = assignments[a];
+        if (assignment.assignees.includes(userId)) {
+          assignmentList.push(assignment);
+          break;
+        }
+      }
+    }
+    return assignmentList;
+  },
+  createAssignment(values) {
+    alert(JSON.stringify(values));
   }
 };
 

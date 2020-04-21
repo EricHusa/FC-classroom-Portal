@@ -32,7 +32,7 @@ export default {
       ],
       headers: [
         { key: "title", label: "Title", sortable: true },
-        { key: "end_date", label: "Due Date", sortable: true },
+        { key: "due_date", label: "Due Date", sortable: true },
         { key: "status", label: "Status", sortable: true },
         { key: "action", label: "Action" }
       ]
