@@ -4,7 +4,7 @@
     <div class="center">
       <ScopeSelector />
       <br />
-      <button><router-link to="/home">Home</router-link></button>
+      <button><router-link to="/">Home</router-link></button>
     </div>
   </div>
 </template>

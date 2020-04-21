@@ -13,47 +13,64 @@ Vue.use(VueRouter);
 
 const routes = [
   {
-    path: "/login",
+    path: "/login/",
     name: "login",
     component: Login
   },
   {
     path: "/",
     name: "home",
-    component: Home,
-    beforeEnter(to, from, next) {
-      if (!store.getters.isAuthenticatedTest) {
-        next("/login");
-      } else {
-        next("/home");
-      }
-    }
+    component: Home
   },
   {
     path: "/settings",
     name: "settings",
-    component: Settings
+    component: Settings,
+    beforeEnter(to, from, next) {
+      if (store.getters.teacherStatus) {
+        next();
+      } else {
+        next("/");
+      }
+    }
   },
   {
     path: "/school",
     name: "school",
-    component: School
+    component: School,
+    beforeEnter(to, from, next) {
+      if (store.getters.teacherStatus) {
+        next();
+      } else {
+        next("/");
+      }
+    }
   },
   {
     path: "/view_assignment/:id",
     name: "viewAssignment",
-    component: Assignment
+    component: Assignment,
+    beforeEnter(to, from, next) {
+      if (!store.getters.isAuthenticatedTest) {
+        next("/login");
+      } else {
+        next();
+      }
+    }
   },
   {
     path: "/student/:id",
     name: "viewAccount",
-    component: Student
-  },
-  {
-    path: "/home",
-    name: "home",
-    component: Home
+    component: Student,
+    beforeEnter(to, from, next) {
+      if (store.getters.teacherStatus) {
+        next();
+      } else {
+        next("/");
+      }
+    }
   }
+
   // {
   //   path: "/teacher",
   //   name: "teacher",
@@ -75,6 +92,16 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes
+});
+
+router.beforeEach((to, from, next) => {
+  {
+    if (!store.getters.isAuthenticatedTest && to.fullPath != "/login") {
+      next("/login");
+    } else {
+      next();
+    }
+  }
 });
 
 export default router;

@@ -1,7 +1,7 @@
 export default {
     admin: [],
     teacher: [
-        {name: "Home", path: "/home"},
+        {name: "Home", path: "/"},
         {name: "School", path: "/school"},
         {name: "Settings", path: "/settings"},
         {name: "Help", path: "/help"},

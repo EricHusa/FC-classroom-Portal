@@ -16,7 +16,6 @@ Vue.use(Vuex);
 
 const state = {
   // single source of data
-  user: {},
   jwt: "",
   experiments: [],
   currentExperiment: {},
@@ -68,7 +67,8 @@ const actions = {
     return getDevice().then(response => {
       state.device = response;
     });
-  }
+  },
+  clearState() {}
 };
 
 const mutations = {
@@ -102,12 +102,14 @@ const getters = {
     return isValidJwt(state.jwt.token);
   },
   isAuthenticatedTest(state) {
-    if (state.role == "teacher" || state.role == "student") {
-      // alert("Logging in as " + state.role);
+    if (state.role != "guest") {
       return true;
     } else {
       return false;
     }
+  },
+  teacherStatus(state) {
+    return state.role == "teacher";
   },
   getRole(state) {
     return state.role;
