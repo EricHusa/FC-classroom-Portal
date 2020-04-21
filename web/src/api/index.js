@@ -240,7 +240,6 @@ export default {
         throw "That username already exists";
       }
     }
-    alert("does not end btw");
     if (student.username) studentIdCounter += 1;
     student.id = studentIdCounter;
     students.push(student);

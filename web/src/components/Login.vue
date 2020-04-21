@@ -89,7 +89,7 @@ export default {
       this.$store.dispatch("dev", "student").then(() => this.$router.push("/"));
     },
     register() {
-      alert(this.$route.query.teacher);
+      // alert(this.$route.query.teacher);
       //this.$store.dispatch("dev", "teacher").then(() => this.$router.push("/"));
       //    this.$store.dispatch('register', { email: this.email, password: this.password })
       //      .then(() => this.$router.push('/')).catch(e => {
