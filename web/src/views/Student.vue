@@ -8,6 +8,7 @@
       Student account deleted
     </b-alert>
     <br />
+    <b-row><b-button variant="secondary" to="/school" style="margin-left: 2rem;">Back</b-button></b-row>
     <b-row class="my-1" v-for="item in headers" :key="item">
       <b-col sm="3">
         <label :for="`form-${item.label}`">{{ item.label }}:</label>

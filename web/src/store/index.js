@@ -3,8 +3,6 @@ import Vuex from "vuex";
 
 // imports of AJAX functions will go here
 import {
-  getExperiment,
-  getExperiments,
   getDevice,
   newExperiment,
   authenticate,
@@ -28,16 +26,16 @@ const state = {
 
 const actions = {
   // asynchronous operations
-  loadExperiments(context) {
-    return getExperiments().then(response => {
-      context.commit("setExperiments", { experiments: response.data });
-    });
-  },
-  loadExperiment(context, { id }) {
-    return getExperiment(id).then(response => {
-      context.commit("setExperiment", { experiment: response.data });
-    });
-  },
+  // loadExperiments(context) {
+  //   return getExperiments().then(response => {
+  //     context.commit("setExperiments", { experiments: response.data });
+  //   });
+  // },
+  // loadExperiment(context, { id }) {
+  //   return getExperiment(id).then(response => {
+  //     context.commit("setExperiment", { experiment: response.data });
+  //   });
+  // },
   login(context, userData) {
     context.commit("setUserData", { userData });
     return authenticate(userData)

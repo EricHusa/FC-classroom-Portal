@@ -1,10 +1,7 @@
 <template>
   <div>
-    <b-alert :show="updateAlert" dismissible fade variant="success">
-      Experiment updated
-    </b-alert>
-    <b-alert :show="deleteAlert" dismissible fade variant="success">
-      Experiment deleted
+    <b-alert :show="updateAlert" dismissible fade variant="success" @dismissed="resetAlert">
+      Experiment {{updateAction}}
     </b-alert>
     <b-overlay :show="experiment.deleted" rounded="sm">
       <b-jumbotron
@@ -118,6 +115,7 @@ export default {
     return {
       updateAlert: 0,
       deleteAlert: 0,
+      updateAction: "",
       deleted: null,
       selectedStudents: [1],
       fields: TableHeaders.experiments
@@ -132,7 +130,8 @@ export default {
         api.deleteExperiment(this.experiment.id);
         this.experiment = { title: "Deleted", deleted: true };
         this.$store.state.currentExperiment = {};
-        this.deleteAlert = 3;
+        this.updateAction = "deleted";
+        this.updateAlert = 3;
       }
     },
     createExperiment() {
@@ -140,7 +139,7 @@ export default {
         this.form,
         this.$store.state.currentUser.id
       );
-      alert(this.experiment.id);
+      this.updateAction = "created";
       this.updateAlert = 3;
     },
     updateExperiment() {
@@ -148,6 +147,7 @@ export default {
       updateValues.students = this.experiment.students;
       api.updateExperiment(this.experiment.id, updateValues);
       this.experiment = api.getExperiment(this.experiment.id);
+      this.updateAction = "updated";
       this.updateAlert = 3;
     },
     getStudentCheckboxes() {
@@ -163,6 +163,9 @@ export default {
     changeInvolvement(studentId) {
       api.changeExperimentInvolvement(this.experiment.id, studentId);
       this.$refs.dropdown.show(true);
+    },
+    resetAlert(){
+      this.updateAlert=0;
     }
   },
   mounted() {

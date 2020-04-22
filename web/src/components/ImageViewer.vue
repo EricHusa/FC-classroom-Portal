@@ -30,6 +30,7 @@
       </b-col>
 
       <b-col sm="6">
+        <b-overlay show rounded="sm">
         <b-jumbotron header="Or make a video!">
           <b-img
             v-bind:src="image_url_with_ts"
@@ -75,6 +76,13 @@
             >Clear</b-btn
           >
         </b-jumbotron>
+        <template v-slot:overlay>
+        <div class="text-center">
+          <b-icon icon="blank" font-scale="3"></b-icon>
+          <div id="cancel-label"><h3>New feature coming soon</h3></div>
+        </div>
+      </template>
+          </b-overlay>
       </b-col>
     </b-row>
   </div>
