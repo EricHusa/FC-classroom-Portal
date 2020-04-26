@@ -84,28 +84,32 @@
                   <h3>Singular Assignments</h3>
                   <div>
                     <b-table :fields="assignmentHeaders" :items="addColors">
-                      <template v-slot:cell(comments)="data">
-                        <b-icon
-                          :id="`comment-notification-${data.item.id}`"
-                          icon="exclamation-circle"
-                          font-scale="2"
-                          :hidden="data.item.comments == null"
-                        ></b-icon>
-                        <b-popover
-                          :target="`comment-notification-${data.item.id}`"
-                          placement="bottom"
-                          triggers="hover focus"
-                          :content="data.item.comments"
-                        ></b-popover>
-                      </template>
+<!--                      <template v-slot:cell(action)="data">-->
+<!--                        <b-icon-->
+<!--                          :id="`comment-notification-${data.item.id}`"-->
+<!--                          icon="exclamation-circle"-->
+<!--                          font-scale="2"-->
+<!--                          :hidden="responses[data.item.id].comments == null"-->
+<!--                        ></b-icon>-->
+<!--                        <b-popover-->
+<!--                          :target="`comment-notification-${data.item.id}`"-->
+<!--                          placement="bottom"-->
+<!--                          triggers="hover focus"-->
+<!--                          :content="responses[data.item.id].comments"-->
+<!--                        ></b-popover>-->
+<!--                      </template>-->
                       <template v-slot:cell(action)="row">
-                        <button>View</button>
                         <b-button
-                          size="sm"
+                        :hidden="role=='teacher'" @click="setAssignment(row.item)">View</b-button>
+                        <b-button
+                          :hidden="role=='student'"
+                          size="md"
                           @click="row.toggleDetails"
                           class="mr-2"
                           >Update</b-button
                         >
+                        <b-button
+                        :hidden="role=='student'" @click="setAssignment(row.item)">Results</b-button>
                       </template>
                       <template v-slot:row-details="data">
                         <b-card>
@@ -120,7 +124,10 @@
                   </div>
                 </b-col>
                 <b-col sm="6">
-                  <b-jumbotron header="Assignment details"></b-jumbotron>
+                  <AssignmentViewer
+                            v-bind:assignment="activeAssignment"
+                            v-bind:response="activeResponse"
+                            v-bind:responseList="responses"/>
                 </b-col>
               </b-row>
             </div>
@@ -158,6 +165,7 @@ import api from "../api/index.js";
 import ExperimentViewer from "../components/ExperimentViewer";
 import AssignmentCreator from "../components/AssignmentCreator";
 import TableHeaders from "../constants/TableHeaders.ts";
+import AssignmentViewer from "../components/AssignmentViewer";
 export default {
   name: "HomePage",
   components: {
@@ -165,15 +173,19 @@ export default {
     NavBar,
     ImageViewer,
     ExperimentViewer,
-    AssignmentCreator
+    AssignmentCreator,
+    AssignmentViewer
   },
   data() {
     return {
       role: this.$store.state.role,
       experiments: [],
       assignments: [],
+      responses: [],
       assignmentHeaders: TableHeaders.assignments,
       activeExperiment: {},
+      activeAssignment: {},
+      activeResponse: {},
       experimentForm: {
         title: null,
         description: null,
@@ -196,21 +208,25 @@ export default {
       this.$store.state.role,
       this.$store.state.currentUser.id
     );
+    if (this.role == "student") {
+      this.responses = api.getStudentAssignmentResponses(this.$store.state.currentUser.id)
+    }
   },
   computed: {
     addColors() {
-      let hmm = this.assignments.map(item => {
+      let rows = this.assignments.map(item => {
         let tmp = item;
         if (this.$store.state.role == "student") {
-          item.complete
-            ? (tmp._rowVariant = "success")
-            : (tmp._rowVariant = "warning");
+          let pos = this.responses.map(function(r) { return r.assignment; }).indexOf(item.id);
+          this.responses[pos].submitted==null
+            ? (tmp._rowVariant = "warning")
+            : (tmp._rowVariant = "success");
         }
         let d = new Date(item.due_date);
         tmp.due_date = d.toDateString();
         return tmp;
       });
-      return hmm;
+      return rows;
     }
   },
   methods: {
@@ -225,12 +241,21 @@ export default {
         this.$store.state.currentUser.id
       );
     },
+    setAssignment(assignment){
+        this.activeAssignment = assignment
+        if(this.role == "student"){this.activeResponse = api.getStudentAssignmentResponse(assignment.id, this.$store.state.currentUser.id)}
+        else{this.responses = api.getTeacherAssignmentResponses(this.activeAssignment.id)}
+    },
     createAssignment(values) {
       api.createAssignment(values);
+      this.assignments = api.getAssignments(
+      this.$store.state.role,
+      this.$store.state.currentUser.id
+    );
     },
 
     updateAssignment(values) {
-      api.createAssignment(values);
+      api.updateAssignment(values.id, values);
     },
     getVariant(id, type) {
       if (id == this.activeExperiment.id) {

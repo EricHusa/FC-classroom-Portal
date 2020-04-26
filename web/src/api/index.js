@@ -1,5 +1,6 @@
 import axios from "axios";
 import ErrorMessages from "../constants/ErrorMessages.ts";
+import store from "../store/index"
 const API_URL = process.env.API_URL;
 
 //sample database data
@@ -67,9 +68,7 @@ let assignments = [
     description: "Predict how many days it takes the plant to grow 1 inch",
     type: "number",
     due_date: "2020-05-05",
-    assignees: [1, 2, 3, 4],
-    responses: [],
-    comments: null
+    assignees: [2, 4]
   },
   {
     id: 25674621,
@@ -78,10 +77,39 @@ let assignments = [
     description: "Tell me what your role on the team is",
     type: "text",
     due_date: "2020-05-04",
-    assignees: [2, 4],
-    responses: [],
-    comments: "Congratulations, you will be the team's researcher"
+    assignees: [1, 2, 3, 4]
   }
+];
+
+let assignment_responses = [
+  {
+    assignment: 25674621,
+    student: 1,
+    response: "I want team Leader",
+    submitted: "2020-05-03",
+    comments: "Congratulations, you will be the team's Leader"
+  },
+    {
+    assignment: 25674621,
+    student: 2,
+    response: "Gardener",
+    submitted: "2020-05-03",
+    comments: "Congratulations, you will be the team's Gardener"
+  },
+    {
+    assignment: 25674621,
+    student: 3,
+    response: "Can I be the Record Keeper",
+    submitted: "2020-05-04",
+    comments: "Congratulations, you will be the team's Record Keeper"
+  },
+    {
+    assignment: 25674621,
+    student: 4,
+    response: "I want to be the team Researcher",
+    submitted: "2020-05-04",
+    comments: "Congratulations, you will be the team's Researcher"
+  }, {assignment: 35688201, student: 2, response: null, submitted: null, comments: null}, {assignment: 35688201, student: 4, response: null, submitted: null, comments: null},
 ];
 
 let teachers = [{ fname: "Mr", lname: "Teacher", password: "a", id: "a" }];
@@ -358,6 +386,8 @@ export default {
     experiments.splice(index, 1);
   },
 
+  //////// ASSIGNMENT FUNCTIONS
+
   getAssignments(role, userId) {
     let assignmentList = [];
     if (role == "teacher") {
@@ -372,14 +402,82 @@ export default {
         let assignment = assignments[a];
         if (assignment.assignees.includes(userId)) {
           assignmentList.push(assignment);
-          break;
         }
       }
     }
     return assignmentList;
   },
   createAssignment(values) {
-    alert(JSON.stringify(values));
+    values.teacher = store.state.currentUser.id;
+    values.id = this.generateId()
+    assignments.push(values)
+  },
+  updateAssignment(assignmentId, values) {
+    for (let a in assignments) {
+      let assignment = assignments[a];
+      if (assignment.id == assignmentId) {
+        assignment.title = values.title
+        assignment.description = values.description
+        assignment.due_date = values.due_date
+        assignment.assignees = values.assignees
+
+        let currentResponses = this.getTeacherAssignmentResponses(assignment.id)
+        let assigneesList = assignment.assignees
+        for(let index in assigneesList){
+          if(!currentResponses.find(o => o.student === assigneesList[index])){
+            this.addAssignmentResponses(assignment.id, assigneesList[index])
+          }
+        }
+      }
+    }
+  },
+  addAssignmentResponses(assignmentId, studentId){
+    let newResponse = {
+    assignment: assignmentId,
+    student: studentId,
+    response: null,
+    submitted: null,
+    comments: null
+  }
+  assignment_responses.push(newResponse)
+  },
+  getStudentAssignmentResponses(studentId){
+    let studentResponses = []
+    for (let i in assignment_responses){
+      if (assignment_responses[i].student == studentId){
+        studentResponses.push(assignment_responses[i])
+      }
+    }
+    return studentResponses
+  },
+  getTeacherAssignmentResponses(assignmentId){
+    let studentResponses = []
+    for (let i in assignment_responses){
+      let thisAssignment = assignment_responses[i]
+      if (thisAssignment.assignment == assignmentId){
+        studentResponses.push(thisAssignment)
+      }
+    }
+    return studentResponses
+  },
+  getStudentAssignmentResponse(assignmentId, studentId){
+    for (let i in assignment_responses){
+      let thisAssignment = assignment_responses[i]
+      if (thisAssignment.student == studentId && thisAssignment.id == assignmentId){
+        return thisAssignment
+      }
+    }
+    return null
+  },
+  updateStudentAssignmentResponses(assignmentId, studentId, values){
+    for (let i in assignment_responses){
+      let thisAssignment = assignment_responses[i]
+      if (thisAssignment.student == studentId && thisAssignment.id == assignmentId){
+        thisAssignment.response = values.response
+        thisAssignment.submitted = values.submitted
+        break;
+      }
+    }
   }
 };
 

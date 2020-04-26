@@ -8,7 +8,6 @@ export default {
     assignments: [
         { key: "title", label: "Title", sortable: true },
         { key: "due_date", label: "Due Date", sortable: true },
-        { key: "comments", label: "Comments" },
         { key: "action", label: "Action" },
       ]
 }

@@ -84,6 +84,7 @@ export default {
       show: true,
       studentsList: [],
       form: {
+        id: null,
         title: null,
         description: null,
         type: [],
@@ -118,18 +119,23 @@ export default {
     }
   },
   methods: {
-    onSubmit(evt) {
-      evt.preventDefault();
-      this.updateAlert = 3;
-      this.$emit("assignmentCreated", this.form);
-    },
-    onReset(evt) {
-      evt.preventDefault();
+    resetForm(){
       this.form.title = null;
       this.form.description = null;
       this.form.type = null;
       this.form.due_date = null;
       this.form.assignees = null;
+    },
+    onSubmit(evt) {
+      evt.preventDefault();
+      this.updateAlert = 3;
+      let copyForm = Object.assign({}, this.form);
+      this.$emit("assignmentCreated", copyForm);
+      this.onReset(evt)
+    },
+    onReset(evt) {
+      evt.preventDefault();
+      this.resetForm()
       this.show = false;
       this.$nextTick(() => {
         this.show = true;
