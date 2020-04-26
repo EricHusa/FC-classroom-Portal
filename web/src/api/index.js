@@ -41,7 +41,7 @@ let students = [
 
 let experiments = [
   {
-    title: "Example",
+    title: "Example Experiment",
     description: "This is a sample experiment",
     plant: "basil",
     start_date: "2020-03-15",
@@ -112,6 +112,36 @@ let assignment_responses = [
   }, {assignment: 35688201, student: 2, response: null, submitted: null, comments: null}, {assignment: 35688201, student: 4, response: null, submitted: null, comments: null},
 ];
 
+let observations = [
+  {
+    id: 12835739,
+    title: "Height Measurement",
+    description: "Take your ruler and measure the height of the plant in centimeters",
+    teacher: "a",
+    experiment: 38782347,
+    type: "number",
+    units: "centimeters",
+    updated: "2020-05-01",
+    collaborators: [1, 2, 4],
+    responses: [
+        {
+          number: 1,
+          response: "3",
+          submitted: "2020-05-02",
+          student: 4,
+          editable: true
+        },
+        {
+          number: 2,
+          response: "3.1",
+          submitted: "2020-05-03",
+          student: 1,
+          editable: true
+        }
+    ]
+  }
+];
+
 let teachers = [{ fname: "Mr", lname: "Teacher", password: "a", id: "a" }];
 
 let studentIdCounter = students.length;
@@ -180,6 +210,9 @@ export default {
       throw ErrorMessages.incorrectCredentials;
     }
   },
+
+  /// MISC FUNCTIONS
+
   getToday: function(d) {
     let fullDate = new Date(d);
     let dd = String(fullDate.getDate()).padStart(2, "0");
@@ -188,6 +221,13 @@ export default {
     fullDate = yyyy + "-" + mm + "-" + dd;
     return fullDate;
   },
+  generateId: function() {
+    let str = Math.floor(Math.random() * 100000000 + 9999999).toString();
+    return parseInt(str.substring(0, 8));
+  },
+
+  /// FUNCTIONS FOR CLASSES
+
   getClasses: function() {
     return classes;
   },
@@ -217,10 +257,9 @@ export default {
       .indexOf(classId);
     classes[index].name = val;
   },
-  generateId: function() {
-    let str = Math.floor(Math.random() * 100000000 + 9999999).toString();
-    return parseInt(str.substring(0, 8));
-  },
+
+  /// FUNCTIONS FOR STUDENTS
+
   getStudents: function(classId = null) {
     if (classId == null) {
       return students;
@@ -310,6 +349,15 @@ export default {
 
     this.$store.state.studentList = this.getStudents();
   },
+  getStudentDisplayName(studentId){
+    if(typeof studentId == "string"){
+      return "teacher"
+    }
+   let student = this.getStudent(studentId)
+    return student.username + ", " + student.fname + " " + student.lname
+  },
+
+  /// FUNCTIONS FOR EXPERIMENTS
 
   getExperiments: function(role, id) {
     let expList = [];
@@ -386,7 +434,7 @@ export default {
     experiments.splice(index, 1);
   },
 
-  //////// ASSIGNMENT FUNCTIONS
+  /// FUNCTIONS FOR ASSIGNMENTS
 
   getAssignments(role, userId) {
     let assignmentList = [];
@@ -478,6 +526,94 @@ export default {
         break;
       }
     }
+  },
+
+  /// FUNCTIONS FOR OBSERVATIONS
+
+  getObservations(){
+    let experiment = store.state.currentExperiment.id
+    let obsList = []
+    for (let i in observations){
+      let obs = observations[i]
+      if (obs.experiment == experiment){
+        obsList.push(obs)}}
+    // alert(JSON.stringify(obsList))
+    return observations
+  },
+  getObservation(observationId){
+    let obsList = this.getObservations()
+    let index = obsList.map(function(e) {return e.id;}).indexOf(observationId);
+    return observations[index]
+  },
+  updateObservation(observationId, values){
+    let obs = this.getObservation(observationId);
+    obs.title = values.title;
+    obs.description = values.description;
+    obs.collaborators = values.collaborators
+    obs.updated = values.updated;
+    alert(JSON.stringify(obs))
+    return obs
+  },
+  createObservation(values){
+    let obs = {};
+    obs.id = this.generateId();
+    obs.experiment = store.state.currentExperiment.id;
+    obs.title = values.title;
+    obs.description = values.description;
+    obs.type = values.type;
+    obs.collaborators = values.collaborators;
+    obs.updated = this.getToday(new Date());
+    obs.responses = [];
+
+    observations.unshift(obs);
+    return obs
+  },
+  deleteObservation(observationId){
+    let obsList = this.getObservations()
+    let index = obsList.map(function(e) {return e.id;}).indexOf(observationId);
+    obsList.splice(index, 1);
+  },
+  addObservationResponse(observationId){
+    let obs = this.getObservation(observationId);
+    obs.responses.push(
+        {
+          response: null,
+          submitted: null,
+          student: null,
+          editable: true,
+          number: obs.responses.length + 1
+        }
+    )
+    return obs
+  },
+  updateObservationResponse(observationId, responseNumber, studentId, value){
+    let obs = this.getObservation(observationId);
+    let responseIndex = obs.responses.map(function(e) {return e.number;}).indexOf(responseNumber);
+    let response = obs.responses[responseIndex];
+
+    response.response = value
+    response.submitted = this.getToday(new Date())
+    response.student = this.getStudentDisplayName(studentId)
+    return obs
+  },
+  updateObservationResponseLock(observationId, responseNumber){
+    let obs = this.getObservation(observationId);
+    let responseIndex = obs.responses.map(function(e) {return e.number;}).indexOf(responseNumber);
+    obs.responses[responseIndex].editable = !obs.responses[responseIndex].editable
+    return obs
+  },
+  deleteObservationResponse(observationId, responseNumber){
+    let obs = this.getObservation(observationId);
+    let responseIndex = obs.responses.map(function(e) {return e.number;}).indexOf(responseNumber);
+    obs.responses.splice(responseIndex, 1);
+
+    obs.responses.map(item => {
+        if(item.number > responseNumber){
+          item.number -= 1;
+        }
+      });
+
+    return obs
   }
 };
 

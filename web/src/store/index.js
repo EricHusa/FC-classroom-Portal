@@ -17,6 +17,7 @@ const state = {
   jwt: "",
   experiments: [],
   currentExperiment: {},
+  currentTeacher: "a",
   role: "guest",
   device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c",
   activeClass: null,

@@ -99,7 +99,7 @@ export default {
       this.form.response = this.response.response
       this.form.submitted = api.getToday(new Date())
       api.updateStudentAssignmentResponse(this.assignment.id, this.$store.state.currentUser.id, this.form)
-      this.assignmentSubmitted = 5;
+      this.assignmentSubmitted = 3;
       this.unlocked = null;
     },
     resetAlert(){
