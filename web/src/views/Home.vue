@@ -133,19 +133,55 @@
             </div>
           </b-tab>
 
+
+
           <b-tab title="Observations">
             <br />
-            <div style="width: 100%; overflow: hidden;">
-              <div style="width: 48%; float: left;">
-                <h3>Repeating Observations</h3>
-                <RepeatAssignments />
-              </div>
-              <div style="width: 48%; float: right;">
-                <b-jumbotron header="Observation details"></b-jumbotron>
-              </div>
+            <div>
+              <b-row>
+                <b-col sm="6">
+                  <b-button v-b-toggle.observation-creator variant="success"
+                    :hidden="role=='student'">New Observation</b-button
+                  >
+                  <b-collapse id="observation-creator"
+                    ><ObservationCreator @observationCreated="createObservation"
+                  /></b-collapse>
+                  <h3>Experiment Observations</h3>
+                  <div>
+                    <b-table :fields="observationHeaders" :items="formatDates">
+                      <template v-slot:cell(action)="row">
+                        <b-button
+                          :hidden="role=='student'"
+                          size="md"
+                          @click="row.toggleDetails"
+                          class="mr-2"
+                          >Update</b-button>
+                        <b-button @click="setObservation(row.item)">View</b-button>
+                      </template>
+                      <template v-slot:row-details="data">
+                        <b-card>
+                          <ObservationCreator
+                            @observationCreated="updateObservation"
+                            v-bind:currentValues="data.item"
+                          />
+                        </b-card>
+                      </template>
+                    </b-table>
+                  </div>
+                </b-col>
+                <b-col sm="6">
+                  <AssignmentViewer
+                            v-bind:assignment="activeAssignment"
+                            v-bind:response="activeResponse"
+                            v-bind:responseList="responses"/>
+                </b-col>
+              </b-row>
             </div>
             <Assignments />
           </b-tab>
+
+
+
           <b-tab title="Images" :disabled="false">
             <div>
               <ImageViewer />
@@ -158,7 +194,6 @@
 </template>
 
 <script>
-import RepeatAssignments from "../components/RepeatAssignments";
 import NavBar from "../components/NavBar";
 import ImageViewer from "../components/ImageViewer";
 import api from "../api/index.js";
@@ -166,26 +201,30 @@ import ExperimentViewer from "../components/ExperimentViewer";
 import AssignmentCreator from "../components/AssignmentCreator";
 import TableHeaders from "../constants/TableHeaders.ts";
 import AssignmentViewer from "../components/AssignmentViewer";
+import ObservationCreator from "../components/ObservationCreator";
 export default {
   name: "HomePage",
   components: {
-    RepeatAssignments,
     NavBar,
     ImageViewer,
     ExperimentViewer,
     AssignmentCreator,
-    AssignmentViewer
+    AssignmentViewer,
+    ObservationCreator
   },
   data() {
     return {
       role: this.$store.state.role,
       experiments: [],
       assignments: [],
+      observations: [],
       responses: [],
       assignmentHeaders: TableHeaders.assignments,
+      observationHeaders: TableHeaders.observations,
       activeExperiment: {},
       activeAssignment: {},
       activeResponse: {},
+      activeObservation: {},
       experimentForm: {
         title: null,
         description: null,
@@ -211,6 +250,7 @@ export default {
     if (this.role == "student") {
       this.responses = api.getStudentAssignmentResponses(this.$store.state.currentUser.id)
     }
+    this.observations = api.getObservations()
   },
   computed: {
     addColors() {
@@ -227,6 +267,15 @@ export default {
         return tmp;
       });
       return rows;
+    },
+    formatDates() {
+      let rows = this.observations.map(item => {
+        let tmp = item;
+        let d = new Date(item.updated);
+        tmp.updated = d.toDateString();
+        return tmp;
+      });
+      return rows;
     }
   },
   methods: {
@@ -240,6 +289,7 @@ export default {
         this.$store.state.role,
         this.$store.state.currentUser.id
       );
+      this.observations = api.getObservations()
     },
     setAssignment(assignment){
         this.activeAssignment = assignment
@@ -252,6 +302,17 @@ export default {
       this.$store.state.role,
       this.$store.state.currentUser.id
     );
+    },
+    createObservation(values) {
+      let obs = api.createObservation(values);
+      this.observations.unshift(obs);
+    },
+    updateObservation(values){
+      alert("am here")
+      this.activeObservation = api.updateObservation(values.id, values)
+    },
+    setObservation(obs){
+        this.activeObservation = obs
     },
 
     updateAssignment(values) {

@@ -116,6 +116,7 @@ let observations = [
   {
     id: 12835739,
     title: "Height Measurement",
+    description: "Take your ruler and measure the height of the plant in centimeters",
     teacher: "a",
     experiment: 38782347,
     type: "number",
@@ -527,27 +528,33 @@ export default {
   getObservations(){
     let experiment = store.state.currentExperiment.id
     let obsList = []
-    for (let i in experiments){
-      let exp = experiments[i]
-      if (exp.experiment == experiment){
-        obsList.push(exp)}}
+    for (let i in observations){
+      let obs = observations[i]
+      if (obs.experiment == experiment){
+        obsList.push(obs)}}
+    // alert(JSON.stringify(obsList))
     return obsList
   },
   getObservation(observationId){
     let obsList = this.getObservations()
-    let index = observations.map(function(e) {return e.id;}).indexOf(observationId);
+    let index = obsList.map(function(e) {return e.id;}).indexOf(observationId);
     return observations[index]
   },
   updateObservation(observationId, values){
     let obs = this.getObservation(observationId);
     obs.title = values.title;
+    obs.description = values.description;
+    obs.collaborators = values.collaborators
     obs.updated = values.updated;
+    alert(JSON.stringify(obs))
+    return obs
   },
   createObservation(values){
     let obs = {};
     obs.id = this.generateId();
     obs.experiment = store.state.currentExperiment.id;
     obs.title = values.title;
+    obs.description = values.description;
     obs.type = values.type;
     obs.collaborators = values.collaborators;
     obs.updated = this.getToday(new Date());
@@ -579,12 +586,12 @@ export default {
     response.response = value
     response.submitted = this.getToday(new Date())
     response.student = this.getStudentDisplayName(studentId)
-
     return obs
   },
   updateObservationResponseLock(observationId, responseIndex){
     let obs = this.getObservation(observationId);
     obs.responses[responseIndex].editable = !obs.responses[responseIndex].editable
+    return obs
   },
   deleteObservationResponse(observationId, responseIndex){
     let obs = this.getObservation(observationId);

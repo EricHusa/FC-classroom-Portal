@@ -1,22 +1,22 @@
 <template>
-  <div class="assignment-creator-dropdown">
+  <div class="observation-creator-dropdown">
     <b-row></b-row>
     <b-col>
-      <b-alert :show="createdAlert" dismissible fade variant="success">
-        Assignment created!
+      <b-alert :show="updateAlert" dismissible fade variant="success" @dismissed="resetAlert">
+        Observation updated!
       </b-alert>
       <b-form class="my-1" @submit="onSubmit" @reset="onReset" v-if="show">
         <b-row v-for="item in options" :key="item.key">
           <b-col sm="3">
             <label
-              :id="`assignment-creation-${item.key}-label`"
-              :label-for="`assignment-creation-${item.key}-input`"
+              :id="`observation-creation-${item.key}-label`"
+              :label-for="`observation-creation-${item.key}-input`"
               >{{ item.label }}:</label
             ></b-col
           >
           <b-col sm="9"
             ><b-form-input
-              :id="`assignment-creation-${item.key}-input`"
+              :id="`observation-creation-${item.key}-input`"
               v-model="form[item.key]"
               :required="item.required"
               :type="item.type"
@@ -27,14 +27,14 @@
         <b-row class="my-1">
           <b-col sm="3">
             <label
-              id="assignment-creation-type-label"
-              label-for="assignment-creation-type-input"
+              id="observation-creation-type-label"
+              label-for="observation-creation-type-input"
               >Information type:</label
             ></b-col
           >
           <b-col sm="9"
             ><b-form-select
-              id="assignment-creation-type-input"
+              id="observation-creation-type-input"
               v-model="form.type"
               :options="types"
               required
@@ -45,15 +45,15 @@
         <b-row class="my-1">
           <b-col sm="3">
             <label
-              id="assignment-creation-students-label"
-              label-for="assignment-creation-students-input"
-              >Assigned students:</label
+              id="observation-creation-students-label"
+              label-for="observation-creation-students-input"
+              >Collaborators:</label
             ></b-col
           >
           <b-col sm="9"
             ><b-form-select
-              id="assignment-creation-students-input"
-              v-model="form.assignees"
+              id="observation-creation-students-input"
+              v-model="form.collaborators"
               :options="studentsList"
               required
               multiple
@@ -62,7 +62,7 @@
           ></b-col>
         </b-row>
         <b-button type="submit" variant="primary">Submit</b-button>
-        <b-button type="reset" variant="danger">Clear</b-button>
+        <b-button type="reset" variant="danger" :disabled="currentValues !== undefined">Clear</b-button>
       </b-form>
     </b-col>
     <hr />
@@ -71,10 +71,10 @@
 
 <script>
 import api from "../api/index.js";
+import CreatorOptions from "../constants/CreatorOptions.ts";
 export default {
   name: "AssignmentCreator",
   props: {
-    students: Array,
     currentValues: {}
   },
   data() {
@@ -82,28 +82,17 @@ export default {
       createdAlert: 0,
       show: true,
       studentsList: [],
+      updateAlert: 0,
       form: {
         id: null,
         title: null,
         description: null,
         type: [],
-        due_date: null,
-        assignees: []
+        updated: null,
+        collaborators: []
       },
-      options: [
-        { key: "title", label: "Title", required: true, type: "text" },
-        {
-          key: "description",
-          label: "Description",
-          required: false,
-          type: "text"
-        },
-        { key: "due_date", label: "Due Date", required: true, type: "date" }
-      ],
-      types: [
-        { text: "Written response", value: "text" },
-        { text: "Numerical response", value: "number" }
-      ]
+      options: CreatorOptions.observationOptions.options,
+      types: CreatorOptions.observationOptions.types
     };
   },
   beforeMount: function() {
@@ -114,23 +103,24 @@ export default {
       for (const [key] of Object.entries(this.form)) {
         this.form[key] = this.currentValues[key];
       }
-      this.form.due_date = api.getToday(this.form.due_date);
     }
   },
   methods: {
     resetForm(){
-      this.form.title = null;
-      this.form.description = null;
-      this.form.type = null;
-      this.form.due_date = null;
-      this.form.assignees = null;
+      for (const [key] of Object.entries(this.form)) {
+        if(key != "id") {
+          this.form[key] = null;
+        }
+      }
     },
     onSubmit(evt) {
       evt.preventDefault();
       this.updateAlert = 3;
       let copyForm = Object.assign({}, this.form);
-      this.$emit("assignmentCreated", copyForm);
-      this.onReset(evt)
+      this.$emit("observationCreated", copyForm);
+      if (this.currentValues == undefined) {
+        this.onReset(evt)
+      }
     },
     onReset(evt) {
       evt.preventDefault();
@@ -139,6 +129,9 @@ export default {
       this.$nextTick(() => {
         this.show = true;
       });
+    },
+    resetAlert(){
+      this.updateAlert=0;
     }
   }
 };

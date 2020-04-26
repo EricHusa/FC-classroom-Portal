@@ -9,5 +9,10 @@ export default {
         { key: "title", label: "Title", sortable: true },
         { key: "due_date", label: "Due Date", sortable: true },
         { key: "action", label: "Action" },
-      ]
+      ],
+    observations: [
+        { key: "title", label: "Title", sortable: true },
+        { key: "updated", label: "Last Update", sortable: true },
+        { key: "action", label: "Action" },
+    ]
 }
