@@ -76,7 +76,7 @@
               <b-row>
                 <b-col sm="6">
                   <b-button v-b-toggle.assignment-creator variant="success"
-                    >New Assignment</b-button
+                    :hidden="role=='student'">New Assignment</b-button
                   >
                   <b-collapse id="assignment-creator"
                     ><AssignmentCreator @assignmentCreated="createAssignment"

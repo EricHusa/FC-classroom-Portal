@@ -463,16 +463,16 @@ export default {
   getStudentAssignmentResponse(assignmentId, studentId){
     for (let i in assignment_responses){
       let thisAssignment = assignment_responses[i]
-      if (thisAssignment.student == studentId && thisAssignment.id == assignmentId){
+      if (thisAssignment.student == studentId && thisAssignment.assignment == assignmentId){
         return thisAssignment
       }
     }
     return null
   },
-  updateStudentAssignmentResponses(assignmentId, studentId, values){
+  updateStudentAssignmentResponse(assignmentId, studentId, values){
     for (let i in assignment_responses){
       let thisAssignment = assignment_responses[i]
-      if (thisAssignment.student == studentId && thisAssignment.id == assignmentId){
+      if (thisAssignment.student == studentId && thisAssignment.assignment == assignmentId){
         thisAssignment.response = values.response
         thisAssignment.submitted = values.submitted
         break;

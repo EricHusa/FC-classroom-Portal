@@ -1,5 +1,8 @@
 <template>
   <div>
+    <b-alert :show="assignmentSubmitted" dismissible fade variant="success" @dismissed="resetAlert">
+        Assignment submitted!
+      </b-alert>
     <b-overlay :show="deleted" rounded="sm">
       <b-jumbotron
         ><h2>{{ assignment.title }}</h2>
@@ -7,7 +10,7 @@
         <b-container fluid>
           <br />
           <p>{{assignment.description}}</p>
-          <b-collapse :visible="response && response.length ">
+          <b-collapse :visible="role=='student' && Object.keys(assignment).length !== 0">
           <b-row>
             <b-col sm="3">
               <label for="student-assignment-response-input"
@@ -16,21 +19,25 @@
               >
             </b-col>
             <b-col sm="9">
+              <b-form @submit="responseSubmitted">
               <b-form-input
                 id="student-assignment-response-input"
                 :type="assignment.type"
-                :value="response.response"
+                required
+                :disabled="unlocked != assignment.id"
                 :placeholder="response.response"
-                v-model="this.form.response"
+                v-model="response.response"
               ></b-form-input>
+                <b-button type="submit" variant="success" style="margin: 1rem;">Submit</b-button>
+                <b-button @click="unlockAnswer(assignment.id)" variant="danger" style="margin: 1rem;">Change Answer</b-button>
+                </b-form>
             </b-col>
-            <b-button @click="responseSubmitted" variant="success">Submit</b-button>
           </b-row>
             </b-collapse>
         </b-container>
 
 
-        <b-collapse :visible="responseList.length">
+        <b-collapse :visible="role=='teacher'">
           <b-container fluid>
             <b-row class="my-1" v-for="item in responseList" :key="item.key">
             <b-col sm="3">
@@ -72,19 +79,34 @@ export default {
   data() {
     return {
       form: {
-        response: null,
+        response: "",
         submitted: null
       },
       deleted: false,
-      students: []
+      students: [],
+      role: null,
+      unlocked: null,
+      assignmentSubmitted: 0
     };
   },
   beforeMount() {
     this.students = api.getStudents()
+    this.role = this.$store.state.role
   },
   methods: {
-    responseSubmitted(){
-      api.updateStudentAssignmentResponses(this.assignment.id, this.$store.currentUser.id, this.form)
+    responseSubmitted(evt){
+      evt.preventDefault()
+      this.form.response = this.response.response
+      this.form.submitted = api.getToday(new Date())
+      api.updateStudentAssignmentResponse(this.assignment.id, this.$store.state.currentUser.id, this.form)
+      this.assignmentSubmitted = 5;
+      this.unlocked = null;
+    },
+    resetAlert(){
+      this.assignmentSubmitted = 0;
+    },
+    unlockAnswer(assignmentId){
+      this.unlocked = assignmentId;
     },
     getStudentName(studentId){
       if(studentId != null) {
