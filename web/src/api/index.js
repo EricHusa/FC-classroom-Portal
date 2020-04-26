@@ -125,12 +125,14 @@ let observations = [
     collaborators: [1, 2, 4],
     responses: [
         {
+          number: 1,
           response: "3",
           submitted: "2020-05-02",
           student: 4,
           editable: true
         },
         {
+          number: 2,
           response: "3.1",
           submitted: "2020-05-03",
           student: 1,
@@ -348,6 +350,9 @@ export default {
     this.$store.state.studentList = this.getStudents();
   },
   getStudentDisplayName(studentId){
+    if(typeof studentId == "string"){
+      return "teacher"
+    }
    let student = this.getStudent(studentId)
     return student.username + ", " + student.fname + " " + student.lname
   },
@@ -533,7 +538,7 @@ export default {
       if (obs.experiment == experiment){
         obsList.push(obs)}}
     // alert(JSON.stringify(obsList))
-    return obsList
+    return observations
   },
   getObservation(observationId){
     let obsList = this.getObservations()
@@ -560,12 +565,13 @@ export default {
     obs.updated = this.getToday(new Date());
     obs.responses = [];
 
-    observations.push(obs);
+    observations.unshift(obs);
     return obs
   },
   deleteObservation(observationId){
-    let index = observations.map(function(e) {return e.id;}).indexOf(observationId);
-    observations.splice(index, 1);
+    let obsList = this.getObservations()
+    let index = obsList.map(function(e) {return e.id;}).indexOf(observationId);
+    obsList.splice(index, 1);
   },
   addObservationResponse(observationId){
     let obs = this.getObservation(observationId);
@@ -574,13 +580,15 @@ export default {
           response: null,
           submitted: null,
           student: null,
-          editable: true
+          editable: true,
+          number: obs.responses.length + 1
         }
     )
     return obs
   },
-  updateObservationResponse(observationId, responseIndex, studentId, value){
+  updateObservationResponse(observationId, responseNumber, studentId, value){
     let obs = this.getObservation(observationId);
+    let responseIndex = obs.responses.map(function(e) {return e.number;}).indexOf(responseNumber);
     let response = obs.responses[responseIndex];
 
     response.response = value
@@ -588,14 +596,23 @@ export default {
     response.student = this.getStudentDisplayName(studentId)
     return obs
   },
-  updateObservationResponseLock(observationId, responseIndex){
+  updateObservationResponseLock(observationId, responseNumber){
     let obs = this.getObservation(observationId);
+    let responseIndex = obs.responses.map(function(e) {return e.number;}).indexOf(responseNumber);
     obs.responses[responseIndex].editable = !obs.responses[responseIndex].editable
     return obs
   },
-  deleteObservationResponse(observationId, responseIndex){
+  deleteObservationResponse(observationId, responseNumber){
     let obs = this.getObservation(observationId);
+    let responseIndex = obs.responses.map(function(e) {return e.number;}).indexOf(responseNumber);
     obs.responses.splice(responseIndex, 1);
+
+    obs.responses.map(item => {
+        if(item.number > responseNumber){
+          item.number -= 1;
+        }
+      });
+
     return obs
   }
 };

@@ -170,10 +170,8 @@
                   </div>
                 </b-col>
                 <b-col sm="6">
-                  <AssignmentViewer
-                            v-bind:assignment="activeAssignment"
-                            v-bind:response="activeResponse"
-                            v-bind:responseList="responses"/>
+                  <ObservationViewer
+                            v-bind:observation="activeObservation"/>
                 </b-col>
               </b-row>
             </div>
@@ -202,6 +200,7 @@ import AssignmentCreator from "../components/AssignmentCreator";
 import TableHeaders from "../constants/TableHeaders.ts";
 import AssignmentViewer from "../components/AssignmentViewer";
 import ObservationCreator from "../components/ObservationCreator";
+import ObservationViewer from "../components/ObservationViewer";
 export default {
   name: "HomePage",
   components: {
@@ -210,7 +209,8 @@ export default {
     ExperimentViewer,
     AssignmentCreator,
     AssignmentViewer,
-    ObservationCreator
+    ObservationCreator,
+    ObservationViewer
   },
   data() {
     return {
@@ -304,11 +304,9 @@ export default {
     );
     },
     createObservation(values) {
-      let obs = api.createObservation(values);
-      this.observations.unshift(obs);
+       api.createObservation(values);
     },
     updateObservation(values){
-      alert("am here")
       this.activeObservation = api.updateObservation(values.id, values)
     },
     setObservation(obs){

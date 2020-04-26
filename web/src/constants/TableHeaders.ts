@@ -8,11 +8,17 @@ export default {
     assignments: [
         { key: "title", label: "Title", sortable: true },
         { key: "due_date", label: "Due Date", sortable: true },
-        { key: "action", label: "Action" },
+        { key: "action", label: "Action", sortable: false },
       ],
     observations: [
         { key: "title", label: "Title", sortable: true },
         { key: "updated", label: "Last Update", sortable: true },
-        { key: "action", label: "Action" },
+        { key: "action", label: "Action", sortable: false },
+    ],
+    observationResponse: [
+        { key: "number", label: "Number", sortable: true },
+        { key: "submitted", label: "Updated on", sortable: true },
+        { key: "response", label: "Observation", sortable: false },
+        { key: "action", label: "Action", sortable: false },
     ]
 }
