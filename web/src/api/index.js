@@ -362,7 +362,6 @@ export default {
     if (student.username) studentIdCounter += 1;
     student.id = studentIdCounter;
     students.push(student);
-    // this.$store.state.studentList = this.getStudents()
     return student;
   },
   addStudent: function(studentId, classId) {
@@ -398,8 +397,6 @@ export default {
         c.students.splice(c.students.indexOf(studentId), 1);
       }
     }
-
-    this.$store.state.studentList = this.getStudents();
   },
   getStudentDisplayName(studentId) {
     if (typeof studentId === "string") {

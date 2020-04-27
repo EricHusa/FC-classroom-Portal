@@ -12,12 +12,10 @@ const state = {
   jwt: "",
   experiments: [],
   currentExperiment: {},
-  currentTeacher: "a",
-  role: "guest",
+  currentTeacher: null, //Set on login
+  role: "guest", //Set on login
   device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c",
-  activeClass: null,
-  studentList: [],
-  currentUser: null
+  currentUser: null //Set on login
 };
 
 const actions = {

@@ -125,7 +125,14 @@ export default {
     },
     login(role) {
       try {
-        this.$store.state.currentUser = api.login(role, this.forms[role]);
+        let user = api.login(role, this.forms[role]);
+        this.$store.state.currentUser = user;
+        if(role==="teacher"){
+          this.$store.state.currentTeacher = user.id
+      }
+        else{
+          this.$store.state.currentTeacher = user.teacher
+        }
       } catch (error) {
         this.errorMsg = error;
         this.errorAlert = 5;
