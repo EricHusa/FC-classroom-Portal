@@ -205,13 +205,13 @@ export function getDevice() {
 
 export default {
   login(role, userData) {
-    if (role == "student") {
+    if (role === "student") {
       for (let i in students) {
         let user = students[i];
-        if (user.username == userData.username) {
+        if (user.username === userData.username) {
           if (
-            user.password == userData.password &&
-            user.teacher == userData.teacher
+            user.password === userData.password &&
+            user.teacher === userData.teacher
           ) {
             return user;
           }
@@ -220,11 +220,11 @@ export default {
       throw ErrorMessages.incorrectCredentials;
     }
 
-    if (role == "teacher") {
+    if (role === "teacher") {
       for (let i in teachers) {
         let user = teachers[i];
-        if (user.id == userData.username) {
-          if (user.password == userData.password) {
+        if (user.id === userData.username) {
+          if (user.password === userData.password) {
             return user;
           } else {
             throw ErrorMessages.incorrectCredentials;
@@ -313,7 +313,7 @@ export default {
   /// FUNCTIONS FOR STUDENTS
 
   getStudents: function(classId = null) {
-    if (classId == null) {
+    if (classId === null) {
       return students;
     } else {
       let currentClass = classes.find(c => c.id === classId);
@@ -355,7 +355,7 @@ export default {
   },
   createStudent: function(student) {
     for (let index in students) {
-      if (students[index].username == student.username) {
+      if (students[index].username === student.username) {
         throw "That username already exists";
       }
     }
@@ -402,7 +402,7 @@ export default {
     this.$store.state.studentList = this.getStudents();
   },
   getStudentDisplayName(studentId) {
-    if (typeof studentId == "string") {
+    if (typeof studentId === "string") {
       return "teacher";
     }
     let student = this.getStudent(studentId);
@@ -413,14 +413,14 @@ export default {
 
   getExperiments: function(role, id) {
     let expList = [];
-    if (role == "teacher") {
+    if (role === "teacher") {
       for (let e in experiments) {
         let exp = experiments[e];
-        if (exp.teacher == id) {
+        if (exp.teacher === id) {
           expList.push(exp);
         }
       }
-    } else if (role == "student") {
+    } else if (role === "student") {
       for (let e in experiments) {
         let exp = experiments[e];
         if (exp.students.includes(id)) {
@@ -433,7 +433,7 @@ export default {
   getExperiment: function(id) {
     for (let e in experiments) {
       let exp = experiments[e];
-      if (exp.id == id) {
+      if (exp.id === id) {
         return exp;
       }
     }
@@ -455,7 +455,7 @@ export default {
   updateExperiment: function(id, values) {
     for (let e in experiments) {
       let exp = experiments[e];
-      if (exp.id == id) {
+      if (exp.id === id) {
         for (let k in values) {
           exp[k] = values[k];
         }
@@ -490,14 +490,14 @@ export default {
 
   getAssignments(role, userId) {
     let assignmentList = [];
-    if (role == "teacher") {
+    if (role === "teacher") {
       for (let a in assignments) {
         let assignment = assignments[a];
-        if (assignment.teacher == userId) {
+        if (assignment.teacher === userId) {
           assignmentList.push(assignment);
         }
       }
-    } else if (role == "student") {
+    } else if (role === "student") {
       for (let a in assignments) {
         let assignment = assignments[a];
         if (assignment.assignees.includes(userId)) {
@@ -515,7 +515,7 @@ export default {
   updateAssignment(assignmentId, values) {
     for (let a in assignments) {
       let assignment = assignments[a];
-      if (assignment.id == assignmentId) {
+      if (assignment.id === assignmentId) {
         assignment.title = values.title;
         assignment.description = values.description;
         assignment.due_date = values.due_date;
@@ -546,7 +546,7 @@ export default {
   getStudentAssignmentResponses(studentId) {
     let studentResponses = [];
     for (let i in assignment_responses) {
-      if (assignment_responses[i].student == studentId) {
+      if (assignment_responses[i].student === studentId) {
         studentResponses.push(assignment_responses[i]);
       }
     }
@@ -556,7 +556,7 @@ export default {
     let studentResponses = [];
     for (let i in assignment_responses) {
       let thisAssignment = assignment_responses[i];
-      if (thisAssignment.assignment == assignmentId) {
+      if (thisAssignment.assignment === assignmentId) {
         studentResponses.push(thisAssignment);
       }
     }
@@ -566,8 +566,8 @@ export default {
     for (let i in assignment_responses) {
       let thisAssignment = assignment_responses[i];
       if (
-        thisAssignment.student == studentId &&
-        thisAssignment.assignment == assignmentId
+        thisAssignment.student === studentId &&
+        thisAssignment.assignment === assignmentId
       ) {
         return thisAssignment;
       }
@@ -578,8 +578,8 @@ export default {
     for (let i in assignment_responses) {
       let thisAssignment = assignment_responses[i];
       if (
-        thisAssignment.student == studentId &&
-        thisAssignment.assignment == assignmentId
+        thisAssignment.student === studentId &&
+        thisAssignment.assignment === assignmentId
       ) {
         thisAssignment.response = values.response;
         thisAssignment.submitted = values.submitted;
@@ -718,7 +718,7 @@ export default {
   },
   verifyDevice(deviceId) {
     for (let d in devices) {
-      if (devices[d].fopd_id == deviceId) {
+      if (devices[d].fopd_id === deviceId) {
         return false;
       }
     }
@@ -753,7 +753,7 @@ export default {
   },
   changeTeacherPassword(oldPass, newPass) {
     let teacher = this.getTeacherInfo();
-    if (teacher.password != oldPass) {
+    if (teacher.password !== oldPass) {
       throw "Password incorrect";
     } else {
       teacher.password = newPass;

@@ -96,7 +96,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   {
-    if (!store.getters.isAuthenticatedTest && to.fullPath != "/login") {
+    if (!store.getters.isAuthenticatedTest && to.fullPath !== "/login") {
       next("/login");
     } else {
       next();

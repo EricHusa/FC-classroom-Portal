@@ -96,14 +96,14 @@ const getters = {
     return isValidJwt(state.jwt.token);
   },
   isAuthenticatedTest(state) {
-    if (state.role != "guest") {
+    if (state.role !== "guest") {
       return true;
     } else {
       return false;
     }
   },
   teacherStatus(state) {
-    return state.role == "teacher";
+    return state.role === "teacher";
   },
   getRole(state) {
     return state.role;
