@@ -2,6 +2,7 @@ import axios from "axios";
 import ErrorMessages from "../constants/ErrorMessages.ts";
 import store from "../store/index";
 import SampleClimate from "../constants/SampleClimate.ts";
+import SampleClimateData from "../constants/SampleClimateData.ts";
 const API_URL = process.env.API_URL;
 
 //sample database data
@@ -257,6 +258,24 @@ export default {
       );
     }
     return username;
+  },
+  getDataArrays(type) {
+    let data = SampleClimateData.data;
+    let temp = { units: null, name: type, data: [] };
+    for (let i in data) {
+      let record = data[i];
+      if (record.attribute === type) {
+        temp.units = record.units;
+        break;
+      }
+    }
+    for (let i in data) {
+      let record = data[i];
+      if (record.attribute === type) {
+        temp.data.push({ x: record.ts, y: record.value });
+      }
+    }
+    return temp;
   },
 
   /// FUNCTIONS FOR CLASSES

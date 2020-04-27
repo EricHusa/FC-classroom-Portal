@@ -190,7 +190,15 @@
             </div>
           </b-tab>
 
-          <b-tab title="Images" :disabled="false">
+          <b-tab title="Data">
+            <div>
+              <ChartViewer v-bind:dataName="'temperature'" v-bind:xDataUnit="'C'"/>
+              <hr/>
+              <ChartViewer v-bind:dataName="'humidity'" v-bind:xDataUnit="'%'"/>
+            </div>
+          </b-tab>
+
+          <b-tab title="Images">
             <div>
               <ImageViewer />
             </div>
@@ -211,6 +219,7 @@ import TableHeaders from "../constants/TableHeaders.ts";
 import AssignmentViewer from "../components/AssignmentViewer";
 import ObservationCreator from "../components/ObservationCreator";
 import ObservationViewer from "../components/ObservationViewer";
+import ChartViewer from "../components/ChartViewer";
 export default {
   name: "HomePage",
   components: {
@@ -220,7 +229,8 @@ export default {
     AssignmentCreator,
     AssignmentViewer,
     ObservationCreator,
-    ObservationViewer
+    ObservationViewer,
+    ChartViewer
   },
   data() {
     return {
