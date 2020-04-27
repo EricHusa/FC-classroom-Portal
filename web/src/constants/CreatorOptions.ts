@@ -29,5 +29,24 @@ export default {
             {text: "Written responses", value: "text"},
             {text: "Numerical responses", value: "number"}
         ]
+    },
+    teacherAccount: {
+        options: [
+            {key: "fname", label: "First Name", required: true, type: "text"},
+            {key: "lname", label: "Last Name", required: true, type: "text"}
+        ]
+    },
+    teacherPassword: {
+        options: [
+            {key: "oldPass", label: "Old Password", required: true, type: "password"},
+            {key: "newPass", label: "New Password", required: true, type: "password"},
+            {key: "repeatNewPass", label: "Repeat New Password", required: true, type: "password"}
+        ]
+    },
+    deviceRegistration: {
+        options: [
+            {key: "fopd_id", label: "Device ID", required: true, type: "text"},
+            {key: "name", label: "Device Name", required: true, type: "text"}
+        ]
     }
 }

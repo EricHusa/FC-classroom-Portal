@@ -2,12 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 // imports of AJAX functions will go here
-import {
-  getDevice,
-  newExperiment,
-  authenticate,
-  register
-} from "../api";
+import { getDevice, newExperiment, authenticate, register } from "../api";
 import { isValidJwt, EventBus } from "../utils/index.js";
 
 Vue.use(Vuex);

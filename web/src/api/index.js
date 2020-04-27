@@ -1,6 +1,7 @@
 import axios from "axios";
 import ErrorMessages from "../constants/ErrorMessages.ts";
-import store from "../store/index"
+import store from "../store/index";
+import SampleClimate from "../constants/SampleClimate.ts";
 const API_URL = process.env.API_URL;
 
 //sample database data
@@ -89,55 +90,69 @@ let assignment_responses = [
     submitted: "2020-05-03",
     comments: "Congratulations, you will be the team's Leader"
   },
-    {
+  {
     assignment: 25674621,
     student: 2,
     response: "Gardener",
     submitted: "2020-05-03",
     comments: "Congratulations, you will be the team's Gardener"
   },
-    {
+  {
     assignment: 25674621,
     student: 3,
     response: "Can I be the Record Keeper",
     submitted: "2020-05-04",
     comments: "Congratulations, you will be the team's Record Keeper"
   },
-    {
+  {
     assignment: 25674621,
     student: 4,
     response: "I want to be the team Researcher",
     submitted: "2020-05-04",
     comments: "Congratulations, you will be the team's Researcher"
-  }, {assignment: 35688201, student: 2, response: null, submitted: null, comments: null}, {assignment: 35688201, student: 4, response: null, submitted: null, comments: null},
+  },
+  {
+    assignment: 35688201,
+    student: 2,
+    response: null,
+    submitted: null,
+    comments: null
+  },
+  {
+    assignment: 35688201,
+    student: 4,
+    response: null,
+    submitted: null,
+    comments: null
+  }
 ];
 
 let observations = [
   {
     id: 12835739,
     title: "Height Measurement",
-    description: "Take your ruler and measure the height of the plant in centimeters",
-    teacher: "a",
+    description:
+      "Take your ruler and measure the height of the plant in centimeters",
     experiment: 38782347,
     type: "number",
     units: "centimeters",
     updated: "2020-05-01",
     collaborators: [1, 2, 4],
     responses: [
-        {
-          number: 1,
-          response: "3",
-          submitted: "2020-05-02",
-          student: 4,
-          editable: true
-        },
-        {
-          number: 2,
-          response: "3.1",
-          submitted: "2020-05-03",
-          student: 1,
-          editable: true
-        }
+      {
+        number: 1,
+        response: "3",
+        submitted: "2020-05-02",
+        student: 4,
+        editable: true
+      },
+      {
+        number: 2,
+        response: "3.1",
+        submitted: "2020-05-03",
+        student: 1,
+        editable: true
+      }
     ]
   }
 ];
@@ -145,6 +160,14 @@ let observations = [
 let teachers = [{ fname: "Mr", lname: "Teacher", password: "a", id: "a" }];
 
 let studentIdCounter = students.length;
+
+let devices = [
+  {
+    name: "SLUdev1",
+    fopd_id: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c",
+    teacher: "a"
+  }
+];
 
 let classes = [
   {
@@ -224,6 +247,16 @@ export default {
   generateId: function() {
     let str = Math.floor(Math.random() * 100000000 + 9999999).toString();
     return parseInt(str.substring(0, 8));
+  },
+  generateUsername() {
+    let username = "";
+    let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    for (let i = 0; i < 5; i++) {
+      username += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
+    }
+    return username;
   },
 
   /// FUNCTIONS FOR CLASSES
@@ -349,12 +382,12 @@ export default {
 
     this.$store.state.studentList = this.getStudents();
   },
-  getStudentDisplayName(studentId){
-    if(typeof studentId == "string"){
-      return "teacher"
+  getStudentDisplayName(studentId) {
+    if (typeof studentId == "string") {
+      return "teacher";
     }
-   let student = this.getStudent(studentId)
-    return student.username + ", " + student.fname + " " + student.lname
+    let student = this.getStudent(studentId);
+    return student.username + ", " + student.fname + " " + student.lname;
   },
 
   /// FUNCTIONS FOR EXPERIMENTS
@@ -457,72 +490,80 @@ export default {
   },
   createAssignment(values) {
     values.teacher = store.state.currentUser.id;
-    values.id = this.generateId()
-    assignments.push(values)
+    values.id = this.generateId();
+    assignments.push(values);
   },
   updateAssignment(assignmentId, values) {
     for (let a in assignments) {
       let assignment = assignments[a];
       if (assignment.id == assignmentId) {
-        assignment.title = values.title
-        assignment.description = values.description
-        assignment.due_date = values.due_date
-        assignment.assignees = values.assignees
+        assignment.title = values.title;
+        assignment.description = values.description;
+        assignment.due_date = values.due_date;
+        assignment.assignees = values.assignees;
 
-        let currentResponses = this.getTeacherAssignmentResponses(assignment.id)
-        let assigneesList = assignment.assignees
-        for(let index in assigneesList){
-          if(!currentResponses.find(o => o.student === assigneesList[index])){
-            this.addAssignmentResponses(assignment.id, assigneesList[index])
+        let currentResponses = this.getTeacherAssignmentResponses(
+          assignment.id
+        );
+        let assigneesList = assignment.assignees;
+        for (let index in assigneesList) {
+          if (!currentResponses.find(o => o.student === assigneesList[index])) {
+            this.addAssignmentResponses(assignment.id, assigneesList[index]);
           }
         }
       }
     }
   },
-  addAssignmentResponses(assignmentId, studentId){
+  addAssignmentResponses(assignmentId, studentId) {
     let newResponse = {
-    assignment: assignmentId,
-    student: studentId,
-    response: null,
-    submitted: null,
-    comments: null
-  }
-  assignment_responses.push(newResponse)
+      assignment: assignmentId,
+      student: studentId,
+      response: null,
+      submitted: null,
+      comments: null
+    };
+    assignment_responses.push(newResponse);
   },
-  getStudentAssignmentResponses(studentId){
-    let studentResponses = []
-    for (let i in assignment_responses){
-      if (assignment_responses[i].student == studentId){
-        studentResponses.push(assignment_responses[i])
+  getStudentAssignmentResponses(studentId) {
+    let studentResponses = [];
+    for (let i in assignment_responses) {
+      if (assignment_responses[i].student == studentId) {
+        studentResponses.push(assignment_responses[i]);
       }
     }
-    return studentResponses
+    return studentResponses;
   },
-  getTeacherAssignmentResponses(assignmentId){
-    let studentResponses = []
-    for (let i in assignment_responses){
-      let thisAssignment = assignment_responses[i]
-      if (thisAssignment.assignment == assignmentId){
-        studentResponses.push(thisAssignment)
+  getTeacherAssignmentResponses(assignmentId) {
+    let studentResponses = [];
+    for (let i in assignment_responses) {
+      let thisAssignment = assignment_responses[i];
+      if (thisAssignment.assignment == assignmentId) {
+        studentResponses.push(thisAssignment);
       }
     }
-    return studentResponses
+    return studentResponses;
   },
-  getStudentAssignmentResponse(assignmentId, studentId){
-    for (let i in assignment_responses){
-      let thisAssignment = assignment_responses[i]
-      if (thisAssignment.student == studentId && thisAssignment.assignment == assignmentId){
-        return thisAssignment
+  getStudentAssignmentResponse(assignmentId, studentId) {
+    for (let i in assignment_responses) {
+      let thisAssignment = assignment_responses[i];
+      if (
+        thisAssignment.student == studentId &&
+        thisAssignment.assignment == assignmentId
+      ) {
+        return thisAssignment;
       }
     }
-    return null
+    return null;
   },
-  updateStudentAssignmentResponse(assignmentId, studentId, values){
-    for (let i in assignment_responses){
-      let thisAssignment = assignment_responses[i]
-      if (thisAssignment.student == studentId && thisAssignment.assignment == assignmentId){
-        thisAssignment.response = values.response
-        thisAssignment.submitted = values.submitted
+  updateStudentAssignmentResponse(assignmentId, studentId, values) {
+    for (let i in assignment_responses) {
+      let thisAssignment = assignment_responses[i];
+      if (
+        thisAssignment.student == studentId &&
+        thisAssignment.assignment == assignmentId
+      ) {
+        thisAssignment.response = values.response;
+        thisAssignment.submitted = values.submitted;
         break;
       }
     }
@@ -530,31 +571,37 @@ export default {
 
   /// FUNCTIONS FOR OBSERVATIONS
 
-  getObservations(){
-    let experiment = store.state.currentExperiment.id
-    let obsList = []
-    for (let i in observations){
-      let obs = observations[i]
-      if (obs.experiment == experiment){
-        obsList.push(obs)}}
+  getObservations() {
+    let experiment = store.state.currentExperiment.id;
+    let obsList = [];
+    for (let i in observations) {
+      let obs = observations[i];
+      if (obs.experiment === experiment) {
+        obsList.push(obs);
+      }
+    }
     // alert(JSON.stringify(obsList))
-    return observations
+    return observations;
   },
-  getObservation(observationId){
-    let obsList = this.getObservations()
-    let index = obsList.map(function(e) {return e.id;}).indexOf(observationId);
-    return observations[index]
+  getObservation(observationId) {
+    let obsList = this.getObservations();
+    let index = obsList
+      .map(function(e) {
+        return e.id;
+      })
+      .indexOf(observationId);
+    return observations[index];
   },
-  updateObservation(observationId, values){
+  updateObservation(observationId, values) {
     let obs = this.getObservation(observationId);
     obs.title = values.title;
     obs.description = values.description;
-    obs.collaborators = values.collaborators
+    obs.collaborators = values.collaborators;
     obs.updated = values.updated;
-    alert(JSON.stringify(obs))
-    return obs
+    alert(JSON.stringify(obs));
+    return obs;
   },
-  createObservation(values){
+  createObservation(values) {
     let obs = {};
     obs.id = this.generateId();
     obs.experiment = store.state.currentExperiment.id;
@@ -566,54 +613,150 @@ export default {
     obs.responses = [];
 
     observations.unshift(obs);
-    return obs
+    return obs;
   },
-  deleteObservation(observationId){
-    let obsList = this.getObservations()
-    let index = obsList.map(function(e) {return e.id;}).indexOf(observationId);
+  deleteObservation(observationId) {
+    let obsList = this.getObservations();
+    let index = obsList
+      .map(function(e) {
+        return e.id;
+      })
+      .indexOf(observationId);
     obsList.splice(index, 1);
   },
-  addObservationResponse(observationId){
+  addObservationResponse(observationId) {
     let obs = this.getObservation(observationId);
-    obs.responses.push(
-        {
-          response: null,
-          submitted: null,
-          student: null,
-          editable: true,
-          number: obs.responses.length + 1
-        }
-    )
-    return obs
+    obs.responses.push({
+      response: null,
+      submitted: null,
+      student: null,
+      editable: true,
+      number: obs.responses.length + 1
+    });
+    return obs;
   },
-  updateObservationResponse(observationId, responseNumber, studentId, value){
+  updateObservationResponse(observationId, responseNumber, studentId, value) {
     let obs = this.getObservation(observationId);
-    let responseIndex = obs.responses.map(function(e) {return e.number;}).indexOf(responseNumber);
+    let responseIndex = obs.responses
+      .map(function(e) {
+        return e.number;
+      })
+      .indexOf(responseNumber);
     let response = obs.responses[responseIndex];
 
-    response.response = value
-    response.submitted = this.getToday(new Date())
-    response.student = this.getStudentDisplayName(studentId)
-    return obs
+    response.response = value;
+    response.submitted = this.getToday(new Date());
+    response.student = this.getStudentDisplayName(studentId);
+    return obs;
   },
-  updateObservationResponseLock(observationId, responseNumber){
+  updateObservationResponseLock(observationId, responseNumber) {
     let obs = this.getObservation(observationId);
-    let responseIndex = obs.responses.map(function(e) {return e.number;}).indexOf(responseNumber);
-    obs.responses[responseIndex].editable = !obs.responses[responseIndex].editable
-    return obs
+    let responseIndex = obs.responses
+      .map(function(e) {
+        return e.number;
+      })
+      .indexOf(responseNumber);
+    obs.responses[responseIndex].editable = !obs.responses[responseIndex]
+      .editable;
+    return obs;
   },
-  deleteObservationResponse(observationId, responseNumber){
+  deleteObservationResponse(observationId, responseNumber) {
     let obs = this.getObservation(observationId);
-    let responseIndex = obs.responses.map(function(e) {return e.number;}).indexOf(responseNumber);
+    let responseIndex = obs.responses
+      .map(function(e) {
+        return e.number;
+      })
+      .indexOf(responseNumber);
     obs.responses.splice(responseIndex, 1);
 
     obs.responses.map(item => {
-        if(item.number > responseNumber){
-          item.number -= 1;
-        }
-      });
+      if (item.number > responseNumber) {
+        item.number -= 1;
+      }
+    });
 
-    return obs
+    return obs;
+  },
+
+  /// FUNCTIONS FOR DEVICES
+
+  getDevices() {
+    return devices;
+  },
+  updateDeviceName(newName) {
+    let deviceId = store.state.device;
+    let deviceList = this.getDevices();
+    let index = deviceList
+      .map(function(e) {
+        return e.fopd_id;
+      })
+      .indexOf(deviceId);
+    deviceList[index].name = newName;
+  },
+
+  getClimate() {
+    return SampleClimate.climate_file.phases;
+  },
+  verifyDevice(deviceId) {
+    for (let d in devices) {
+      if (devices[d].fopd_id == deviceId) {
+        return false;
+      }
+    }
+    return true;
+  },
+  registerDevice(values) {
+    if (!this.verifyDevice(values.id)) {
+      throw "Invalid device ID";
+    } else {
+      devices.push({
+        name: values.name,
+        fopd_id: values.id,
+        teacher: store.state.currentTeacher
+      });
+    }
+  },
+
+  /// FUNCTIONS FOR TEACHERS
+
+  getTeacherInfo() {
+    let index = teachers
+      .map(function(e) {
+        return e.id;
+      })
+      .indexOf(store.state.currentTeacher);
+    return teachers[index];
+  },
+  updateTeacherName(values) {
+    let teacher = this.getTeacherInfo();
+    teacher.fname = values.fname;
+    teachers.lname = values.lname;
+  },
+  changeTeacherPassword(oldPass, newPass) {
+    let teacher = this.getTeacherInfo();
+    if (teacher.password != oldPass) {
+      throw "Password incorrect";
+    } else {
+      teacher.password = newPass;
+      store.state.currentUser = {
+        fname: teacher.fname,
+        lname: teacher.lname,
+        id: teacher.id
+      };
+    }
+  },
+  registerTeacher(values) {
+    if (this.verifyDevice(values.device)) {
+      let newTeacher = {
+        fname: values.fname,
+        lname: values.lname,
+        password: values.password,
+        id: this.generateUsername()
+      };
+      teachers.push(newTeacher);
+    } else {
+      throw "invalid device ID";
+    }
   }
 };
 

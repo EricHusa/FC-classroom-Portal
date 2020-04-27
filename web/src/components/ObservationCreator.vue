@@ -2,7 +2,13 @@
   <div class="observation-creator-dropdown">
     <b-row></b-row>
     <b-col>
-      <b-alert :show="updateAlert" dismissible fade variant="success" @dismissed="resetAlert">
+      <b-alert
+        :show="updateAlert"
+        dismissible
+        fade
+        variant="success"
+        @dismissed="resetAlert"
+      >
         Observation updated!
       </b-alert>
       <b-form class="my-1" @submit="onSubmit" @reset="onReset" v-if="show">
@@ -62,7 +68,12 @@
           ></b-col>
         </b-row>
         <b-button type="submit" variant="primary">Submit</b-button>
-        <b-button type="reset" variant="danger" :disabled="currentValues !== undefined">Clear</b-button>
+        <b-button
+          type="reset"
+          variant="danger"
+          :disabled="currentValues !== undefined"
+          >Clear</b-button
+        >
       </b-form>
     </b-col>
     <hr />
@@ -106,9 +117,9 @@ export default {
     }
   },
   methods: {
-    resetForm(){
+    resetForm() {
       for (const [key] of Object.entries(this.form)) {
-        if(key != "id") {
+        if (key != "id") {
           this.form[key] = null;
         }
       }
@@ -119,19 +130,19 @@ export default {
       let copyForm = Object.assign({}, this.form);
       this.$emit("observationCreated", copyForm);
       if (this.currentValues == undefined) {
-        this.onReset(evt)
+        this.onReset(evt);
       }
     },
     onReset(evt) {
       evt.preventDefault();
-      this.resetForm()
+      this.resetForm();
       this.show = false;
       this.$nextTick(() => {
         this.show = true;
       });
     },
-    resetAlert(){
-      this.updateAlert=0;
+    resetAlert() {
+      this.updateAlert = 0;
     }
   }
 };

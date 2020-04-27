@@ -1,7 +1,13 @@
 <template>
   <div>
-    <b-alert :show="updateAlert" dismissible fade variant="success" @dismissed="resetAlert">
-      Experiment {{updateAction}}
+    <b-alert
+      :show="updateAlert"
+      dismissible
+      fade
+      variant="success"
+      @dismissed="resetAlert"
+    >
+      Experiment {{ updateAction }}
     </b-alert>
     <b-overlay :show="experiment.deleted" rounded="sm">
       <b-jumbotron
@@ -164,8 +170,8 @@ export default {
       api.changeExperimentInvolvement(this.experiment.id, studentId);
       this.$refs.dropdown.show(true);
     },
-    resetAlert(){
-      this.updateAlert=0;
+    resetAlert() {
+      this.updateAlert = 0;
     }
   },
   mounted() {

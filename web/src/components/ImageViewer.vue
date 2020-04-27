@@ -31,58 +31,58 @@
 
       <b-col sm="6">
         <b-overlay show rounded="sm">
-        <b-jumbotron header="Or make a video!">
-          <b-img
-            v-bind:src="image_url_with_ts"
-            fluid
-            alt="No video to show"
-            class="zoom"
-          /><br />
-          <hr />
-          <b-row>
-            <b-col sm="6">
-              <label for="gif-start-datepicker">Start date</label>
-              <b-form-datepicker
-                id="gif-start-datepicker"
-                today-button
-                reset-button
-                close-button
-                locale="en"
-              ></b-form-datepicker>
-            </b-col>
-            <b-col sm="6">
-              <label for="gif-end-datepicker">End date</label>
-              <b-form-datepicker
-                id="gif-end-datepicker"
-                today-button
-                reset-button
-                close-button
-                locale="en"
-              ></b-form-datepicker>
-            </b-col>
-          </b-row>
-          <b-btn
-            @click="fetchImage"
-            variant="success"
-            dark
-            class="mb-2 image-reset"
-            >Create</b-btn
-          >
-          <b-btn
-            @click="fetchImage"
-            variant="danger"
-            dark
-            class="mb-2 image-reset"
-            >Clear</b-btn
-          >
-        </b-jumbotron>
-        <template v-slot:overlay>
-        <div class="text-center">
-          <b-icon icon="blank" font-scale="3"></b-icon>
-          <div id="cancel-label"><h3>New feature coming soon</h3></div>
-        </div>
-      </template>
-          </b-overlay>
+          <b-jumbotron header="Or make a video!">
+            <b-img
+              v-bind:src="image_url_with_ts"
+              fluid
+              alt="No video to show"
+              class="zoom"
+            /><br />
+            <hr />
+            <b-row>
+              <b-col sm="6">
+                <label for="gif-start-datepicker">Start date</label>
+                <b-form-datepicker
+                  id="gif-start-datepicker"
+                  today-button
+                  reset-button
+                  close-button
+                  locale="en"
+                ></b-form-datepicker>
+              </b-col>
+              <b-col sm="6">
+                <label for="gif-end-datepicker">End date</label>
+                <b-form-datepicker
+                  id="gif-end-datepicker"
+                  today-button
+                  reset-button
+                  close-button
+                  locale="en"
+                ></b-form-datepicker>
+              </b-col>
+            </b-row>
+            <b-btn
+              @click="fetchImage"
+              variant="success"
+              dark
+              class="mb-2 image-reset"
+              >Create</b-btn
+            >
+            <b-btn
+              @click="fetchImage"
+              variant="danger"
+              dark
+              class="mb-2 image-reset"
+              >Clear</b-btn
+            >
+          </b-jumbotron>
+          <template v-slot:overlay>
+            <div class="text-center">
+              <b-icon icon="blank" font-scale="3"></b-icon>
+              <div id="cancel-label"><h3>New feature coming soon</h3></div>
+            </div>
+          </template>
+        </b-overlay>
       </b-col>
     </b-row>
   </div>

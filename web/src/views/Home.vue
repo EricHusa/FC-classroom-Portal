@@ -75,8 +75,11 @@
             <div>
               <b-row>
                 <b-col sm="6">
-                  <b-button v-b-toggle.assignment-creator variant="success"
-                    :hidden="role=='student'">New Assignment</b-button
+                  <b-button
+                    v-b-toggle.assignment-creator
+                    variant="success"
+                    :hidden="role == 'student'"
+                    >New Assignment</b-button
                   >
                   <b-collapse id="assignment-creator"
                     ><AssignmentCreator @assignmentCreated="createAssignment"
@@ -84,32 +87,38 @@
                   <h3>Singular Assignments</h3>
                   <div>
                     <b-table :fields="assignmentHeaders" :items="addColors">
-<!--                      <template v-slot:cell(action)="data">-->
-<!--                        <b-icon-->
-<!--                          :id="`comment-notification-${data.item.id}`"-->
-<!--                          icon="exclamation-circle"-->
-<!--                          font-scale="2"-->
-<!--                          :hidden="responses[data.item.id].comments == null"-->
-<!--                        ></b-icon>-->
-<!--                        <b-popover-->
-<!--                          :target="`comment-notification-${data.item.id}`"-->
-<!--                          placement="bottom"-->
-<!--                          triggers="hover focus"-->
-<!--                          :content="responses[data.item.id].comments"-->
-<!--                        ></b-popover>-->
-<!--                      </template>-->
+                      <!--                      <template v-slot:cell(action)="data">-->
+                      <!--                        <b-icon-->
+                      <!--                          :id="`comment-notification-${data.item.id}`"-->
+                      <!--                          icon="exclamation-circle"-->
+                      <!--                          font-scale="2"-->
+                      <!--                          :hidden="responses[data.item.id].comments == null"-->
+                      <!--                        ></b-icon>-->
+                      <!--                        <b-popover-->
+                      <!--                          :target="`comment-notification-${data.item.id}`"-->
+                      <!--                          placement="bottom"-->
+                      <!--                          triggers="hover focus"-->
+                      <!--                          :content="responses[data.item.id].comments"-->
+                      <!--                        ></b-popover>-->
+                      <!--                      </template>-->
                       <template v-slot:cell(action)="row">
                         <b-button
-                        :hidden="role=='teacher'" @click="setAssignment(row.item)">View</b-button>
+                          :hidden="role == 'teacher'"
+                          @click="setAssignment(row.item)"
+                          >View</b-button
+                        >
                         <b-button
-                          :hidden="role=='student'"
+                          :hidden="role == 'student'"
                           size="md"
                           @click="row.toggleDetails"
                           class="mr-2"
                           >Update</b-button
                         >
                         <b-button
-                        :hidden="role=='student'" @click="setAssignment(row.item)">Results</b-button>
+                          :hidden="role == 'student'"
+                          @click="setAssignment(row.item)"
+                          >Results</b-button
+                        >
                       </template>
                       <template v-slot:row-details="data">
                         <b-card>
@@ -125,23 +134,25 @@
                 </b-col>
                 <b-col sm="6">
                   <AssignmentViewer
-                            v-bind:assignment="activeAssignment"
-                            v-bind:response="activeResponse"
-                            v-bind:responseList="responses"/>
+                    v-bind:assignment="activeAssignment"
+                    v-bind:response="activeResponse"
+                    v-bind:responseList="responses"
+                  />
                 </b-col>
               </b-row>
             </div>
           </b-tab>
-
-
 
           <b-tab title="Observations">
             <br />
             <div>
               <b-row>
                 <b-col sm="6">
-                  <b-button v-b-toggle.observation-creator variant="success"
-                    :hidden="role=='student'">New Observation</b-button
+                  <b-button
+                    v-b-toggle.observation-creator
+                    variant="success"
+                    :hidden="role == 'student'"
+                    >New Observation</b-button
                   >
                   <b-collapse id="observation-creator"
                     ><ObservationCreator @observationCreated="createObservation"
@@ -151,12 +162,15 @@
                     <b-table :fields="observationHeaders" :items="formatDates">
                       <template v-slot:cell(action)="row">
                         <b-button
-                          :hidden="role=='student'"
+                          :hidden="role == 'student'"
                           size="md"
                           @click="row.toggleDetails"
                           class="mr-2"
-                          >Update</b-button>
-                        <b-button @click="setObservation(row.item)">View</b-button>
+                          >Update</b-button
+                        >
+                        <b-button @click="setObservation(row.item)"
+                          >View</b-button
+                        >
                       </template>
                       <template v-slot:row-details="data">
                         <b-card>
@@ -170,15 +184,11 @@
                   </div>
                 </b-col>
                 <b-col sm="6">
-                  <ObservationViewer
-                            v-bind:observation="activeObservation"/>
+                  <ObservationViewer v-bind:observation="activeObservation" />
                 </b-col>
               </b-row>
             </div>
-            <Assignments />
           </b-tab>
-
-
 
           <b-tab title="Images" :disabled="false">
             <div>
@@ -248,17 +258,23 @@ export default {
       this.$store.state.currentUser.id
     );
     if (this.role == "student") {
-      this.responses = api.getStudentAssignmentResponses(this.$store.state.currentUser.id)
+      this.responses = api.getStudentAssignmentResponses(
+        this.$store.state.currentUser.id
+      );
     }
-    this.observations = api.getObservations()
+    this.observations = api.getObservations();
   },
   computed: {
     addColors() {
       let rows = this.assignments.map(item => {
         let tmp = item;
         if (this.$store.state.role == "student") {
-          let pos = this.responses.map(function(r) { return r.assignment; }).indexOf(item.id);
-          this.responses[pos].submitted==null
+          let pos = this.responses
+            .map(function(r) {
+              return r.assignment;
+            })
+            .indexOf(item.id);
+          this.responses[pos].submitted == null
             ? (tmp._rowVariant = "warning")
             : (tmp._rowVariant = "success");
         }
@@ -289,28 +305,36 @@ export default {
         this.$store.state.role,
         this.$store.state.currentUser.id
       );
-      this.observations = api.getObservations()
+      this.observations = api.getObservations();
     },
-    setAssignment(assignment){
-        this.activeAssignment = assignment
-        if(this.role == "student"){this.activeResponse = api.getStudentAssignmentResponse(assignment.id, this.$store.state.currentUser.id)}
-        else{this.responses = api.getTeacherAssignmentResponses(this.activeAssignment.id)}
+    setAssignment(assignment) {
+      this.activeAssignment = assignment;
+      if (this.role == "student") {
+        this.activeResponse = api.getStudentAssignmentResponse(
+          assignment.id,
+          this.$store.state.currentUser.id
+        );
+      } else {
+        this.responses = api.getTeacherAssignmentResponses(
+          this.activeAssignment.id
+        );
+      }
     },
     createAssignment(values) {
       api.createAssignment(values);
       this.assignments = api.getAssignments(
-      this.$store.state.role,
-      this.$store.state.currentUser.id
-    );
+        this.$store.state.role,
+        this.$store.state.currentUser.id
+      );
     },
     createObservation(values) {
-       api.createObservation(values);
+      api.createObservation(values);
     },
-    updateObservation(values){
-      this.activeObservation = api.updateObservation(values.id, values)
+    updateObservation(values) {
+      this.activeObservation = api.updateObservation(values.id, values);
     },
-    setObservation(obs){
-        this.activeObservation = obs
+    setObservation(obs) {
+      this.activeObservation = obs;
     },
 
     updateAssignment(values) {

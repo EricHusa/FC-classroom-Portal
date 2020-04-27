@@ -118,7 +118,7 @@ export default {
     }
   },
   methods: {
-    resetForm(){
+    resetForm() {
       this.form.title = null;
       this.form.description = null;
       this.form.type = null;
@@ -130,11 +130,11 @@ export default {
       this.updateAlert = 3;
       let copyForm = Object.assign({}, this.form);
       this.$emit("assignmentCreated", copyForm);
-      this.onReset(evt)
+      this.onReset(evt);
     },
     onReset(evt) {
       evt.preventDefault();
-      this.resetForm()
+      this.resetForm();
       this.show = false;
       this.$nextTick(() => {
         this.show = true;
