@@ -5,7 +5,7 @@
       <b-col sm="4"></b-col>
       <b-col sm="4">
         <b-card header-html="<h3><b>Login</b></h3>" no-body>
-          <b-alert :show="errorAlert" dismissible fade variant="danger">
+          <b-alert :show="errorAlert" dismissible fade variant="danger" @dismissed="resetAlert">
             {{ this.errorMsg }}
           </b-alert>
 
@@ -46,7 +46,24 @@
               <b-button variant="success" @click="login('teacher')"
                 >Login</b-button
               >
-              <b-button variant="info" @click="register()">Register</b-button>
+              <b-button variant="info" v-b-toggle.register-teacher>Register</b-button>
+              <b-collapse id="register-teacher">
+                <b-form @submit="register">
+                <b-row v-for="item in registerOptions" :key="item.key">
+                  <b-col sm="4">
+                    <label>{{item.label}}: </label>
+                  </b-col>
+                  <b-col sm="8">
+                    <b-input
+                      v-model="forms.register[item.key]"
+                      :type="item.type"
+                      :required="item.required"
+                      ></b-input><br/>
+                  </b-col>
+                </b-row>
+                  <b-button variant="success" type="submit">Create Account</b-button>
+                </b-form>
+              </b-collapse>
             </b-tab>
           </b-tabs>
         </b-card>
@@ -60,6 +77,7 @@
 import { EventBus } from "../utils";
 import NavBar from "./NavBar";
 import api from "../api/index.js";
+import LoginOptions from "../constants/LoginOptions.ts";
 export default {
   components: { NavBar },
   data() {
@@ -69,31 +87,41 @@ export default {
       errorMsg: "",
       forms: {
         student: { teacher: "", username: "", password: "" },
-        teacher: { username: "", password: "" }
+        teacher: { username: "", password: "" },
+        register: {fopd_id: "", fname: "", lname: "", password: "", repeatPassword: ""}
       },
-      options: [
-        { key: "teacher", label: "Teacher" },
-        { key: "username", label: "Username" },
-        { key: "password", label: "Password" }
-      ],
+      options: LoginOptions.login,
+      registerOptions: LoginOptions.register,
       errorAlert: 0
     };
   },
   methods: {
-    authenticate() {
-      // this.$store.dispatch('login', { email: this.email, password: this.password })
-      //   .then(() => this.$router.push('/'))
-      this.$store
-        .dispatch("device", "student")
-        .then(() => this.$router.push("/"));
-      this.$store.dispatch("dev", "student").then(() => this.$router.push("/"));
-    },
-    register() {
+    // authenticate() {
+    //   // this.$store.dispatch('login', { email: this.email, password: this.password })
+    //   //   .then(() => this.$router.push('/'))
+    //   this.$store
+    //     .dispatch("device", "student")
+    //     .then(() => this.$router.push("/"));
+    //   this.$store.dispatch("dev", "student").then(() => this.$router.push("/"));
+    // },
+    register(evt) {
       // alert(this.$route.query.teacher);
       //this.$store.dispatch("dev", "teacher").then(() => this.$router.push("/"));
       //    this.$store.dispatch('register', { email: this.email, password: this.password })
       //      .then(() => this.$router.push('/')).catch(e => {
       // alert(e);
+      evt.preventDefault();
+      try{
+        this.checkNewPassword()
+        let username = api.registerTeacher(this.forms.register);
+        this.forms.teacher.username = username;
+        this.forms.teacher.password = this.forms.register.password;
+        alert("Your username is " + username + ". Please write it down now and then log in")
+      }
+      catch (e) {
+        this.errorMsg = e;
+        this.errorAlert = 5
+      }
     },
     login(role) {
       try {
@@ -105,6 +133,14 @@ export default {
       }
       this.$store.state.role = role;
       this.$router.push("/");
+    },
+    checkNewPassword(){
+      if(this.forms.register.password !== this.forms.register.repeatPassword){
+        throw "Passwords must match"
+      }
+    },
+    resetAlert(){
+      this.errorAlert = 0;
     }
   },
   beforeMount() {

@@ -252,7 +252,7 @@ export default {
   generateUsername() {
     let username = "";
     let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 4; i++) {
       username += characters.charAt(
         Math.floor(Math.random() * characters.length)
       );
@@ -702,15 +702,23 @@ export default {
   getDevices() {
     return devices;
   },
-  updateDeviceName(newName) {
-    let deviceId = store.state.device;
-    let deviceList = this.getDevices();
-    let index = deviceList
+  getDevice(deviceId){
+    let devices = this.getDevices()
+    let index = devices
       .map(function(e) {
         return e.fopd_id;
       })
       .indexOf(deviceId);
-    deviceList[index].name = newName;
+    return devices[index]
+  },
+  updateDeviceName(newName) {
+    let deviceId = store.state.device;
+    let device = this.getDevice(deviceId)
+    device.name = newName;
+  },
+  updateDeviceOwner(deviceId, teacherId) {
+    let device = this.getDevice(deviceId)
+    device.name = teacherId;
   },
 
   getClimate() {
@@ -718,22 +726,20 @@ export default {
   },
   verifyDevice(deviceId) {
     for (let d in devices) {
-      if (devices[d].fopd_id === deviceId) {
+      let device = devices[d]
+      if (device.fopd_id === deviceId && device.teacher !== "") {
         return false;
       }
     }
     return true;
   },
-  registerDevice(values) {
-    if (!this.verifyDevice(values.id)) {
-      throw "Invalid device ID";
-    } else {
+  registerDevice(values, teacher) {
+    let devices = this.getDevices()
       devices.push({
         name: values.name,
-        fopd_id: values.id,
-        teacher: store.state.currentTeacher
+        fopd_id: values.fopd_id,
+        teacher: teacher
       });
-    }
   },
 
   /// FUNCTIONS FOR TEACHERS
@@ -765,7 +771,8 @@ export default {
     }
   },
   registerTeacher(values) {
-    if (this.verifyDevice(values.device)) {
+    let deviceId = values.fopd_id
+    if (this.verifyDevice(deviceId)) {
       let newTeacher = {
         fname: values.fname,
         lname: values.lname,
@@ -773,6 +780,8 @@ export default {
         id: this.generateUsername()
       };
       teachers.push(newTeacher);
+      this.registerDevice({ fopd_id: deviceId, name: "" }, newTeacher.id)
+      return newTeacher.id
     } else {
       throw "invalid device ID";
     }

@@ -50,6 +50,8 @@
                 id="account-settings-collapse"
               >
                 <b-form inline @submit="updateAccount">
+                  <b-form-group description="Username: " for="teacher-username">
+                <b-input disabled :value="teacher" id="teacher-username" style="margin: 0.5rem;"></b-input></b-form-group>
                   <b-form-group
                     v-for="item in teacherOptions"
                     :key="item.key"
@@ -165,6 +167,7 @@ export default {
   components: { NavBar, DeviceViewer },
   data() {
     return {
+      teacher: this.$store.state.currentTeacher,
       currentDevice: null,
       devices: [],
       updateAlert: 0,
@@ -233,7 +236,7 @@ export default {
     registerDevice(evt) {
       evt.preventDefault();
       try {
-        api.registerDevice(this.deviceForm);
+        api.registerDevice(this.deviceForm, this.$store.state.currentTeacher);
       } catch (e) {
         alert(e);
       }
