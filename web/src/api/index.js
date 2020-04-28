@@ -592,6 +592,11 @@ export default {
       }
     }
   },
+  addCommentToAssignment(assignmentId, studentId, value){
+      let response = this.getStudentAssignmentResponse(assignmentId, studentId);
+      response.comments = value;
+      return response;
+  },
 
   /// FUNCTIONS FOR OBSERVATIONS
 
