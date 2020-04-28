@@ -66,6 +66,7 @@
                 <ExperimentViewer
                   v-bind:experiment="activeExperiment"
                   v-bind:form="experimentForm"
+                  v-bind:devices="devices"
                   @experimentsChanged="refreshExperimentList"
                 />
               </b-col>
@@ -240,6 +241,7 @@ export default {
       assignments: [],
       observations: [],
       responses: [],
+      devices: api.getDevices(),
       assignmentHeaders: TableHeaders.assignments,
       observationHeaders: TableHeaders.observations,
       activeExperiment: {},
@@ -250,7 +252,8 @@ export default {
         title: null,
         description: null,
         plant: null,
-        start_date: null
+        start_date: null,
+        students: []
       }
     };
   },
@@ -313,7 +316,7 @@ export default {
     },
 
     createExperiment() {
-      this.activeExperiment = { title: "New Experiment" };
+      this.activeExperiment = { title: "New Experiment", device: this.devices[0].fopd_id };
       this.$store.state.currentExperiment = null;
       for (let k in this.experimentForm) {
         this.experimentForm[k] = this.activeExperiment[k];

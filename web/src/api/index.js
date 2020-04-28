@@ -49,7 +49,8 @@ let experiments = [
     start_date: "2020-03-15",
     teacher: "a",
     students: [1, 4],
-    id: 38782347
+    id: 38782347,
+    device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c"
   },
   {
     title: "Another",
@@ -58,7 +59,8 @@ let experiments = [
     start_date: "2020-03-18",
     teacher: "a",
     students: [1, 2, 3],
-    id: 16847325
+    id: 16847325,
+    device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c"
   }
 ];
 
@@ -698,10 +700,10 @@ export default {
   /// FUNCTIONS FOR DEVICES
 
   getDevices() {
-    return devices;
+    alert(JSON.stringify(devices));
+    return devices.filter(element => element.teacher === store.state.currentTeacher);
   },
   getDevice(deviceId){
-    let devices = this.getDevices()
     let index = devices
       .map(function(e) {
         return e.fopd_id;
@@ -709,8 +711,7 @@ export default {
       .indexOf(deviceId);
     return devices[index]
   },
-  updateDeviceName(newName) {
-    let deviceId = store.state.device;
+  updateDeviceName(deviceId, newName) {
     let device = this.getDevice(deviceId)
     device.name = newName;
   },
@@ -732,7 +733,6 @@ export default {
     return true;
   },
   registerDevice(values, teacher) {
-    let devices = this.getDevices()
       devices.push({
         name: values.name,
         fopd_id: values.fopd_id,
@@ -778,7 +778,7 @@ export default {
         id: this.generateUsername()
       };
       teachers.push(newTeacher);
-      this.registerDevice({ fopd_id: deviceId, name: "" }, newTeacher.id)
+      this.registerDevice({ fopd_id: deviceId, name: deviceId }, newTeacher.id)
       return newTeacher.id
     } else {
       throw "invalid device ID";

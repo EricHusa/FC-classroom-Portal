@@ -10,7 +10,7 @@ Vue.use(Vuex);
 const state = {
   // single source of data
   jwt: "",
-  currentExperiment: null,
+  currentExperiment: null, //Set when clicked on
   currentTeacher: null, //Set on login
   role: "guest", //Set on login
   device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c",
