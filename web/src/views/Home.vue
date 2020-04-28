@@ -94,7 +94,7 @@
                       <!--                          :id="`comment-notification-${data.item.id}`"-->
                       <!--                          icon="exclamation-circle"-->
                       <!--                          font-scale="2"-->
-                      <!--                          :hidden="responses[data.item.id].comments == null"-->
+                      <!--                          :hidden="role == 'teacher && responses[data.item.id].comments == null"-->
                       <!--                        ></b-icon>-->
                       <!--                        <b-popover-->
                       <!--                          :target="`comment-notification-${data.item.id}`"-->

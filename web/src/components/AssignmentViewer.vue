@@ -12,6 +12,7 @@
     <b-overlay :show="deleted" rounded="sm">
       <b-jumbotron
         ><h2>{{ assignment.title }}</h2>
+        <code>{{assignment.type}}</code>
         <hr />
         <b-container fluid>
           <br />
@@ -27,14 +28,14 @@
               </b-col>
               <b-col sm="9">
                 <b-form @submit="responseSubmitted">
-                  <b-form-input
+                  <b-form-textarea
                     id="student-assignment-response-input"
                     :type="assignment.type"
                     required
                     :disabled="unlocked != assignment.id"
                     :placeholder="response.response"
                     v-model="response.response"
-                  ></b-form-input>
+                  ></b-form-textarea>
                   <b-button
                     type="submit"
                     variant="success"
@@ -49,9 +50,12 @@
                   >
                 </b-form>
               </b-col>
-            </b-row>
+            </b-row><hr/>
+            <b><u>Teacher's Comments:</u></b>
+            <p>{{response.comments}}</p>
           </b-collapse>
         </b-container>
+
 
         <b-collapse :visible="role == 'teacher'">
           <b-container fluid>
@@ -64,11 +68,11 @@
                 >
               </b-col>
               <b-col sm="8">
-                <b-form-input
+                <b-form-textarea
                   :id="`response-${item.student}`"
                   :value="item.response"
                   disabled
-                ></b-form-input>
+                ></b-form-textarea>
               </b-col>
               <b-col sm="1"><b-button @click="selectResponse(item)">+</b-button></b-col>
             </b-row>
@@ -128,6 +132,12 @@ export default {
   methods: {
     responseSubmitted(evt) {
       evt.preventDefault();
+      if(this.assignment.type ==="number"){
+        if(!/^\d+(\.\d+)?$/.test(this.response.response)){
+          alert("You may only enter numbers for this response (such as 1.5), please try again");
+          return;
+        }
+      }
       this.form.response = this.response.response;
       this.form.submitted = api.getToday(new Date());
       api.updateStudentAssignmentResponse(
@@ -155,6 +165,9 @@ export default {
     unlockAnswer(assignmentId) {
       this.unlocked = assignmentId;
     },
+    // checkInput(input, varType){
+    //
+    // },
     getStudentName(studentId) {
       if (studentId != null) {
         let student = api.getStudent(studentId);
