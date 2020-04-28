@@ -649,7 +649,7 @@ export default {
         return e.id;
       })
       .indexOf(observationId);
-    obsList.splice(index, 1);
+    observations.splice(index, 1);
   },
   addObservationResponse(observationId) {
     let obs = this.getObservation(observationId);

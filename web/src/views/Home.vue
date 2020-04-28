@@ -186,7 +186,7 @@
                   </div>
                 </b-col>
                 <b-col sm="6">
-                  <ObservationViewer v-bind:observation="activeObservation" />
+                  <ObservationViewer v-bind:observation="activeObservation" @observationDeleted="refreshObservations"/>
                 </b-col>
               </b-row>
             </div>
@@ -353,12 +353,16 @@ export default {
     },
     createObservation(values) {
       api.createObservation(values);
+      this.refreshObservations();
     },
     updateObservation(values) {
       this.activeObservation = api.updateObservation(values.id, values);
     },
     setObservation(obs) {
       this.activeObservation = obs;
+    },
+    refreshObservations(){
+      this.observations = api.getObservations();
     },
 
     updateAssignment(values) {
