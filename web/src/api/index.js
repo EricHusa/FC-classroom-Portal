@@ -68,6 +68,7 @@ let assignments = [
   {
     id: 35688201,
     teacher: "a",
+    experiment: 38782347,
     title: "Predict How Many Days",
     description: "Predict how many days it takes the plant to grow 1 inch",
     type: "number",
@@ -77,6 +78,7 @@ let assignments = [
   {
     id: 25674621,
     teacher: "a",
+    experiment: 38782347,
     title: "Give yourself a team role",
     description: "Tell me what your role on the team is",
     type: "text",
@@ -279,6 +281,9 @@ export default {
     }
     return temp;
   },
+  pullCSV(start, end){
+    alert("https://fop1.urbanspacefarms.com:5000/api/get_data_json/" + store.state.currentExperiment.device + "/" + start + "/" +end);
+  },
 
   /// FUNCTIONS FOR CLASSES
 
@@ -410,19 +415,19 @@ export default {
 
   /// FUNCTIONS FOR EXPERIMENTS
 
-  getExperiments: function(role, id) {
+  getExperiments: function(role, userId) {
     let expList = [];
     if (role === "teacher") {
       for (let e in experiments) {
         let exp = experiments[e];
-        if (exp.teacher === id) {
+        if (exp.teacher === userId) {
           expList.push(exp);
         }
       }
     } else if (role === "student") {
       for (let e in experiments) {
         let exp = experiments[e];
-        if (exp.students.includes(id)) {
+        if (exp.students.includes(userId)) {
           expList.push(exp);
         }
       }
@@ -599,8 +604,7 @@ export default {
         obsList.push(obs);
       }
     }
-    // alert(JSON.stringify(obsList))
-    return observations;
+    return obsList;
   },
   getObservation(observationId) {
     let obsList = this.getObservations();
@@ -617,7 +621,6 @@ export default {
     obs.description = values.description;
     obs.collaborators = values.collaborators;
     obs.updated = values.updated;
-    alert(JSON.stringify(obs));
     return obs;
   },
   createObservation(values) {
@@ -700,7 +703,6 @@ export default {
   /// FUNCTIONS FOR DEVICES
 
   getDevices() {
-    alert(JSON.stringify(devices));
     return devices.filter(element => element.teacher === store.state.currentTeacher);
   },
   getDevice(deviceId){
