@@ -47,7 +47,6 @@
         </b-tab>
 
         <b-tab title="Class List">
-          <button><router-link to="/">Home</router-link></button>
           <br />
           <b-row>
             <b-col cols="6" md="4">
@@ -70,7 +69,7 @@
             </b-col>
 
             <b-col cols="12" md="8">
-              <b-overlay :show="!currClass">
+              <b-overlay :show="classDeleted">
                 <div>
                   <b-container fluid>
                     <b-form inline style="float: left;">
@@ -79,13 +78,13 @@
                         trim
                         id="inline-form-class-name"
                         class="mb-2 mr-sm-2 mb-sm-0"
-                        :disabled="!currClass"
+                        :disabled="classDeleted"
                         :placeholder="currClass.name"
                       ></b-input>
                       <b-button
                         variant="warning"
                         @click="updateClassName(currClass.id, className)"
-                        :disabled="!currClass"
+                        :disabled="classDeleted"
                         >Rename class</b-button
                       >
                     </b-form>
@@ -94,7 +93,7 @@
                       variant="danger"
                       class="mb-2 mr-sm-2 mb-sm-0"
                       @click="deleteClass(currClass.id)"
-                      :disabled="!currClass"
+                      :disabled="classDeleted"
                       >Delete class</b-button
                     >
                   </b-container>
@@ -109,7 +108,7 @@
                         v-b-toggle.import-student
                         class="m-1"
                         variant="primary"
-                        :disabled="!currClass"
+                        :disabled="classDeleted"
                         >Add existing students</b-button
                       >
                     </b-col>
@@ -130,7 +129,7 @@
                         <b-button
                           @click="importStudents"
                           variant="success"
-                          :disabled="!currClass"
+                          :disabled="classDeleted"
                           >Add</b-button
                         >
                       </b-collapse>
@@ -169,7 +168,7 @@ export default {
       ],
       classes: [{}],
       className: "",
-      classDeleted: false,
+      classDeleted: true,
       selectedStudents: [],
       form: {
         fname: null,
@@ -188,6 +187,7 @@ export default {
     setClass(id) {
       this.currStudents = api.getStudents(id);
       this.currClass = api.getClass(id);
+      this.classDeleted = false;
     },
     getClassName(id) {
       if (id === null) {
@@ -209,7 +209,7 @@ export default {
         )
       ) {
         api.deleteClass(id);
-        this.currClass = null;
+        this.classDeleted = true;
       }
     },
     addStudent() {
@@ -252,6 +252,10 @@ export default {
     this.classes = api.getClasses();
     if(this.classes.length > 0) {
       this.setClass(this.classes[0].id);
+      this.classDeleted = false;
+    }
+    else{
+      this.currClass = {id: null};
     }
   }
 };

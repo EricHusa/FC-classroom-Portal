@@ -9,7 +9,7 @@
     >
       Experiment {{ updateAction }}
     </b-alert>
-    <b-overlay :show="experiment.deleted" rounded="sm">
+    <b-overlay :show="experiment.id===deleted" rounded="sm">
       <b-jumbotron
         ><h2>{{ experiment.title }}</h2>
         <hr />
@@ -134,10 +134,12 @@ export default {
     deleteExperiment() {
       if (confirm("Are you sure you want to delete this experiment?")) {
         api.deleteExperiment(this.experiment.id);
-        this.experiment = { title: "Deleted", deleted: true };
-        this.$store.state.currentExperiment = {};
+        //this.experiment = { title: "Deleted", deleted: true };
+        this.deleted = this.experiment.id
+        this.$store.state.currentExperiment = null;
         this.updateAction = "deleted";
         this.updateAlert = 3;
+        this.$emit("experimentsChanged");
       }
     },
     createExperiment() {
@@ -147,6 +149,7 @@ export default {
       );
       this.updateAction = "created";
       this.updateAlert = 3;
+      this.$emit("experimentsChanged", this.experiment.id);
     },
     updateExperiment() {
       let updateValues = this.form;

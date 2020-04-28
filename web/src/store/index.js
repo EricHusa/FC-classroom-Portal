@@ -10,8 +10,7 @@ Vue.use(Vuex);
 const state = {
   // single source of data
   jwt: "",
-  experiments: [],
-  currentExperiment: {},
+  currentExperiment: null,
   currentTeacher: null, //Set on login
   role: "guest", //Set on login
   device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c",
@@ -65,12 +64,9 @@ const actions = {
 
 const mutations = {
   // isolated data mutations
-  setExperiments(state, payload) {
-    state.experiments = payload.experiments;
-  },
-  setExperiment(state, payload) {
-    state.currentExperiment = payload.experiment;
-  },
+  // setExperiment(state, payload) {
+  //   state.currentExperiment = payload.experiment;
+  // },
   setUserData(state, payload) {
     //console.log("setUserData payload = ", payload);
     state.userData = payload.userData;

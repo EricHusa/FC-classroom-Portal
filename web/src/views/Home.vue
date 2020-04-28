@@ -40,7 +40,7 @@
                       header="Create Experiment"
                       style="max-width: 13rem; max-height: 14rem; min-width: 13rem; min-height: 14rem;"
                       ><b-card-text
-                        ><b-button @click="setExpi()" variant="success"
+                        ><b-button @click="createExperiment()" variant="success"
                           ><b-icon
                             icon="plus-square-fill"
                             font-scale="5"
@@ -66,12 +66,13 @@
                 <ExperimentViewer
                   v-bind:experiment="activeExperiment"
                   v-bind:form="experimentForm"
+                  @experimentsChanged="refreshExperimentList"
                 />
               </b-col>
             </b-row>
           </b-tab>
 
-          <b-tab title="Assignments">
+          <b-tab title="Assignments" :disabled="$store.state.currentExperiment==null">
             <div>
               <b-row>
                 <b-col sm="6">
@@ -143,7 +144,7 @@
             </div>
           </b-tab>
 
-          <b-tab title="Observations">
+          <b-tab title="Observations" :disabled="$store.state.currentExperiment==null">
             <br />
             <div>
               <b-row>
@@ -190,7 +191,7 @@
             </div>
           </b-tab>
 
-          <b-tab title="Data">
+          <b-tab title="Data" :disabled="$store.state.currentExperiment==null">
             <div>
               <ChartViewer v-bind:dataName="'temperature'" v-bind:xDataUnit="'C'"/>
               <hr/>
@@ -198,7 +199,7 @@
             </div>
           </b-tab>
 
-          <b-tab title="Images">
+          <b-tab title="Images" :disabled="$store.state.currentExperiment==null">
             <div>
               <ImageViewer />
             </div>
@@ -254,10 +255,7 @@ export default {
     };
   },
   beforeMount() {
-    this.experiments = api.getExperiments(
-      this.$store.state.role,
-      this.$store.state.currentUser.id
-    );
+    this.refreshExperimentList()
     if (this.experiments.length > 0) {
       this.setExpi(this.experiments[0].id);
     } else {
@@ -278,7 +276,7 @@ export default {
     addColors() {
       let rows = this.assignments.map(item => {
         let tmp = item;
-        if (this.$store.state.role == "student") {
+        if (this.$store.state.role === "student") {
           let pos = this.responses
             .map(function(r) {
               return r.assignment;
@@ -311,11 +309,24 @@ export default {
       for (let k in this.experimentForm) {
         this.experimentForm[k] = this.activeExperiment[k];
       }
+      this.observations = api.getObservations();
+    },
+
+    createExperiment() {
+      this.activeExperiment = { title: "New Experiment" };
+      this.$store.state.currentExperiment = null;
+      for (let k in this.experimentForm) {
+        this.experimentForm[k] = this.activeExperiment[k];
+      }
+    },
+    refreshExperimentList(newItem=null){
       this.experiments = api.getExperiments(
         this.$store.state.role,
         this.$store.state.currentUser.id
       );
-      this.observations = api.getObservations();
+      if(newItem !== null){
+        this.setExpi(newItem);
+      }
     },
     setAssignment(assignment) {
       this.activeAssignment = assignment;

@@ -434,8 +434,9 @@ export default {
         return exp;
       }
     }
-    let today = this.getToday(new Date());
-    return { title: "New Experiment", start_date: today };
+    // let today = this.getToday(new Date());
+    // return { title: "New Experiment", start_date: today };
+    return null;
   },
   createExperiment: function(values, teacher) {
     let newExperiment = {};
