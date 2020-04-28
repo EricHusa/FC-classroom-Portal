@@ -29,6 +29,7 @@
                 :value="experiment[item.key]"
                 :placeholder="experiment[item.key]"
                 v-model="form[item.key]"
+                trim
                 :disabled="checkRole()"
               ></b-form-input>
             </b-col>
@@ -136,7 +137,6 @@ export default {
   data() {
     return {
       updateAlert: 0,
-      deleteAlert: 0,
       updateAction: "",
       deleted: null,
       selectedStudents: [1],
@@ -177,6 +177,10 @@ export default {
     },
     createExperiment() {
       let updateValues = this.addFormValues(this.form);
+      if(updateValues.title.length <=0 || updateValues.device === null){
+        alert("New experiments must have at least a name and device assigned")
+        return;
+      }
       this.experiment = api.createExperiment(
         updateValues,
         this.$store.state.currentUser.id

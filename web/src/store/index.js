@@ -2,7 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 // imports of AJAX functions will go here
-import { getDevice, newExperiment, authenticate, register } from "../api";
+import { newExperiment, authenticate, register } from "../api";
 import { isValidJwt, EventBus } from "../utils/index.js";
 
 Vue.use(Vuex);
@@ -13,7 +13,6 @@ const state = {
   currentExperiment: null, //Set when clicked on
   currentTeacher: null, //Set on login
   role: "guest", //Set on login
-  device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c",
   currentUser: null //Set on login
 };
 
@@ -55,9 +54,9 @@ const actions = {
     context.commit("setUser");
   },
   device() {
-    return getDevice().then(response => {
-      state.device = response;
-    });
+    // return getDevice().then(response => {
+    //   state.device = response;
+    // });
   },
   clearState() {}
 };

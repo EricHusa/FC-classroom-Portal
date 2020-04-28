@@ -20,6 +20,7 @@
     </b-alert>
     <b-jumbotron
       ><h2>{{ observation.title }}</h2>
+      <code>{{ observation.units }}</code>
       <hr />
       <div id="observation-graph"></div>
       <div>

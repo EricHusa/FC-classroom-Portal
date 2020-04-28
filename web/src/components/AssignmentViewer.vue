@@ -68,11 +68,14 @@
                 >
               </b-col>
               <b-col sm="8">
+                <b-form-group
+                  :label-for="`response-${item.student}`"
+                  :description="`Submitted on ${item.submitted}`">
                 <b-form-textarea
                   :id="`response-${item.student}`"
                   :value="item.response"
                   disabled
-                ></b-form-textarea>
+                ></b-form-textarea></b-form-group>
               </b-col>
               <b-col sm="1"><b-button @click="selectResponse(item)">+</b-button></b-col>
             </b-row>

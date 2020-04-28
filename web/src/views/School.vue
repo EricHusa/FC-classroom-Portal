@@ -120,7 +120,7 @@
                           >
                             <b-form-checkbox-group
                               v-model="selectedStudents"
-                              :options="getStudentCheckboxes()"
+                              :options="formatCheckboxes"
                               name="flavour-2a"
                               stacked
                             ></b-form-checkbox-group>
@@ -178,6 +178,19 @@ export default {
       },
       currClass: null
     };
+  },
+  computed: {
+    formatCheckboxes() {
+      let students = api.getStudentCheckboxes();
+      let rows = students.map(item => {
+        let tmp = item;
+        if (this.currClass.students.includes(item.value)) {
+          tmp.disabled = true;
+        }
+        return tmp;
+      });
+      return rows;
+    }
   },
   methods: {
     addClass() {

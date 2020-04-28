@@ -207,7 +207,7 @@ export default {
   methods: {
     onSubmit(evt) {
       evt.preventDefault();
-      this.$store.state.device = this.currentDevice;
+      // this.$store.state.device = this.currentDevice;
     },
     resetAlert() {
       this.updateAlert = 0;
