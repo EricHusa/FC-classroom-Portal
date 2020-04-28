@@ -451,7 +451,6 @@ export default {
       newExperiment[v] = values[v];
     }
     newExperiment.teacher = teacher;
-    newExperiment.students = [];
     newExperiment.id = this.generateId();
 
     experiments.push(newExperiment);

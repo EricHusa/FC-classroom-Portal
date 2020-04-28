@@ -108,7 +108,7 @@
           :visible="!checkRole() && !experiment.id"
         >
           <b-button
-            @click="createExperiment()"
+            @click="createExperiment"
             variant="success"
             style="float: right;"
             >Add experiment</b-button
