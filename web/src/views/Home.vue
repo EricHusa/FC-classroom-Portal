@@ -40,7 +40,7 @@
                       header="Create Experiment"
                       style="max-width: 13rem; max-height: 14rem; min-width: 13rem; min-height: 14rem;"
                       ><b-card-text
-                        ><b-button @click="setExpi()" variant="success"
+                        ><b-button @click="createExperiment()" variant="success"
                           ><b-icon
                             icon="plus-square-fill"
                             font-scale="5"
@@ -66,12 +66,14 @@
                 <ExperimentViewer
                   v-bind:experiment="activeExperiment"
                   v-bind:form="experimentForm"
+                  v-bind:devices="devices"
+                  @experimentsChanged="refreshExperimentList"
                 />
               </b-col>
             </b-row>
           </b-tab>
 
-          <b-tab title="Assignments">
+          <b-tab title="Assignments" :disabled="$store.state.currentExperiment==null">
             <div>
               <b-row>
                 <b-col sm="6">
@@ -92,7 +94,7 @@
                       <!--                          :id="`comment-notification-${data.item.id}`"-->
                       <!--                          icon="exclamation-circle"-->
                       <!--                          font-scale="2"-->
-                      <!--                          :hidden="responses[data.item.id].comments == null"-->
+                      <!--                          :hidden="role == 'teacher && responses[data.item.id].comments == null"-->
                       <!--                        ></b-icon>-->
                       <!--                        <b-popover-->
                       <!--                          :target="`comment-notification-${data.item.id}`"-->
@@ -143,7 +145,7 @@
             </div>
           </b-tab>
 
-          <b-tab title="Observations">
+          <b-tab title="Observations" :disabled="$store.state.currentExperiment==null">
             <br />
             <div>
               <b-row>
@@ -184,13 +186,13 @@
                   </div>
                 </b-col>
                 <b-col sm="6">
-                  <ObservationViewer v-bind:observation="activeObservation" />
+                  <ObservationViewer v-bind:observation="activeObservation" @observationDeleted="refreshObservations"/>
                 </b-col>
               </b-row>
             </div>
           </b-tab>
 
-          <b-tab title="Data">
+          <b-tab title="Data" :disabled="$store.state.currentExperiment==null">
             <div>
               <ChartViewer v-bind:dataName="'temperature'" v-bind:xDataUnit="'C'"/>
               <hr/>
@@ -198,7 +200,7 @@
             </div>
           </b-tab>
 
-          <b-tab title="Images">
+          <b-tab title="Images" :disabled="$store.state.currentExperiment==null">
             <div>
               <ImageViewer />
             </div>
@@ -239,6 +241,7 @@ export default {
       assignments: [],
       observations: [],
       responses: [],
+      devices: api.getDevices(),
       assignmentHeaders: TableHeaders.assignments,
       observationHeaders: TableHeaders.observations,
       activeExperiment: {},
@@ -249,15 +252,13 @@ export default {
         title: null,
         description: null,
         plant: null,
-        start_date: null
+        start_date: null,
+        students: []
       }
     };
   },
   beforeMount() {
-    this.experiments = api.getExperiments(
-      this.$store.state.role,
-      this.$store.state.currentUser.id
-    );
+    this.refreshExperimentList()
     if (this.experiments.length > 0) {
       this.setExpi(this.experiments[0].id);
     } else {
@@ -278,7 +279,7 @@ export default {
     addColors() {
       let rows = this.assignments.map(item => {
         let tmp = item;
-        if (this.$store.state.role == "student") {
+        if (this.$store.state.role === "student") {
           let pos = this.responses
             .map(function(r) {
               return r.assignment;
@@ -311,11 +312,24 @@ export default {
       for (let k in this.experimentForm) {
         this.experimentForm[k] = this.activeExperiment[k];
       }
+      this.observations = api.getObservations();
+    },
+
+    createExperiment() {
+      this.activeExperiment = { title: "New Experiment", device: this.devices[0].fopd_id, students: [] };
+      this.$store.state.currentExperiment = null;
+      for (let k in this.experimentForm) {
+        this.experimentForm[k] = this.activeExperiment[k];
+      }
+    },
+    refreshExperimentList(newItem=null){
       this.experiments = api.getExperiments(
         this.$store.state.role,
         this.$store.state.currentUser.id
       );
-      this.observations = api.getObservations();
+      if(newItem !== null){
+        this.setExpi(newItem);
+      }
     },
     setAssignment(assignment) {
       this.activeAssignment = assignment;
@@ -339,12 +353,16 @@ export default {
     },
     createObservation(values) {
       api.createObservation(values);
+      this.refreshObservations();
     },
     updateObservation(values) {
       this.activeObservation = api.updateObservation(values.id, values);
     },
     setObservation(obs) {
       this.activeObservation = obs;
+    },
+    refreshObservations(){
+      this.observations = api.getObservations();
     },
 
     updateAssignment(values) {

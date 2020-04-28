@@ -47,7 +47,6 @@
         </b-tab>
 
         <b-tab title="Class List">
-          <button><router-link to="/">Home</router-link></button>
           <br />
           <b-row>
             <b-col cols="6" md="4">
@@ -60,7 +59,7 @@
                 <b-list-group-item
                   button
                   @click="setClass(item.id)"
-                  :active="item.id == currClass"
+                  :active="item.id == currClass.id"
                   variant="secondary"
                   >{{ item.name }}</b-list-group-item
                 >
@@ -70,7 +69,7 @@
             </b-col>
 
             <b-col cols="12" md="8">
-              <b-overlay :show="!currClass">
+              <b-overlay :show="classDeleted">
                 <div>
                   <b-container fluid>
                     <b-form inline style="float: left;">
@@ -79,13 +78,13 @@
                         trim
                         id="inline-form-class-name"
                         class="mb-2 mr-sm-2 mb-sm-0"
-                        :disabled="!currClass"
-                        :placeholder="getClassName(currClass)"
+                        :disabled="classDeleted"
+                        :placeholder="currClass.name"
                       ></b-input>
                       <b-button
                         variant="warning"
-                        @click="updateClassName(currClass, className)"
-                        :disabled="!currClass"
+                        @click="updateClassName(currClass.id, className)"
+                        :disabled="classDeleted"
                         >Rename class</b-button
                       >
                     </b-form>
@@ -93,15 +92,15 @@
                       style="float: right;"
                       variant="danger"
                       class="mb-2 mr-sm-2 mb-sm-0"
-                      @click="deleteClass(currClass)"
-                      :disabled="!currClass"
+                      @click="deleteClass(currClass.id)"
+                      :disabled="classDeleted"
                       >Delete class</b-button
                     >
                   </b-container>
                   <StudentList
                     v-bind:students="currStudents"
                     v-bind:headers="headers"
-                    v-bind:currClass="currClass"
+                    v-bind:currClass="currClass.id"
                   />
                   <b-row>
                     <b-col sm="3">
@@ -109,7 +108,7 @@
                         v-b-toggle.import-student
                         class="m-1"
                         variant="primary"
-                        :disabled="!currClass"
+                        :disabled="classDeleted"
                         >Add existing students</b-button
                       >
                     </b-col>
@@ -121,7 +120,7 @@
                           >
                             <b-form-checkbox-group
                               v-model="selectedStudents"
-                              :options="getStudentCheckboxes()"
+                              :options="formatCheckboxes"
                               name="flavour-2a"
                               stacked
                             ></b-form-checkbox-group>
@@ -130,7 +129,7 @@
                         <b-button
                           @click="importStudents"
                           variant="success"
-                          :disabled="!currClass"
+                          :disabled="classDeleted"
                           >Add</b-button
                         >
                       </b-collapse>
@@ -158,7 +157,7 @@ export default {
   components: { StudentList, NavBar },
   data() {
     return {
-      currStudents: api.getStudents(this.$store.state.activeClass),
+      currStudents: api.getStudents(),
       allStudents: api.getStudents(),
       headers: [
         { key: "fname", label: "First Name", sortable: true },
@@ -169,7 +168,7 @@ export default {
       ],
       classes: [{}],
       className: "",
-      classDeleted: false,
+      classDeleted: true,
       selectedStudents: [],
       form: {
         fname: null,
@@ -177,8 +176,21 @@ export default {
         username: "",
         password: ""
       },
-      currClass: this.$store.state.activeClass
+      currClass: null
     };
+  },
+  computed: {
+    formatCheckboxes() {
+      let students = api.getStudentCheckboxes();
+      let rows = students.map(item => {
+        let tmp = item;
+        if (this.currClass.students.includes(item.value)) {
+          tmp.disabled = true;
+        }
+        return tmp;
+      });
+      return rows;
+    }
   },
   methods: {
     addClass() {
@@ -187,11 +199,11 @@ export default {
     },
     setClass(id) {
       this.currStudents = api.getStudents(id);
-      this.$store.state.activeClass = id;
-      this.currClass = id;
+      this.currClass = api.getClass(id);
+      this.classDeleted = false;
     },
     getClassName(id) {
-      if (id == null) {
+      if (id === null) {
         return "";
       }
       let c = api.getClass(id);
@@ -210,8 +222,7 @@ export default {
         )
       ) {
         api.deleteClass(id);
-        this.currClass = null;
-        this.$store.state.activeClass = null;
+        this.classDeleted = true;
       }
     },
     addStudent() {
@@ -236,9 +247,9 @@ export default {
     importStudents() {
       let i;
       for (i in this.selectedStudents) {
-        api.addStudent(this.selectedStudents[i], this.currClass);
+        api.addStudent(this.selectedStudents[i], this.currClass.id);
       }
-      this.currStudents = api.getStudents(this.currClass);
+      this.currStudents = api.getStudents(this.currClass.id);
       this.selectedStudents = [];
     },
     validate() {
@@ -250,8 +261,15 @@ export default {
       );
     }
   },
-  mounted() {
+  beforeMount() {
     this.classes = api.getClasses();
+    if(this.classes.length > 0) {
+      this.setClass(this.classes[0].id);
+      this.classDeleted = false;
+    }
+    else{
+      this.currClass = {id: null};
+    }
   }
 };
 </script>

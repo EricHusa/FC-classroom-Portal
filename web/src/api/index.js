@@ -49,7 +49,8 @@ let experiments = [
     start_date: "2020-03-15",
     teacher: "a",
     students: [1, 4],
-    id: 38782347
+    id: 38782347,
+    device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c"
   },
   {
     title: "Another",
@@ -58,7 +59,8 @@ let experiments = [
     start_date: "2020-03-18",
     teacher: "a",
     students: [1, 2, 3],
-    id: 16847325
+    id: 16847325,
+    device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c"
   }
 ];
 
@@ -66,6 +68,7 @@ let assignments = [
   {
     id: 35688201,
     teacher: "a",
+    experiment: 38782347,
     title: "Predict How Many Days",
     description: "Predict how many days it takes the plant to grow 1 inch",
     type: "number",
@@ -75,6 +78,7 @@ let assignments = [
   {
     id: 25674621,
     teacher: "a",
+    experiment: 38782347,
     title: "Give yourself a team role",
     description: "Tell me what your role on the team is",
     type: "text",
@@ -277,6 +281,9 @@ export default {
     }
     return temp;
   },
+  pullCSV(start, end){
+    alert("https://fop1.urbanspacefarms.com:5000/api/get_data_json/" + store.state.currentExperiment.device + "/" + start + "/" +end);
+  },
 
   /// FUNCTIONS FOR CLASSES
 
@@ -362,7 +369,6 @@ export default {
     if (student.username) studentIdCounter += 1;
     student.id = studentIdCounter;
     students.push(student);
-    // this.$store.state.studentList = this.getStudents()
     return student;
   },
   addStudent: function(studentId, classId) {
@@ -398,8 +404,6 @@ export default {
         c.students.splice(c.students.indexOf(studentId), 1);
       }
     }
-
-    this.$store.state.studentList = this.getStudents();
   },
   getStudentDisplayName(studentId) {
     if (typeof studentId === "string") {
@@ -411,19 +415,19 @@ export default {
 
   /// FUNCTIONS FOR EXPERIMENTS
 
-  getExperiments: function(role, id) {
+  getExperiments: function(role, userId) {
     let expList = [];
     if (role === "teacher") {
       for (let e in experiments) {
         let exp = experiments[e];
-        if (exp.teacher === id) {
+        if (exp.teacher === userId) {
           expList.push(exp);
         }
       }
     } else if (role === "student") {
       for (let e in experiments) {
         let exp = experiments[e];
-        if (exp.students.includes(id)) {
+        if (exp.students.includes(userId)) {
           expList.push(exp);
         }
       }
@@ -437,8 +441,9 @@ export default {
         return exp;
       }
     }
-    let today = this.getToday(new Date());
-    return { title: "New Experiment", start_date: today };
+    // let today = this.getToday(new Date());
+    // return { title: "New Experiment", start_date: today };
+    return null;
   },
   createExperiment: function(values, teacher) {
     let newExperiment = {};
@@ -446,7 +451,6 @@ export default {
       newExperiment[v] = values[v];
     }
     newExperiment.teacher = teacher;
-    newExperiment.students = [];
     newExperiment.id = this.generateId();
 
     experiments.push(newExperiment);
@@ -587,6 +591,11 @@ export default {
       }
     }
   },
+  addCommentToAssignment(assignmentId, studentId, value){
+      let response = this.getStudentAssignmentResponse(assignmentId, studentId);
+      response.comments = value;
+      return response;
+  },
 
   /// FUNCTIONS FOR OBSERVATIONS
 
@@ -599,8 +608,7 @@ export default {
         obsList.push(obs);
       }
     }
-    // alert(JSON.stringify(obsList))
-    return observations;
+    return obsList;
   },
   getObservation(observationId) {
     let obsList = this.getObservations();
@@ -617,7 +625,6 @@ export default {
     obs.description = values.description;
     obs.collaborators = values.collaborators;
     obs.updated = values.updated;
-    alert(JSON.stringify(obs));
     return obs;
   },
   createObservation(values) {
@@ -641,7 +648,7 @@ export default {
         return e.id;
       })
       .indexOf(observationId);
-    obsList.splice(index, 1);
+    observations.splice(index, 1);
   },
   addObservationResponse(observationId) {
     let obs = this.getObservation(observationId);
@@ -700,10 +707,9 @@ export default {
   /// FUNCTIONS FOR DEVICES
 
   getDevices() {
-    return devices;
+    return devices.filter(element => element.teacher === store.state.currentTeacher);
   },
   getDevice(deviceId){
-    let devices = this.getDevices()
     let index = devices
       .map(function(e) {
         return e.fopd_id;
@@ -711,8 +717,7 @@ export default {
       .indexOf(deviceId);
     return devices[index]
   },
-  updateDeviceName(newName) {
-    let deviceId = store.state.device;
+  updateDeviceName(deviceId, newName) {
     let device = this.getDevice(deviceId)
     device.name = newName;
   },
@@ -734,7 +739,6 @@ export default {
     return true;
   },
   registerDevice(values, teacher) {
-    let devices = this.getDevices()
       devices.push({
         name: values.name,
         fopd_id: values.fopd_id,
@@ -780,7 +784,7 @@ export default {
         id: this.generateUsername()
       };
       teachers.push(newTeacher);
-      this.registerDevice({ fopd_id: deviceId, name: "" }, newTeacher.id)
+      this.registerDevice({ fopd_id: deviceId, name: deviceId }, newTeacher.id)
       return newTeacher.id
     } else {
       throw "invalid device ID";

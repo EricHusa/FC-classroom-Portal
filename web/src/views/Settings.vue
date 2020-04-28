@@ -207,7 +207,7 @@ export default {
   methods: {
     onSubmit(evt) {
       evt.preventDefault();
-      this.$store.state.device = this.currentDevice;
+      // this.$store.state.device = this.currentDevice;
     },
     resetAlert() {
       this.updateAlert = 0;
@@ -230,7 +230,7 @@ export default {
       evt.preventDefault();
       this.updateMessage = "Device name updated!";
       this.updateAlert = 3;
-      api.updateDeviceName(this.deviceInput);
+      api.updateDeviceName(this.currentDevice.fopd_id, this.deviceInput);
       this.devices = api.getDevices();
     },
     registerDevice(evt) {

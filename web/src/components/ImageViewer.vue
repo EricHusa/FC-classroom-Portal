@@ -98,7 +98,7 @@ export default {
     }
   },
   beforeMount: function() {
-    this.imageBase = Fop.api + "/image/" + this.$store.state.device;
+    this.imageBase = Fop.api + "/image/" + this.$store.state.currentExperiment.device;
     this.image_url_with_ts = this.imageBase + "?ts=" + new Date().getTime();
   }
 };

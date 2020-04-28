@@ -2,7 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 // imports of AJAX functions will go here
-import { getDevice, newExperiment, authenticate, register } from "../api";
+import { newExperiment, authenticate, register } from "../api";
 import { isValidJwt, EventBus } from "../utils/index.js";
 
 Vue.use(Vuex);
@@ -10,14 +10,10 @@ Vue.use(Vuex);
 const state = {
   // single source of data
   jwt: "",
-  experiments: [],
-  currentExperiment: {},
-  currentTeacher: "a",
-  role: "guest",
-  device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c",
-  activeClass: null,
-  studentList: [],
-  currentUser: null
+  currentExperiment: null, //Set when clicked on
+  currentTeacher: null, //Set on login
+  role: "guest", //Set on login
+  currentUser: null //Set on login
 };
 
 const actions = {
@@ -58,21 +54,18 @@ const actions = {
     context.commit("setUser");
   },
   device() {
-    return getDevice().then(response => {
-      state.device = response;
-    });
+    // return getDevice().then(response => {
+    //   state.device = response;
+    // });
   },
   clearState() {}
 };
 
 const mutations = {
   // isolated data mutations
-  setExperiments(state, payload) {
-    state.experiments = payload.experiments;
-  },
-  setExperiment(state, payload) {
-    state.currentExperiment = payload.experiment;
-  },
+  // setExperiment(state, payload) {
+  //   state.currentExperiment = payload.experiment;
+  // },
   setUserData(state, payload) {
     //console.log("setUserData payload = ", payload);
     state.userData = payload.userData;

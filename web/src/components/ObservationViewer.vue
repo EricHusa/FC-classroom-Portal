@@ -18,8 +18,10 @@
     >
       {{ errMsg }}
     </b-alert>
+    <b-overlay :show="deleted === observation.id" rounded="sm">
     <b-jumbotron
       ><h2>{{ observation.title }}</h2>
+      <code>{{ observation.units }}</code>
       <hr />
       <div id="observation-graph"></div>
       <div>
@@ -28,7 +30,7 @@
           <b-button
             @click="addObservation"
             variant="info"
-            :hidden="role == 'student'"
+            :hidden="role == 'student' || deleted === observation.id"
             >New Report Row</b-button
           >
         </b-row>
@@ -49,12 +51,12 @@
             </template>
             <template v-slot:cell(action)="row">
               <b-button
-                hidden="role=='teacher'"
+                :hidden="role=='teacher' || deleted === observation.id"
                 @click="unlocked = row.item.number"
                 >Change</b-button
               >
               <b-button
-                :hidden="role == 'student'"
+                :hidden="role == 'student' || deleted === observation.id"
                 size="md"
                 @click="row.toggleDetails"
                 class="mr-2"
@@ -63,6 +65,7 @@
               <b-button
                 @click="updateObservation(row.item.number, row.item.response)"
                 variant="success"
+                :hidden="deleted === observation.id"
                 >Update</b-button
               >
             </template>
@@ -71,16 +74,19 @@
                 <b-button
                   variant="danger"
                   @click="deleteReport(data.item.number)"
+                  :hidden="deleted === observation.id"
                   >Delete report</b-button
                 >
                 <b-button
                   variant="light"
                   @click="unlockResponse(data.item.number)"
+                  :hidden="deleted === observation.id"
                   >Change</b-button
                 >
                 <b-button
                   variant="warning"
                   @click="changeEditPermission(data.item.number)"
+                  :hidden="deleted === observation.id"
                   >Lock / Unlock</b-button
                 >
               </b-row>
@@ -91,12 +97,19 @@
           <b-button
             @click="deleteObservation"
             variant="danger"
-            :hidden="role == 'student'"
+            :hidden="role == 'student' || deleted === observation.id"
             >Delete Observation</b-button
           >
         </b-row>
       </div>
     </b-jumbotron>
+      <template v-slot:overlay>
+        <div class="text-center">
+          <b-icon icon="x-circle-fill" font-scale="3"></b-icon>
+          <p id="cancel-label">Please select or create another observation.</p>
+        </div>
+      </template>
+    </b-overlay>
   </div>
 </template>
 
@@ -117,6 +130,7 @@ export default {
       observationError: 0,
       reportInputs: {},
       role: null,
+      deleted: false,
       errMsg: ""
     };
   },
@@ -170,7 +184,9 @@ export default {
       if (
         confirm("Are you sure you want to permanently delete this observation?")
       ) {
+        this.deleted = this.observation.id;
         api.deleteObservation(this.observation.id);
+        this.$emit("observationDeleted")
       }
     },
     resetAlert() {
