@@ -341,17 +341,19 @@ export default {
       return classStudents;
     }
   },
-  getStudentCheckboxes: function() {
+  getStudentCheckboxes: function(experimentId=null) {
     let newList = [];
     let modifiedStudent = {};
-    // let currentScope
-    // if(type == "experiment") {
-    //   currentScope = experiments.find(c => c.id === scopeId);
-    // }
-    // else {
-    //   currentScope = classes.find(c => c.id === scopeId);
-    // }
-    for (let i in students) {
+    let currentScope;
+    if(experimentId !== null) {
+      let exp = experiments.find(c => c.id === experimentId);
+      currentScope = students.filter(element => exp.students.includes(element.id));
+    }
+    else{
+      currentScope = students;
+    }
+
+    for (let i in currentScope) {
       let student = students[i];
       modifiedStudent = {
         text: student.username + ", " + student.fname + " " + student.lname,
