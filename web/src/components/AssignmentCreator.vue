@@ -75,7 +75,8 @@ export default {
   name: "AssignmentCreator",
   props: {
     students: Array,
-    currentValues: {}
+    currentValues: {},
+    updating: Boolean
   },
   data() {
     return {
@@ -130,7 +131,9 @@ export default {
       this.updateAlert = 3;
       let copyForm = Object.assign({}, this.form);
       this.$emit("assignmentCreated", copyForm);
-      this.onReset(evt);
+      if(!this.updating) {
+        this.onReset(evt);
+      }
     },
     onReset(evt) {
       evt.preventDefault();

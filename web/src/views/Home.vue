@@ -84,7 +84,9 @@
                     >New Assignment</b-button
                   >
                   <b-collapse id="assignment-creator"
-                    ><AssignmentCreator @assignmentCreated="createAssignment"
+                    ><AssignmentCreator
+                          @assignmentCreated="createAssignment"
+                            v-bind:updating="false"
                   /></b-collapse>
                   <h3>Singular Assignments</h3>
                   <div>
@@ -128,6 +130,7 @@
                           <AssignmentCreator
                             @assignmentCreated="updateAssignment"
                             v-bind:currentValues="data.item"
+                            v-bind:updating="true"
                           />
                         </b-card>
                       </template>
@@ -290,7 +293,7 @@ export default {
             ? (tmp._rowVariant = "warning")
             : (tmp._rowVariant = "success");
         }
-        let d = new Date(item.due_date);
+        let d = new Date(item.due_date.replace(/-/g, '/'));
         tmp.due_date = d.toDateString();
         return tmp;
       });
