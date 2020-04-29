@@ -1,28 +1,28 @@
 <template>
   <div>
-    <!--      <b-overlay :show="true" rounded="sm" variant="danger">-->
     <b-table
       :fields="headers"
       :items="students"
       :striped="true"
       :bordered="true"
     >
-      <template v-slot:cell(action)="props">
-        <router-link :to="`/student/${props.item.id}`" tag="button"
-          >Update</router-link
-        >
+      <template v-slot:cell(action)="data">
+        <b-button :hidden="classView" :to="`/student/${data.item.id}`">Update</b-button>
+        <b-button :hidden="!classView" @click="removeStudent(data.item.id)">Remove</b-button>
+<!--        <router-link :to="`/student/${props.item.id}`" tag="button"-->
+<!--          >Update</router-link-->
+<!--        >-->
       </template>
     </b-table>
   </div>
 </template>
 
 <script>
-// import api from "../api/index.js";
 export default {
   props: {
-    currClass: Number,
     students: Array,
-    headers: Array
+    headers: Array,
+    classView: Boolean
   },
   data() {
     return {
@@ -36,7 +36,11 @@ export default {
       className: ""
     };
   },
-  methods: {}
+  methods: {
+    removeStudent(studentId){
+      this.$emit("studentRemoved", studentId);
+    }
+  }
 };
 </script>
 

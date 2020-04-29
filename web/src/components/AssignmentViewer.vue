@@ -9,7 +9,7 @@
     >
       {{alertMessage}}
     </b-alert>
-    <b-overlay :show="deleted" rounded="sm">
+    <b-overlay :show="assignment.id===undefined" rounded="sm">
       <b-jumbotron
         ><h2>{{ assignment.title }}</h2>
         <code>{{assignment.type}}</code>
@@ -90,13 +90,14 @@
             </b-row>
                 </b-collapse>
               </b-form-group>
+            <b-button variant="danger" @click="deleteAssignment" :hidden="assignment.id===undefined" style="float:left;">Delete assignment</b-button>
           </b-container>
         </b-collapse>
       </b-jumbotron>
       <template v-slot:overlay>
         <div class="text-center">
           <b-icon icon="x-circle-fill" font-scale="3"></b-icon>
-          <p id="cancel-label">Please select or create another assignment.</p>
+          <p id="cancel-label">Please select or create an assignment.</p>
         </div>
       </template>
     </b-overlay>
@@ -161,6 +162,11 @@ export default {
       this.showSuccess = 3;
       this.alertMessage = "Comment updated";
       this.commentingOn = null;
+    },
+    deleteAssignment(){
+      api.deleteAssignment(this.assignment.id);
+      this.deleted=true;
+      this.$emit("assignmentDeleted")
     },
     resetAlert() {
       this.showSuccess = 0;

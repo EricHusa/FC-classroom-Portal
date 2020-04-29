@@ -4,8 +4,8 @@
     <b-card no-body>
       <b-tabs card justified>
         <b-tab title="Student List">
-          <h3 style="text-align: center">All students on this device</h3>
-          <StudentList v-bind:students="allStudents" v-bind:headers="headers" />
+          <h3 style="text-align: center">All of your students</h3>
+          <StudentList v-bind:students="allStudents" v-bind:headers="headers" v-bind:classView="false"/>
           <b-container fluid>
             <b-row>
               <b-col sm="3">
@@ -100,7 +100,8 @@
                   <StudentList
                     v-bind:students="currStudents"
                     v-bind:headers="headers"
-                    v-bind:currClass="currClass.id"
+                    v-bind:classView="true"
+                    @studentRemoved="removeStudent"
                   />
                   <b-row>
                     <b-col sm="3">
@@ -251,6 +252,10 @@ export default {
       }
       this.currStudents = api.getStudents(this.currClass.id);
       this.selectedStudents = [];
+    },
+    removeStudent(studentId){
+      api.removeStudentFromClass(this.currClass.id, studentId);
+      this.setClass(this.currClass.id);
     },
     validate() {
       return (

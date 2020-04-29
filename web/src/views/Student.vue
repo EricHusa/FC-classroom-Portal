@@ -72,7 +72,13 @@ export default {
   },
   methods: {
     updateStudent() {
-      api.updateStudent(this.student.id, this.form);
+      try {
+        api.updateStudent(this.student.id, this.form);
+      }
+      catch(e){
+        alert(e);
+        return
+      }
       this.updateAlert = 3;
     },
     deleteStudent() {

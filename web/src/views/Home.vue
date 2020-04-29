@@ -139,6 +139,7 @@
                     v-bind:assignment="activeAssignment"
                     v-bind:response="activeResponse"
                     v-bind:responseList="responses"
+                    @assignmentDeleted="refreshAssignmentList"
                   />
                 </b-col>
               </b-row>
@@ -285,7 +286,7 @@ export default {
               return r.assignment;
             })
             .indexOf(item.id);
-          this.responses[pos].submitted == null
+          this.responses[pos].submitted === null || this.responses[pos].submitted === undefined
             ? (tmp._rowVariant = "warning")
             : (tmp._rowVariant = "success");
         }
@@ -330,6 +331,10 @@ export default {
       if(newItem !== null){
         this.setExpi(newItem);
       }
+    },
+    refreshAssignmentList(){
+      this.assignments = api.getAssignments(this.$store.state.role,this.$store.state.currentUser.id);
+      this.activeAssignment = {};
     },
     setAssignment(assignment) {
       this.activeAssignment = assignment;

@@ -120,14 +120,14 @@ let assignment_responses = [
     assignment: 35688201,
     student: 2,
     response: null,
-    submitted: null,
+    submitted: "",
     comments: null
   },
   {
     assignment: 35688201,
     student: 4,
     response: null,
-    submitted: null,
+    submitted: "",
     comments: null
   }
 ];
@@ -316,6 +316,15 @@ export default {
       .indexOf(classId);
     classes[index].name = val;
   },
+  removeStudentFromClass(classId, studentId){
+    let index = classes
+      .map(function(e) {
+        return e.id;
+      })
+      .indexOf(classId);
+    let studentIndex = classes[index].students.indexOf(studentId);
+    classes[index].students.splice(studentIndex, 1);
+  },
 
   /// FUNCTIONS FOR STUDENTS
 
@@ -376,6 +385,12 @@ export default {
     currentClass.students.push(studentId);
   },
   updateStudent: function(studentId, values) {
+    for (let index in students) {
+      if (students[index].username === values.username && students[index].id !== studentId) {
+        throw "That username already exists";
+      }
+    }
+
     let index = students
       .map(function(e) {
         return e.id;
@@ -515,6 +530,9 @@ export default {
     values.teacher = store.state.currentUser.id;
     values.id = this.generateId();
     assignments.push(values);
+    for(let i in values.assignees) {
+      this.addAssignmentResponse(values.id,values.assignees[i])
+    }
   },
   updateAssignment(assignmentId, values) {
     for (let a in assignments) {
@@ -531,18 +549,26 @@ export default {
         let assigneesList = assignment.assignees;
         for (let index in assigneesList) {
           if (!currentResponses.find(o => o.student === assigneesList[index])) {
-            this.addAssignmentResponses(assignment.id, assigneesList[index]);
+            this.addAssignmentResponse(assignment.id, assigneesList[index]);
           }
         }
       }
     }
   },
-  addAssignmentResponses(assignmentId, studentId) {
+  deleteAssignment(assignmentId){
+    let index = assignments
+      .map(function(e) {
+        return e.id;
+      })
+      .indexOf(assignmentId);
+    assignments.splice(index, 1);
+  },
+  addAssignmentResponse(assignmentId, studentId) {
     let newResponse = {
       assignment: assignmentId,
       student: studentId,
       response: null,
-      submitted: null,
+      submitted: "",
       comments: null
     };
     assignment_responses.push(newResponse);
