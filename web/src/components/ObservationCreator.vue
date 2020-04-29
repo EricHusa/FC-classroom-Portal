@@ -107,7 +107,7 @@ export default {
     };
   },
   beforeMount: function() {
-    this.studentsList = api.getStudentCheckboxes(this.$store.state.currentExperiment.id);
+    this.studentsList = api.getStudentCheckboxes("experiment", this.$store.state.currentExperiment.id);
   },
   mounted() {
     if (this.currentValues !== undefined) {

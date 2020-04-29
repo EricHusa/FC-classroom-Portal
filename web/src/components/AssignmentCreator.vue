@@ -62,7 +62,7 @@
           ></b-col>
         </b-row>
         <b-button type="submit" variant="primary">Submit</b-button>
-        <b-button type="reset" variant="danger">Clear</b-button>
+        <b-button type="reset" variant="danger" :disabled="currentValues !== undefined">Clear</b-button>
       </b-form>
     </b-col>
     <hr />

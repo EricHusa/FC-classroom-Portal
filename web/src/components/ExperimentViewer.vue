@@ -53,12 +53,30 @@
           <b-col sm="3">
             <label><b>Students</b>:</label>
           </b-col>
-          <b-col sm="9">
+          <b-col sm="3">
+            <b-dropdown
+              text="Class"
+              menu-class="w-100"
+              variant="light"
+              style="width: 100%; margin: auto;"
+              :disabled="checkRole()"
+            >
+              <b-dropdown-form>
+                <b-form-radio-group
+                  v-model="currentClassScope"
+                  :options="getClassCheckboxes()"
+                  name="flavour-2a"
+                  stacked
+                ></b-form-radio-group>
+              </b-dropdown-form>
+            </b-dropdown><br/>
+          </b-col>
+          <b-col sm="6">
             <b-dropdown
               text="Select students"
               menu-class="w-100"
               variant="light"
-              style="width: 95%; margin: auto;"
+              style="width: 100%; margin: auto;"
               :disabled="checkRole()"
             >
               <b-dropdown-form>
@@ -136,6 +154,7 @@ export default {
   },
   data() {
     return {
+      currentClassScope: null,
       updateAlert: 0,
       updateAction: "",
       deleted: null,
@@ -197,7 +216,15 @@ export default {
       this.updateAlert = 3;
     },
     getStudentCheckboxes() {
-      return api.getStudentCheckboxes();
+      if(this.currentClassScope === null) {
+        return api.getStudentCheckboxes();
+      }
+      else{
+        return api.getStudentCheckboxes("class",this.currentClassScope);
+      }
+    },
+    getClassCheckboxes(){
+      return api.getClassCheckboxes();
     },
     inExperiment(studentId) {
       if (this.experiment.students.includes(studentId)) {

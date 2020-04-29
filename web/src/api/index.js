@@ -325,6 +325,19 @@ export default {
     let studentIndex = classes[index].students.indexOf(studentId);
     classes[index].students.splice(studentIndex, 1);
   },
+  getClassCheckboxes(){
+    let newList = [{text: "All Classes", value:null}];
+    let modifiedClass = {};
+    for (let i in classes) {
+      let thisClass = classes[i];
+      modifiedClass = {
+        text: thisClass.name,
+        value: thisClass.id
+      };
+      newList.push(modifiedClass);
+    }
+    return newList;
+  },
 
   /// FUNCTIONS FOR STUDENTS
 
@@ -341,20 +354,24 @@ export default {
       return classStudents;
     }
   },
-  getStudentCheckboxes: function(experimentId=null) {
+  getStudentCheckboxes: function(scope=null, scopeId=null) {
     let newList = [];
     let modifiedStudent = {};
     let currentScope;
-    if(experimentId !== null) {
-      let exp = experiments.find(c => c.id === experimentId);
+    if(scope === "experiment") {
+      let exp = experiments.find(c => c.id === scopeId);
       currentScope = students.filter(element => exp.students.includes(element.id));
+    }
+    else if(scope === "class"){
+      let thisClass = classes.find(c => c.id === scopeId);
+      currentScope = students.filter(element => thisClass.students.includes(element.id));
     }
     else{
       currentScope = students;
     }
 
     for (let i in currentScope) {
-      let student = students[i];
+      let student = currentScope[i];
       modifiedStudent = {
         text: student.username + ", " + student.fname + " " + student.lname,
         value: student.id
