@@ -146,7 +146,7 @@ export default {
       this.form.submitted = api.getToday(new Date());
       api.updateStudentAssignmentResponse(
         this.assignment.id,
-        this.$store.state.currentUser.id,
+        this.response.id,
         this.form
       );
       this.showSuccess = 3;

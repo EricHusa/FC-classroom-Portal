@@ -268,10 +268,7 @@ export default {
     } else {
       this.setExpi(null);
     }
-    this.assignments = api.getAssignments(
-      this.$store.state.role,
-      this.$store.state.currentUser.id
-    );
+    this.assignments = api.getAssignments();
     if (this.role == "student") {
       this.responses = api.getStudentAssignmentResponses(
         this.$store.state.currentUser.id
@@ -327,24 +324,20 @@ export default {
       }
     },
     refreshExperimentList(newItem=null){
-      this.experiments = api.getExperiments(
-        this.$store.state.role,
-        this.$store.state.currentUser.id
-      );
+      this.experiments = api.getExperiments();
       if(newItem !== null){
         this.setExpi(newItem);
       }
     },
     refreshAssignmentList(){
-      this.assignments = api.getAssignments(this.$store.state.role,this.$store.state.currentUser.id);
+      this.assignments = api.getAssignments();
       this.activeAssignment = {};
     },
     setAssignment(assignment) {
       this.activeAssignment = assignment;
       if (this.role == "student") {
         this.activeResponse = api.getStudentAssignmentResponse(
-          assignment.id,
-          this.$store.state.currentUser.id
+          assignment.id
         );
       } else {
         this.responses = api.getTeacherAssignmentResponses(
@@ -354,10 +347,7 @@ export default {
     },
     createAssignment(values) {
       api.createAssignment(values);
-      this.assignments = api.getAssignments(
-        this.$store.state.role,
-        this.$store.state.currentUser.id
-      );
+      this.assignments = api.getAssignments();
     },
     createObservation(values) {
       api.createObservation(values);

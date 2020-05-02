@@ -6,132 +6,139 @@ import SampleClimateData from "../constants/SampleClimateData.ts";
 // const API_URL = process.env.API_URL;
 const API_URL = "http://127.0.0.1:5000/api";
 
+//Local storage for speed
+let students = [];
+let classes = [];
+let experiments = [];
+let assignments = [];
+let assignment_responses = {};
+
 //sample database data
-let students = [
-  {
-    fname: "Jon",
-    lname: "Joe",
-    username: "JJ09",
-    password: "Peaches",
-    id: 1,
-    teacher: "a"
-  },
-  {
-    fname: "Will",
-    lname: "Billy",
-    username: "WB02",
-    password: "Cake",
-    id: 2,
-    teacher: "a"
-  },
-  {
-    fname: "Drew",
-    lname: "Blue",
-    username: "DB12",
-    password: "Orange",
-    id: 3,
-    teacher: "a"
-  },
-  {
-    fname: "Bob",
-    lname: "Cob",
-    username: "b",
-    password: "c",
-    id: 4,
-    teacher: "a"
-  }
-];
+// let students = [
+//   {
+//     fname: "Jon",
+//     lname: "Joe",
+//     username: "JJ09",
+//     password: "Peaches",
+//     id: 1,
+//     teacher: "a"
+//   },
+//   {
+//     fname: "Will",
+//     lname: "Billy",
+//     username: "WB02",
+//     password: "Cake",
+//     id: 2,
+//     teacher: "a"
+//   },
+//   {
+//     fname: "Drew",
+//     lname: "Blue",
+//     username: "DB12",
+//     password: "Orange",
+//     id: 3,
+//     teacher: "a"
+//   },
+//   {
+//     fname: "Bob",
+//     lname: "Cob",
+//     username: "b",
+//     password: "c",
+//     id: 4,
+//     teacher: "a"
+//   }
+// ];
 
-let experiments = [
-  {
-    title: "Example Experiment",
-    description: "This is a sample experiment",
-    plant: "basil",
-    start_date: "2020-03-15",
-    teacher: "a",
-    students: [1, 4],
-    id: 38782347,
-    device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c"
-  },
-  {
-    title: "Another",
-    description: "Another example experiment",
-    plant: "tomato",
-    start_date: "2020-03-18",
-    teacher: "a",
-    students: [1, 2, 3],
-    id: 16847325,
-    device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c"
-  }
-];
+// let experiments = [
+//   {
+//     title: "Example Experiment",
+//     description: "This is a sample experiment",
+//     plant: "basil",
+//     start_date: "2020-03-15",
+//     teacher: "a",
+//     students: [1, 4],
+//     id: 38782347,
+//     device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c"
+//   },
+//   {
+//     title: "Another",
+//     description: "Another example experiment",
+//     plant: "tomato",
+//     start_date: "2020-03-18",
+//     teacher: "a",
+//     students: [1, 2, 3],
+//     id: 16847325,
+//     device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c"
+//   }
+// ];
 
-let assignments = [
-  {
-    id: 35688201,
-    teacher: "a",
-    experiment: 38782347,
-    title: "Predict How Many Days",
-    description: "Predict how many days it takes the plant to grow 1 inch",
-    type: "number",
-    due_date: "2020-05-05",
-    assignees: [2, 4]
-  },
-  {
-    id: 25674621,
-    teacher: "a",
-    experiment: 38782347,
-    title: "Give yourself a team role",
-    description: "Tell me what your role on the team is",
-    type: "text",
-    due_date: "2020-05-04",
-    assignees: [1, 2, 3, 4]
-  }
-];
+// let assignments = [
+//   {
+//     id: 35688201,
+//     teacher: "a",
+//     experiment: 38782347,
+//     title: "Predict How Many Days",
+//     description: "Predict how many days it takes the plant to grow 1 inch",
+//     type: "number",
+//     due_date: "2020-05-05",
+//     assignees: [2, 4]
+//   },
+//   {
+//     id: 25674621,
+//     teacher: "a",
+//     experiment: 38782347,
+//     title: "Give yourself a team role",
+//     description: "Tell me what your role on the team is",
+//     type: "text",
+//     due_date: "2020-05-04",
+//     assignees: [1, 2, 3, 4]
+//   }
+// ];
 
-let assignment_responses = [
-  {
-    assignment: 25674621,
-    student: 1,
-    response: "I want team Leader",
-    submitted: "2020-05-03",
-    comments: "Congratulations, you will be the team's Leader"
-  },
-  {
-    assignment: 25674621,
-    student: 2,
-    response: "Gardener",
-    submitted: "2020-05-03",
-    comments: "Congratulations, you will be the team's Gardener"
-  },
-  {
-    assignment: 25674621,
-    student: 3,
-    response: "Can I be the Record Keeper",
-    submitted: "2020-05-04",
-    comments: "Congratulations, you will be the team's Record Keeper"
-  },
-  {
-    assignment: 25674621,
-    student: 4,
-    response: "I want to be the team Researcher",
-    submitted: "2020-05-04",
-    comments: "Congratulations, you will be the team's Researcher"
-  },
-  {
-    assignment: 35688201,
-    student: 2,
-    response: null,
-    submitted: "",
-    comments: null
-  },
-  {
-    assignment: 35688201,
-    student: 4,
-    response: null,
-    submitted: "",
-    comments: null
-  }
-];
+// let assignment_responses = [
+//   {
+//     assignment: 25674621,
+//     student: 1,
+//     response: "I want team Leader",
+//     submitted: "2020-05-03",
+//     comments: "Congratulations, you will be the team's Leader"
+//   },
+//   {
+//     assignment: 25674621,
+//     student: 2,
+//     response: "Gardener",
+//     submitted: "2020-05-03",
+//     comments: "Congratulations, you will be the team's Gardener"
+//   },
+//   {
+//     assignment: 25674621,
+//     student: 3,
+//     response: "Can I be the Record Keeper",
+//     submitted: "2020-05-04",
+//     comments: "Congratulations, you will be the team's Record Keeper"
+//   },
+//   {
+//     assignment: 25674621,
+//     student: 4,
+//     response: "I want to be the team Researcher",
+//     submitted: "2020-05-04",
+//     comments: "Congratulations, you will be the team's Researcher"
+//   },
+//   {
+//     assignment: 35688201,
+//     student: 2,
+//     response: null,
+//     submitted: "",
+//     comments: null
+//   },
+//   {
+//     assignment: 35688201,
+//     student: 4,
+//     response: null,
+//     submitted: "",
+//     comments: null
+//   }
+// ];
 
 let observations = [
   {
@@ -163,9 +170,9 @@ let observations = [
   }
 ];
 
-let teachers = [{ fname: "Mr", lname: "Teacher", password: "a", id: "a" }];
-
-let studentIdCounter = students.length;
+// let teachers = [{ fname: "Mr", lname: "Teacher", password: "a", id: "a" }];
+//
+// let studentIdCounter = students.length;
 
 let devices = [
   {
@@ -175,18 +182,18 @@ let devices = [
   }
 ];
 
-let classes = [
-  {
-    name: "Class 1",
-    id: 23213931,
-    students: [1, 2]
-  },
-  {
-    name: "Class 2",
-    id: 63526050,
-    students: [3, 4]
-  }
-];
+// let classes = [
+//   {
+//     name: "Class 1",
+//     id: 23213931,
+//     students: [1, 2]
+//   },
+//   {
+//     name: "Class 2",
+//     id: 63526050,
+//     students: [3, 4]
+//   }
+// ];
 
 export function authenticate(userData) {
   return axios.post(`${API_URL}/login/`, userData);
@@ -204,9 +211,9 @@ export function register(userData) {
 //   return axios.get(`${API_URL}/experiments/${experimentId}/`);
 // }
 
-export function getDevice() {
-  return "1199802";
-}
+// export function getDevice() {
+//   return "1199802";
+// }
 
 export default {
   login(role, userData) {
@@ -216,7 +223,7 @@ export default {
             if (response.data.status === "fail") {
                 throw (response.data.message);
             } else {
-                return (response.data.message);
+                return (response.data.student);
             }
         }))
     .catch(function(error) {
@@ -230,7 +237,7 @@ export default {
             if (response.data.status === "fail") {
                 throw (response.data.message);
             } else {
-                return (response.data.message);
+                return (response.data.teacher);
             }
         }))
     .catch(function(error) {
@@ -314,34 +321,26 @@ export default {
   },
 
   /// FUNCTIONS FOR CLASSES
+  setLocalClasses: function() {
+    return Promise.resolve(axios.get(`${API_URL}/course/teacher/${store.state.currentTeacher}`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                classes = response.data.courses;
+                return(classes);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+  },
 
   getClasses: function() {
-    return Promise.resolve(axios.post(`${API_URL}/course/teacher/${store.state.currentTeacher}`)
-        .then(function(response) {
-            if (response.data.status === "fail") {
-                throw (response.data.message);
-            } else {
-                return (response.data.courses);
-            }
-        }))
-    .catch(function(error) {
-        throw (error);
-    });
-    // return classes;
+    return classes;
   },
   getClass: function(classId) {
-    return Promise.resolve(axios.post(`${API_URL}/course/${classId}/teacher/${store.state.currentTeacher}`)
-        .then(function(response) {
-            if (response.data.status === "fail") {
-                throw (response.data.message);
-            } else {
-                return (response.data.course);
-            }
-        }))
-    .catch(function(error) {
-        throw (error);
-    });
-    // return classes.find(c => c.id === classId);
+    return classes.find(c => c.id === classId);
   },
   addClass: function() {
     let tempClass = {
@@ -355,7 +354,8 @@ export default {
             if (response.data.status === "fail") {
                 throw (response.data.message);
             } else {
-                return (response.data.teacher);
+                classes.push(response.data.course);
+                return (response.data.course);
             }
         }))
     .catch(function(error) {
@@ -363,30 +363,63 @@ export default {
     });
   },
   deleteClass: function(classId) {
-    let index = classes
-      .map(function(e) {
-        return e.id;
-      })
-      .indexOf(classId);
-    classes.splice(index, 1);
+    return Promise.resolve(axios.delete(`${API_URL}/course/${classId}/teacher/${store.state.currentTeacher}/`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.message);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+
+    // let index = classes
+    //   .map(function(e) {
+    //     return e.id;
+    //   })
+    //   .indexOf(classId);
+    // classes.splice(index, 1);
   },
-  updateClass: function(classId, val) {
-    let index = classes
-      .map(function(e) {
-        return e.id;
-      })
-      .indexOf(classId);
-    classes[index].name = val;
+  updateClass: function(course) {
+    return Promise.resolve(axios.put(`${API_URL}/course/${course.id}/teacher/${store.state.currentTeacher}/`, course)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.course);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+
+    // let index = classes
+    //   .map(function(e) {
+    //     return e.id;
+    //   })
+    //   .indexOf(classId);
+    // classes[index].name = val;
   },
-  removeStudentFromClass(classId, studentId){
-    let index = classes
-      .map(function(e) {
-        return e.id;
-      })
-      .indexOf(classId);
-    let studentIndex = classes[index].students.indexOf(studentId);
-    classes[index].students.splice(studentIndex, 1);
-  },
+  // async addStudent(studentUsername, course) {
+  //   course.students.push(studentUsername);
+  //   let c = await this.updateClass(course, course.name).then(function(response) {
+  //       return response;
+  //     });
+  //
+  //   // let currentClass = classes.find(c => c.id === classId);
+  //   // currentClass.students.push(studentId);
+  // },
+  // removeStudentFromClass(classId, studentId){
+  //   let index = classes
+  //     .map(function(e) {
+  //       return e.id;
+  //     })
+  //     .indexOf(classId);
+  //   let studentIndex = classes[index].students.indexOf(studentId);
+  //   classes[index].students.splice(studentIndex, 1);
+  // },
   getClassCheckboxes(){
     let newList = [{text: "All Classes", value:null}];
     let modifiedClass = {};
@@ -402,21 +435,29 @@ export default {
   },
 
   /// FUNCTIONS FOR STUDENTS
-
-  getStudents: function(classId = null) {
+  setLocalStudents(){
+    return Promise.resolve(axios.get(`${API_URL}/student/teacher/${store.state.currentTeacher}`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                students = response.data.students;
+                return true;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+  },
+  getStudents(classId = null) {
     if (classId === null) {
       return students;
     } else {
-      let currentClass = classes.find(c => c.id === classId);
-      let studentIds = currentClass.students;
-      let classStudents = [];
-      studentIds.forEach(function(id) {
-        classStudents.push(students.find(s => s.id === id));
-      });
-      return classStudents;
+      let currentClass = this.getClass(classId)
+      return currentClass.students;
     }
   },
-  getStudentCheckboxes: function(scope=null, scopeId=null) {
+  getStudentCheckboxes(scope=null, scopeId=null) {
     let newList = [];
     let modifiedStudent = {};
     let currentScope;
@@ -442,7 +483,7 @@ export default {
     }
     return newList;
   },
-  getStudent: function(studentId) {
+  getStudent(studentId) {
     let student = students.find(c => c.id === studentId);
     if (!student) {
       alert("This account does not exist");
@@ -450,59 +491,93 @@ export default {
       return student;
     }
   },
-  createStudent: function(student) {
-    for (let index in students) {
-      if (students[index].username === student.username) {
-        throw "That username already exists";
-      }
-    }
-    if (student.username) studentIdCounter += 1;
-    student.id = studentIdCounter;
-    students.push(student);
-    return student;
-  },
-  addStudent: function(studentId, classId) {
-    let currentClass = classes.find(c => c.id === classId);
-    currentClass.students.push(studentId);
+  createStudent(student) {
+    student.teacher_username = store.state.currentUser.username;
+    return Promise.resolve(axios.post(`${API_URL}/auth/register/student/`, student)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                students.push(response.data.student);
+                return response.data.student;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+
+    // for (let index in students) {
+    //   if (students[index].username === student.username) {
+    //     throw "That username already exists";
+    //   }
+    // }
+    // if (student.username) studentIdCounter += 1;
+    // student.id = studentIdCounter;
+    // students.push(student);
+    // return student;
   },
   updateStudent: function(studentId, values) {
-    for (let index in students) {
-      if (students[index].username === values.username && students[index].id !== studentId) {
-        throw "That username already exists";
-      }
-    }
+    return Promise.resolve(axios.put(`${API_URL}/account/student/${studentId}/`, values)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.student);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
 
-    let index = students
-      .map(function(e) {
-        return e.id;
-      })
-      .indexOf(studentId);
-
-    let student = students[index];
-    student.fname = values.fname;
-    student.lname = values.lname;
-    student.username = values.username;
-    student.password = values.password;
+    // for (let index in students) {
+    //   if (students[index].username === values.username && students[index].id !== studentId) {
+    //     throw "That username already exists";
+    //   }
+    // }
+    //
+    // let index = students
+    //   .map(function(e) {
+    //     return e.id;
+    //   })
+    //   .indexOf(studentId);
+    //
+    // let student = students[index];
+    // student.fname = values.fname;
+    // student.lname = values.lname;
+    // student.username = values.username;
+    // student.password = values.password;
   },
 
   deleteStudent: function(studentId) {
-    //Delete student from student list
-    let index = students
-      .map(function(e) {
-        return e.id;
-      })
-      .indexOf(studentId);
-    students.splice(index, 1);
-    //Remove student from their classes
-    for (let i in classes) {
-      let c = classes[i];
-      if (c.students.includes(studentId)) {
-        c.students.splice(c.students.indexOf(studentId), 1);
-      }
-    }
+    return Promise.resolve(axios.delete(`${API_URL}/student/${studentId}/`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.message);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+
+    // //Delete student from student list
+    // let index = students
+    //   .map(function(e) {
+    //     return e.id;
+    //   })
+    //   .indexOf(studentId);
+    // students.splice(index, 1);
+    // //Remove student from their classes
+    // for (let i in classes) {
+    //   let c = classes[i];
+    //   if (c.students.includes(studentId)) {
+    //     c.students.splice(c.students.indexOf(studentId), 1);
+    //   }
+    // }
   },
   getStudentDisplayName(studentId) {
-    if (typeof studentId === "string") {
+    if (store.state.role==="teacher") {
       return "teacher";
     }
     let student = this.getStudent(studentId);
@@ -511,24 +586,22 @@ export default {
 
   /// FUNCTIONS FOR EXPERIMENTS
 
-  getExperiments: function(role, userId) {
-    let expList = [];
-    if (role === "teacher") {
-      for (let e in experiments) {
-        let exp = experiments[e];
-        if (exp.teacher === userId) {
-          expList.push(exp);
-        }
-      }
-    } else if (role === "student") {
-      for (let e in experiments) {
-        let exp = experiments[e];
-        if (exp.students.includes(userId)) {
-          expList.push(exp);
-        }
-      }
-    }
-    return expList;
+  setLocalExperiments(){
+    return Promise.resolve(axios.get(`${API_URL}/experiment/${store.state.role}/${store.state.currentUser.id}`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                experiments = response.data.experiments;
+                return true;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+  },
+  getExperiments() {
+    return experiments;
   },
   getExperiment: function(id) {
     for (let e in experiments) {
@@ -541,167 +614,251 @@ export default {
     // return { title: "New Experiment", start_date: today };
     return null;
   },
-  createExperiment: function(values, teacher) {
-    let newExperiment = {};
-    for (let v in values) {
-      newExperiment[v] = values[v];
-    }
-    newExperiment.teacher = teacher;
-    newExperiment.id = this.generateId();
-
-    experiments.push(newExperiment);
-    return newExperiment;
+  createExperiment: function(values) {
+    return Promise.resolve(axios.post(`${API_URL}/experiment/teacher/${store.state.currentTeacher}`, values)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                experiments.push(response.data.experiment);
+                return response.data.experiment;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+    // let newExperiment = {};
+    // for (let v in values) {
+    //   newExperiment[v] = values[v];
+    // }
+    // newExperiment.teacher = teacher;
+    // newExperiment.id = this.generateId();
+    //
+    // experiments.push(newExperiment);
+    // return newExperiment;
   },
-  updateExperiment: function(id, values) {
-    for (let e in experiments) {
-      let exp = experiments[e];
-      if (exp.id === id) {
-        for (let k in values) {
-          exp[k] = values[k];
-        }
-        break;
-      }
-    }
+  updateExperiment: function(experimentId, values) {
+    return Promise.resolve(axios.put(`${API_URL}/experiment/${experimentId}/teacher/${store.state.currentTeacher}`, values)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.experiment);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
   },
-  changeExperimentInvolvement: function(expId, studentId) {
-    let index = experiments
-      .map(function(e) {
-        return e.id;
-      })
-      .indexOf(expId);
-
-    let exp = experiments[index];
-    if (exp.students.includes(studentId)) {
-      exp.students.splice(exp.students.indexOf(studentId), 1);
-    } else {
-      exp.students.push(studentId);
-    }
-  },
+  // changeExperimentInvolvement: function(expId, studentId) {
+  //   let index = experiments
+  //     .map(function(e) {
+  //       return e.id;
+  //     })
+  //     .indexOf(expId);
+  //
+  //   let exp = experiments[index];
+  //   if (exp.students.includes(studentId)) {
+  //     exp.students.splice(exp.students.indexOf(studentId), 1);
+  //   } else {
+  //     exp.students.push(studentId);
+  //   }
+  // },
   deleteExperiment: function(experimentId) {
-    let index = experiments
-      .map(function(e) {
-        return e.id;
-      })
-      .indexOf(experimentId);
-    experiments.splice(index, 1);
+    return Promise.resolve(axios.delete(`${API_URL}/experiment/${experimentId}/teacher/${store.state.currentTeacher}`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.message);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
   },
 
   /// FUNCTIONS FOR ASSIGNMENTS
 
-  getAssignments(role, userId) {
-    let assignmentList = [];
-    if (role === "teacher") {
-      for (let a in assignments) {
-        let assignment = assignments[a];
-        if (assignment.teacher === userId) {
-          assignmentList.push(assignment);
-        }
-      }
-    } else if (role === "student") {
-      for (let a in assignments) {
-        let assignment = assignments[a];
-        if (assignment.assignees.includes(userId)) {
-          assignmentList.push(assignment);
-        }
-      }
-    }
-    return assignmentList;
+    setLocalAssignments(){
+    return Promise.resolve(axios.get(`${API_URL}/assignment/${store.state.role}/${store.state.currentUser.id}`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                assignments = response.data.assignments;
+                return true;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
   },
-  createAssignment(values) {
-    values.teacher = store.state.currentUser.id;
-    values.id = this.generateId();
-    assignments.push(values);
-    for(let i in values.assignees) {
-      this.addAssignmentResponse(values.id,values.assignees[i])
-    }
+  getAssignments() {
+    return assignments;
   },
-  updateAssignment(assignmentId, values) {
+  getAssignment(assignmentId) {
     for (let a in assignments) {
-      let assignment = assignments[a];
-      if (assignment.id === assignmentId) {
-        assignment.title = values.title;
-        assignment.description = values.description;
-        assignment.due_date = values.due_date;
-        assignment.assignees = values.assignees;
-
-        let currentResponses = this.getTeacherAssignmentResponses(
-          assignment.id
-        );
-        let assigneesList = assignment.assignees;
-        for (let index in assigneesList) {
-          if (!currentResponses.find(o => o.student === assigneesList[index])) {
-            this.addAssignmentResponse(assignment.id, assigneesList[index]);
-          }
-        }
-      }
-    }
-  },
-  deleteAssignment(assignmentId){
-    let index = assignments
-      .map(function(e) {
-        return e.id;
-      })
-      .indexOf(assignmentId);
-    assignments.splice(index, 1);
-  },
-  addAssignmentResponse(assignmentId, studentId) {
-    let newResponse = {
-      assignment: assignmentId,
-      student: studentId,
-      response: null,
-      submitted: "",
-      comments: null
-    };
-    assignment_responses.push(newResponse);
-  },
-  getStudentAssignmentResponses(studentId) {
-    let studentResponses = [];
-    for (let i in assignment_responses) {
-      if (assignment_responses[i].student === studentId) {
-        studentResponses.push(assignment_responses[i]);
-      }
-    }
-    return studentResponses;
-  },
-  getTeacherAssignmentResponses(assignmentId) {
-    let studentResponses = [];
-    for (let i in assignment_responses) {
-      let thisAssignment = assignment_responses[i];
-      if (thisAssignment.assignment === assignmentId) {
-        studentResponses.push(thisAssignment);
-      }
-    }
-    return studentResponses;
-  },
-  getStudentAssignmentResponse(assignmentId, studentId) {
-    for (let i in assignment_responses) {
-      let thisAssignment = assignment_responses[i];
-      if (
-        thisAssignment.student === studentId &&
-        thisAssignment.assignment === assignmentId
-      ) {
-        return thisAssignment;
+      let assign = assignments[a];
+      if (assign.id === assignmentId) {
+        return assign;
       }
     }
     return null;
   },
-  updateStudentAssignmentResponse(assignmentId, studentId, values) {
-    for (let i in assignment_responses) {
-      let thisAssignment = assignment_responses[i];
-      if (
-        thisAssignment.student === studentId &&
-        thisAssignment.assignment === assignmentId
-      ) {
-        thisAssignment.response = values.response;
-        thisAssignment.submitted = values.submitted;
-        break;
-      }
-    }
+  createAssignment(values) {
+    return Promise.resolve(axios.post(`${API_URL}/assignment/teacher/${store.state.currentTeacher}`, values)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                assignments.push(response.data.assignment);
+                return response.data.assignment;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+
+    // assignments.push(values);
+    // for(let i in values.assignees) {
+    //   this.addAssignmentResponse(values.id,values.assignees[i])
+    // }
   },
-  addCommentToAssignment(assignmentId, studentId, value){
-      let response = this.getStudentAssignmentResponse(assignmentId, studentId);
-      response.comments = value;
-      return response;
+  updateAssignment(assignmentId, values) {
+      return Promise.resolve(axios.put(`${API_URL}/assignment/${assignmentId}/teacher/${store.state.currentTeacher}`, values)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.experiment);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+
+    // for (let a in assignments) {
+    //   let assignment = assignments[a];
+    //   if (assignment.id === assignmentId) {
+    //     assignment.title = values.title;
+    //     assignment.description = values.description;
+    //     assignment.due_date = values.due_date;
+    //     assignment.assignees = values.assignees;
+
+        // let currentResponses = this.getTeacherAssignmentResponses(
+        //   assignment.id
+        // );
+        // let assigneesList = assignment.assignees;
+        // for (let index in assigneesList) {
+        //   if (!currentResponses.find(o => o.student === assigneesList[index])) {
+        //     this.addAssignmentResponse(assignment.id, assigneesList[index]);
+        //   }
+        // }
+    //   }
+    // }
+  },
+  deleteAssignment(assignmentId){
+    return Promise.resolve(axios.delete(`${API_URL}/assignment/${assignmentId}/teacher/${store.state.currentTeacher}`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.message);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+  },
+  // addAssignmentResponse(assignmentId, studentId) {
+  //   let newResponse = {
+  //     assignment: assignmentId,
+  //     student: studentId,
+  //     response: null,
+  //     submitted: "",
+  //     comments: null
+  //   };
+  //   assignment_responses.push(newResponse);
+  // },
+    getApiStudentAssignmentResponse(assignmentId,studentId){
+      return Promise.resolve(axios.get(`${API_URL}/assignment/${assignmentId}/student/${studentId}`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return response.data.assignment_response;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+    },
+  async setLocalStudentAssignmentResponses(studentId) {
+    let assignment;
+    let res;
+    for (let i in assignments) {
+        assignment = assignments[i];
+        res = await this.getApiStudentAssignmentResponse(assignment.id,studentId).then(function(response) {
+        return response;
+      });
+        assignment_responses[assignment.id] = res;
+    }
+    return assignment_responses;
+  },
+getStudentAssignmentResponses(){
+      return assignment_responses;
+    },
+  getTeacherAssignmentResponses(assignmentId) {
+  return Promise.resolve(axios.get(`${API_URL}/assignment/${assignmentId}/response`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return response.data.assignment_response;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+
+    // let studentResponses = [];
+    // for (let i in assignment_responses) {
+    //   let thisAssignment = assignment_responses[i];
+    //   if (thisAssignment.assignment === assignmentId) {
+    //     studentResponses.push(thisAssignment);
+    //   }
+    // }
+    // return studentResponses;
+  },
+  getStudentAssignmentResponse(assignmentId) {
+    return assignment_responses[assignmentId];
+  },
+  updateStudentAssignmentResponse(assignmentId, responseId, values) {
+    return Promise.resolve(axios.put(`${API_URL}/assignment/${assignmentId}/response/${responseId}/student/${store.state.currentUser.id}`, values)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.assignment_response);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+  },
+  addCommentToAssignment(assignmentId, responseId, value){
+      return Promise.resolve(axios.put(`${API_URL}/assignment/${assignmentId}/response/${responseId}/student/${store.state.currentUser.id}`, {comments: value})
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.assignment_response);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
   },
 
   /// FUNCTIONS FOR OBSERVATIONS
@@ -853,31 +1010,49 @@ export default {
   /// FUNCTIONS FOR TEACHERS
 
   getTeacherInfo() {
-    let index = teachers
-      .map(function(e) {
-        return e.id;
-      })
-      .indexOf(store.state.currentTeacher);
-    return teachers[index];
+    return Promise.resolve(axios.get(`${API_URL}/teacher/${store.state.currentTeacher}/`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return response.data.teacher;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
   },
-  updateTeacherName(values) {
-    let teacher = this.getTeacherInfo();
-    teacher.fname = values.fname;
-    teachers.lname = values.lname;
-  },
-  changeTeacherPassword(oldPass, newPass) {
-    let teacher = this.getTeacherInfo();
-    if (teacher.password !== oldPass) {
-      throw "Password incorrect";
-    } else {
-      teacher.password = newPass;
-      store.state.currentUser = {
-        fname: teacher.fname,
-        lname: teacher.lname,
-        id: teacher.id
-      };
-    }
-  },
+    updateTeacher(values){
+     return Promise.resolve(axios.put(`${API_URL}/account/teacher/${store.state.currentTeacher}`, values)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.teacher);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+},
+  // updateTeacherName(values) {
+  //   let teacher = this.getTeacherInfo();
+  //   teacher.fname = values.fname;
+  //   teachers.lname = values.lname;
+  // },
+  // changeTeacherPassword(oldPass, newPass) {
+  //   let teacher = this.getTeacherInfo();
+  //   if (teacher.password !== oldPass) {
+  //     throw "Password incorrect";
+  //   } else {
+  //     teacher.password = newPass;
+  //     store.state.currentUser = {
+  //       fname: teacher.fname,
+  //       lname: teacher.lname,
+  //       id: teacher.id
+  //     };
+  //   }
+  // },
   registerTeacher(values) {
     let deviceId = values.fopd_id
     if (this.verifyDevice(deviceId)) {

@@ -83,7 +83,7 @@
                       ></b-input>
                       <b-button
                         variant="warning"
-                        @click="updateClassName(currClass.id, className)"
+                        @click="updateClassName(currClass, className)"
                         :disabled="classDeleted"
                         >Rename class</b-button
                       >
@@ -203,16 +203,17 @@ export default {
       this.currClass = api.getClass(id);
       this.classDeleted = false;
     },
-    getClassName(id) {
-      if (id === null) {
-        return "";
-      }
-      let c = api.getClass(id);
-      return c.name;
-    },
-    updateClassName(id, name) {
+    // getClassName(id) {
+    //   if (id === null) {
+    //     return "";
+    //   }
+    //   let c = api.getClass(id);
+    //   return c.name;
+    // },
+    updateClassName(thisClass, name) {
       if (name.length > 0) {
-        api.updateClass(id, name);
+        thisClass.name = name;
+        api.updateClass(thisClass);
       }
       this.className = "";
     },
@@ -238,18 +239,21 @@ export default {
         this.form.fname = null;
         this.form.lname = null;
         this.form.username = "";
-        this.form.username = "";
         this.form.password = "";
       }
     },
     getStudentCheckboxes() {
       return api.getStudentCheckboxes();
     },
-    importStudents() {
-      let i;
-      for (i in this.selectedStudents) {
-        api.addStudent(this.selectedStudents[i], this.currClass.id);
+    async importStudents() {
+      let newStudents = [];
+      for (let i in this.selectedStudents) {
+        newStudents.push(this.selectedStudents[i]);
+        //this.currClass
       }
+      let course = await updateClass.login(role, this.forms[role]).then(function(response) {
+        return response;
+      });
       this.currStudents = api.getStudents(this.currClass.id);
       this.selectedStudents = [];
     },

@@ -201,8 +201,7 @@ export default {
         return;
       }
       this.experiment = api.createExperiment(
-        updateValues,
-        this.$store.state.currentUser.id
+        updateValues
       );
       this.updateAction = "created";
       this.updateAlert = 3;
@@ -234,7 +233,7 @@ export default {
       }
     },
     changeInvolvement(studentId) {
-      api.changeExperimentInvolvement(this.experiment.id, studentId);
+      api.changeExperimentInvolvement(this.experiment, studentId);
       this.$refs.dropdown.show(true);
     },
     resetAlert() {
