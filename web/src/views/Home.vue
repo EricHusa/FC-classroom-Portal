@@ -143,6 +143,7 @@
                     v-bind:response="activeResponse"
                     v-bind:responseList="responses"
                     @assignmentDeleted="refreshAssignmentList"
+                    @updateResponseList="setAssignment"
                   />
                 </b-col>
               </b-row>
@@ -257,7 +258,7 @@ export default {
         description: null,
         plant: null,
         start_date: null,
-        students: []
+        student_ids: []
       }
     };
   },
@@ -281,12 +282,8 @@ export default {
       let rows = this.assignments.map(item => {
         let tmp = item;
         if (this.$store.state.role === "student") {
-          let pos = this.responses
-            .map(function(r) {
-              return r.assignment;
-            })
-            .indexOf(item.id);
-          this.responses[pos].submitted === null || this.responses[pos].submitted === undefined
+          let res = this.responses[item.id];
+          res.submitted === null || res.submitted === undefined
             ? (tmp._rowVariant = "warning")
             : (tmp._rowVariant = "success");
         }
@@ -317,14 +314,16 @@ export default {
     },
 
     createExperiment() {
-      this.activeExperiment = { title: "New Experiment", device: this.devices[0].fopd_id, students: [] };
+      this.activeExperiment = { title: "New Experiment", device: this.devices[0].fopd_id, student_ids: [] };
       this.$store.state.currentExperiment = null;
       for (let k in this.experimentForm) {
         this.experimentForm[k] = this.activeExperiment[k];
       }
     },
-    refreshExperimentList(newItem=null){
-      this.experiments = api.getExperiments();
+    async refreshExperimentList(newItem=null){
+      this.experiments = await api.setLocalExperiments().then(function (response) {
+          return response;
+        });
       if(newItem !== null){
         this.setExpi(newItem);
       }
@@ -333,21 +332,27 @@ export default {
       this.assignments = api.getAssignments();
       this.activeAssignment = {};
     },
-    setAssignment(assignment) {
+    async setAssignment(assignment) {
       this.activeAssignment = assignment;
       if (this.role == "student") {
         this.activeResponse = api.getStudentAssignmentResponse(
           assignment.id
         );
       } else {
-        this.responses = api.getTeacherAssignmentResponses(
+        this.responses = await api.getTeacherAssignmentResponses(
           this.activeAssignment.id
-        );
+        ).then(function (response) {
+          return response;
+        });
       }
     },
-    createAssignment(values) {
-      api.createAssignment(values);
-      this.assignments = api.getAssignments();
+    async createAssignment(values) {
+      await api.createAssignment(values).then(function (response) {
+          return response;
+        });
+      this.assignments = await api.setLocalAssignments().then(function (response) {
+          return response;
+        });
     },
     createObservation(values) {
       api.createObservation(values);
@@ -363,8 +368,13 @@ export default {
       this.observations = api.getObservations();
     },
 
-    updateAssignment(values) {
-      api.updateAssignment(values.id, values);
+    async updateAssignment(values) {
+      this.activeAssignment = await api.updateAssignment(values.id, values).then(function (response) {
+          return response;
+        });
+      this.assignments = await api.setLocalAssignments().then(function (response) {
+          return response;
+        });
     },
     getVariant(id, type) {
       if (id == this.activeExperiment.id) {

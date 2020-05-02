@@ -134,7 +134,7 @@ export default {
     this.role = this.$store.state.role;
   },
   methods: {
-    responseSubmitted(evt) {
+    async responseSubmitted(evt) {
       evt.preventDefault();
       if(this.assignment.type ==="number"){
         if(!/^\d+(\.\d+)?$/.test(this.response.response)){
@@ -144,27 +144,34 @@ export default {
       }
       this.form.response = this.response.response;
       this.form.submitted = api.getToday(new Date());
-      api.updateStudentAssignmentResponse(
+      this.response = await api.updateStudentAssignmentResponse(
         this.assignment.id,
         this.response.id,
         this.form
-      );
+      ).then(function (response) {
+          return response;
+        });
       this.showSuccess = 3;
       this.alertMessage = "Assignment submitted!"
       this.unlocked = null;
     },
     selectResponse(res){
       this.teacherComment = res.comments;
-      this.commentingOn = (this.responseList.filter(response => response.student === res.student))[0];
+      this.commentingOn = (this.responseList.filter(response => response.student.id === res.student.id))[0];
     },
-    addComment(res){
-      this.commentingOn = api.addCommentToAssignment(res.assignment, res.student, this.teacherComment);
+    async addComment(res){
+      this.commentingOn = await api.addCommentToAssignment(res.assignment, res.student, this.teacherComment).then(function (response) {
+          return response;
+        });
       this.showSuccess = 3;
       this.alertMessage = "Comment updated";
       this.commentingOn = null;
+      this.$emit("updateResponseList", this.assignment);
     },
-    deleteAssignment(){
-      api.deleteAssignment(this.assignment.id);
+    async deleteAssignment(){
+      await api.deleteAssignment(this.assignment.id).then(function (response) {
+          return response;
+        });
       this.deleted=true;
       this.$emit("assignmentDeleted")
     },

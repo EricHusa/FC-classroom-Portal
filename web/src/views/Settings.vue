@@ -215,11 +215,18 @@ export default {
     onRowSelected(items) {
       this.sectionTitle = items[0].label;
     },
-    updateAccount(evt) {
+    async updateAccount(evt) {
       evt.preventDefault();
       this.updateMessage = "Account updated!";
       this.updateAlert = 3;
-      api.updateTeacherName(this.teacherForm);
+      try{
+      await api.updateTeacher(this.teacherForm).then(function (response) {
+          return response;
+        });
+      } catch (err) {
+          alert(err);
+          return;
+        }
     },
     checkNewPass() {
       if (this.passwordForm.newPass !== this.passwordForm.repeatNewPass) {
@@ -244,14 +251,13 @@ export default {
       this.updateAlert = 3;
       this.devices = api.getDevices();
     },
-    updatePassword(evt) {
+    async updatePassword(evt) {
       evt.preventDefault();
       try {
         this.checkNewPass();
-        api.changeTeacherPassword(
-          this.passwordForm.oldPass,
-          this.passwordForm.newPass
-        );
+        await api.updateTeacher(this.teacherForm).then(function (response) {
+          return response;
+        });
       } catch (e) {
         alert(e);
         return;

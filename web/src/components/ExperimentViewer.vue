@@ -177,9 +177,11 @@ export default {
     checkRole() {
       return this.$store.state.role == "student";
     },
-    deleteExperiment() {
+    async deleteExperiment() {
       if (confirm("Are you sure you want to delete this experiment?")) {
-        api.deleteExperiment(this.experiment.id);
+        await api.deleteExperiment(this.experiment.id).then(function (response) {
+          return response;
+        });
         //this.experiment = { title: "Deleted", deleted: true };
         this.deleted = this.experiment.id
         this.$store.state.currentExperiment = null;
@@ -190,27 +192,29 @@ export default {
     },
     addFormValues(form){
       let updateValues = form;
-      updateValues.students = this.experiment.students;
+      updateValues.student_ids = api.getStudentIdList(this.experiment.students);
       updateValues.device = this.experiment.device;
       return updateValues
     },
-    createExperiment() {
+    async createExperiment() {
       let updateValues = this.addFormValues(this.form);
       if(updateValues.title.length <=0 || updateValues.device === null){
         alert("New experiments must have at least a name and device assigned")
         return;
       }
-      this.experiment = api.createExperiment(
-        updateValues
-      );
+      this.experiment = await api.createExperiment(updateValues).then(function (response) {
+          return response;
+        });
       this.updateAction = "created";
       this.updateAlert = 3;
       this.$emit("experimentsChanged", this.experiment.id);
     },
-    updateExperiment() {
+    async updateExperiment() {
       let updateValues = this.addFormValues(this.form);
-      api.updateExperiment(this.experiment.id, updateValues);
-      this.experiment = api.getExperiment(this.experiment.id);
+      this.experiment = await api.updateExperiment(this.experiment.id, updateValues).then(function (response) {
+          return response;
+        });
+      // this.experiment = api.getExperiment(this.experiment.id);
       this.updateAction = "updated";
       this.updateAlert = 3;
     },
@@ -225,17 +229,17 @@ export default {
     getClassCheckboxes(){
       return api.getClassCheckboxes();
     },
-    inExperiment(studentId) {
-      if (this.experiment.students.includes(studentId)) {
-        return "success";
-      } else {
-        return "default";
-      }
-    },
-    changeInvolvement(studentId) {
-      api.changeExperimentInvolvement(this.experiment, studentId);
-      this.$refs.dropdown.show(true);
-    },
+    // inExperiment(studentId) {
+    //   if (this.experiment.students.includes(studentId)) {
+    //     return "success";
+    //   } else {
+    //     return "default";
+    //   }
+    // },
+    // changeInvolvement(studentId) {
+    //   api.changeExperimentInvolvement(this.experiment, studentId);
+    //   this.$refs.dropdown.show(true);
+    // },
     resetAlert() {
       this.updateAlert = 0;
     }

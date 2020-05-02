@@ -71,9 +71,14 @@ export default {
     };
   },
   methods: {
-    updateStudent() {
+    async updateStudent() {
       try {
-        api.updateStudent(this.student.id, this.form);
+        this.student = await api.updateStudent(this.student.id, this.form).then(function (response) {
+          return response;
+        });
+        await api.setLocalStudents().then(function (response) {
+          return response;
+        });
       }
       catch(e){
         alert(e);
@@ -81,9 +86,20 @@ export default {
       }
       this.updateAlert = 3;
     },
-    deleteStudent() {
+    async deleteStudent() {
+      try{
       if (confirm("Are you sure you want to delete this student account?")) {
-        api.deleteStudent(this.student.id);
+        await api.deleteStudent(this.student.id).then(function (response) {
+          return response;
+        });
+        await api.setLocalStudents().then(function (response) {
+          return response;
+        });
+        }
+      catch(e){
+        alert(e);
+        return
+      }
         // this.deleteAlert = 3
         this.$router.push("/school");
       }

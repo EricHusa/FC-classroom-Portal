@@ -203,14 +203,6 @@ export function register(userData) {
   return axios.post(`${API_URL}/register/`, userData);
 }
 
-// export function getExperiments() {
-//   return axios.get(`${API_URL}/experiments/`);
-// }
-
-// export function getExperiment(experimentId) {
-//   return axios.get(`${API_URL}/experiments/${experimentId}/`);
-// }
-
 // export function getDevice() {
 //   return "1199802";
 // }
@@ -435,6 +427,7 @@ export default {
   },
 
   /// FUNCTIONS FOR STUDENTS
+
   setLocalStudents(){
     return Promise.resolve(axios.get(`${API_URL}/student/teacher/${store.state.currentTeacher}`)
         .then(function(response) {
@@ -516,7 +509,7 @@ export default {
     // students.push(student);
     // return student;
   },
-  updateStudent: function(studentId, values) {
+  updateStudent(studentId, values) {
     return Promise.resolve(axios.put(`${API_URL}/account/student/${studentId}/`, values)
         .then(function(response) {
             if (response.data.status === "fail") {
@@ -583,6 +576,15 @@ export default {
     let student = this.getStudent(studentId);
     return student.username + ", " + student.fname + " " + student.lname;
   },
+    getStudentIdList(studentList){
+      let student_ids = [];
+      let student;
+      for(let i in studentList){
+          student = studentList[i];
+          student_ids.push(student.id);
+      }
+      return student_ids;
+    },
 
   /// FUNCTIONS FOR EXPERIMENTS
 
@@ -731,7 +733,7 @@ export default {
             if (response.data.status === "fail") {
                 throw (response.data.message);
             } else {
-                return (response.data.experiment);
+                return (response.data.assignment);
             }
         }))
     .catch(function(error) {
@@ -771,6 +773,9 @@ export default {
         throw (error);
     });
   },
+    getAssignmentAssignees(){
+
+    },
   // addAssignmentResponse(assignmentId, studentId) {
   //   let newResponse = {
   //     assignment: assignmentId,
@@ -853,7 +858,7 @@ getStudentAssignmentResponses(){
             if (response.data.status === "fail") {
                 throw (response.data.message);
             } else {
-                return (response.data.assignment_response);
+                return (response.data.assignment_response.id);
             }
         }))
     .catch(function(error) {

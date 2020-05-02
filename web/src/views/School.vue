@@ -128,7 +128,7 @@
                           </b-form-group>
                         </div>
                         <b-button
-                          @click="importStudents"
+                          @click="setStudents"
                           variant="success"
                           :disabled="classDeleted"
                           >Add</b-button
@@ -194,13 +194,20 @@ export default {
     }
   },
   methods: {
-    addClass() {
-      api.addClass();
-      this.classes = api.getClasses();
+    async addClass() {
+      try{
+      await api.addClass().then(function (response) {
+          return response;
+        });
+      } catch (err) {
+          alert(err);
+          return;
+        }
     },
     setClass(id) {
       this.currStudents = api.getStudents(id);
       this.currClass = api.getClass(id);
+      this.selectedStudents = api.getStudentIdList(this.currClass.students);
       this.classDeleted = false;
     },
     // getClassName(id) {
@@ -210,31 +217,61 @@ export default {
     //   let c = api.getClass(id);
     //   return c.name;
     // },
-    updateClassName(thisClass, name) {
+    async refreshClassList(){
+      try{
+      this.classes = await api.setLocalClasses().then(function (response) {
+          return response;
+        });
+      } catch (err) {
+          alert(err);
+          return;
+        }
+    },
+    async updateClassName(thisClass, name) {
       if (name.length > 0) {
         thisClass.name = name;
-        api.updateClass(thisClass);
+        thisClass.student_ids = api.getStudentIdList(thisClass,student);
+        try{
+        this.currClass = await api.updateClass(thisClass).then(function (response) {
+          return response;
+        });
+        } catch (err) {
+          alert(err);
+          return;
+        }
+        this.refreshClassList();
       }
       this.className = "";
     },
-    deleteClass(id) {
+    async deleteClass(id) {
       if (
         confirm(
           "Are you sure you want to delete this class? Note that this does not delete accounts in the class"
         )
       ) {
-        api.deleteClass(id);
+        try{
+        await api.delete(id).then(function (response) {
+          return response;
+        });
+        } catch (err) {
+          alert(err);
+          return;
+        }
+        this.refreshClassList();
         this.classDeleted = true;
       }
     },
-    addStudent() {
+    async addStudent() {
       if (!this.validate()) {
         alert("spaces are not allowed in input");
       } else {
         try {
-          api.createStudent(JSON.parse(JSON.stringify(this.form)));
+          await api.createStudent(JSON.parse(JSON.stringify(this.form))).then(function (response) {
+          return response;
+        });
         } catch (err) {
           alert(err);
+          return;
         }
         this.form.fname = null;
         this.form.lname = null;
@@ -245,20 +282,11 @@ export default {
     getStudentCheckboxes() {
       return api.getStudentCheckboxes();
     },
-    async importStudents() {
-      let newStudents = [];
-      for (let i in this.selectedStudents) {
-        newStudents.push(this.selectedStudents[i]);
-        //this.currClass
-      }
-      let course = await updateClass.login(role, this.forms[role]).then(function(response) {
+    async setStudents() {
+      this.currClass.student_ids = this.selectedStudents;
+      this.currClass = await api.updateClass(this.currClass).then(function(response) {
         return response;
       });
-      this.currStudents = api.getStudents(this.currClass.id);
-      this.selectedStudents = [];
-    },
-    removeStudent(studentId){
-      api.removeStudentFromClass(this.currClass.id, studentId);
       this.setClass(this.currClass.id);
     },
     validate() {
