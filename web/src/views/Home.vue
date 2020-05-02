@@ -2,6 +2,7 @@
   <div>
     <NavBar />
     <div>
+      <b-overlay :show="loading" rounded="sm">
       <b-card no-body>
         <b-tabs card justified>
           <b-tab title="Experiment">
@@ -212,6 +213,7 @@
           </b-tab>
         </b-tabs>
       </b-card>
+        </b-overlay>
     </div>
   </div>
 </template>
@@ -246,13 +248,14 @@ export default {
       assignments: [],
       observations: [],
       responses: [],
-      devices: api.getDevices(),
+      devices: [],
       assignmentHeaders: TableHeaders.assignments,
       observationHeaders: TableHeaders.observations,
       activeExperiment: {},
       activeAssignment: {},
       activeResponse: {},
       activeObservation: {},
+      loading: false,
       experimentForm: {
         title: null,
         description: null,
@@ -263,19 +266,22 @@ export default {
     };
   },
   beforeMount() {
-    this.refreshExperimentList()
+    this.loading = true;
+    this.refreshStudents();
+    this.refreshClasses();
+    this.refreshExperimentList();
     if (this.experiments.length > 0) {
       this.setExpi(this.experiments[0].id);
     } else {
       this.setExpi(null);
     }
-    this.assignments = api.getAssignments();
+    this.refreshAssignmentList();
     if (this.role == "student") {
-      this.responses = api.getStudentAssignmentResponses(
-        this.$store.state.currentUser.id
-      );
+      this.refreshStudentAssignmentResponses();
     }
-    this.observations = api.getObservations();
+    this.refreshDeviceList();
+    this.refreshObservations();
+    this.loading = false;
   },
   computed: {
     addColors() {
@@ -323,13 +329,26 @@ export default {
     async refreshExperimentList(newItem=null){
       this.experiments = await api.setLocalExperiments().then(function (response) {
           return response;
-        });
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
       if(newItem !== null){
         this.setExpi(newItem);
       }
     },
-    refreshAssignmentList(){
-      this.assignments = api.getAssignments();
+    async refreshStudentAssignmentResponses(){
+      this.responses = await api.setLocalStudentAssignmentResponses(this.$store.state.currentUser.id).catch(function (error) {
+        alert(error);
+      });
+    },
+    async refreshAssignmentList(){
+      this.assignments = await api.setLocalAssignments().then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+        return;
+      });
       this.activeAssignment = {};
     },
     async setAssignment(assignment) {
@@ -343,16 +362,24 @@ export default {
           this.activeAssignment.id
         ).then(function (response) {
           return response;
-        });
+        }).catch(function (error) {
+        alert(error);
+      });
       }
     },
     async createAssignment(values) {
       await api.createAssignment(values).then(function (response) {
           return response;
-        });
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
       this.assignments = await api.setLocalAssignments().then(function (response) {
           return response;
-        });
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
     },
     createObservation(values) {
       api.createObservation(values);
@@ -371,10 +398,38 @@ export default {
     async updateAssignment(values) {
       this.activeAssignment = await api.updateAssignment(values.id, values).then(function (response) {
           return response;
-        });
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
       this.assignments = await api.setLocalAssignments().then(function (response) {
           return response;
-        });
+        }).catch(function (error) {
+        alert(error);
+      });
+    },
+    async refreshClasses(){
+      await api.setLocalClasses().then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
+    },
+    async refreshStudents(){
+      await api.setLocalStudents().then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+      });
+    },
+    async refreshDeviceList(){
+      this.devices = await api.setLocalDevices().then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+        return;
+      });
     },
     getVariant(id, type) {
       if (id == this.activeExperiment.id) {

@@ -150,7 +150,10 @@ export default {
         this.form
       ).then(function (response) {
           return response;
-        });
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
       this.showSuccess = 3;
       this.alertMessage = "Assignment submitted!"
       this.unlocked = null;
@@ -162,7 +165,10 @@ export default {
     async addComment(res){
       this.commentingOn = await api.addCommentToAssignment(res.assignment, res.student, this.teacherComment).then(function (response) {
           return response;
-        });
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
       this.showSuccess = 3;
       this.alertMessage = "Comment updated";
       this.commentingOn = null;
@@ -171,7 +177,10 @@ export default {
     async deleteAssignment(){
       await api.deleteAssignment(this.assignment.id).then(function (response) {
           return response;
-        });
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
       this.deleted=true;
       this.$emit("assignmentDeleted")
     },

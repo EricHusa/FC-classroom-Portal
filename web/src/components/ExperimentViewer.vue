@@ -181,7 +181,10 @@ export default {
       if (confirm("Are you sure you want to delete this experiment?")) {
         await api.deleteExperiment(this.experiment.id).then(function (response) {
           return response;
-        });
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
         //this.experiment = { title: "Deleted", deleted: true };
         this.deleted = this.experiment.id
         this.$store.state.currentExperiment = null;
@@ -204,7 +207,10 @@ export default {
       }
       this.experiment = await api.createExperiment(updateValues).then(function (response) {
           return response;
-        });
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
       this.updateAction = "created";
       this.updateAlert = 3;
       this.$emit("experimentsChanged", this.experiment.id);
@@ -213,7 +219,10 @@ export default {
       let updateValues = this.addFormValues(this.form);
       this.experiment = await api.updateExperiment(this.experiment.id, updateValues).then(function (response) {
           return response;
-        });
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
       // this.experiment = api.getExperiment(this.experiment.id);
       this.updateAction = "updated";
       this.updateAlert = 3;

@@ -12,6 +12,8 @@ let classes = [];
 let experiments = [];
 let assignments = [];
 let assignment_responses = {};
+let observations = [];
+let devices = [];
 
 //sample database data
 // let students = [
@@ -140,47 +142,47 @@ let assignment_responses = {};
 //   }
 // ];
 
-let observations = [
-  {
-    id: 12835739,
-    title: "Height Measurement",
-    description:
-      "Take your ruler and measure the height of the plant in centimeters",
-    experiment: 38782347,
-    type: "number",
-    units: "centimeters",
-    updated: "2020-05-01",
-    collaborators: [1, 2, 4],
-    responses: [
-      {
-        number: 1,
-        response: "3",
-        submitted: "2020-05-02",
-        student: 4,
-        editable: true
-      },
-      {
-        number: 2,
-        response: "3.1",
-        submitted: "2020-05-03",
-        student: 1,
-        editable: true
-      }
-    ]
-  }
-];
+// let observations = [
+//   {
+//     id: 12835739,
+//     title: "Height Measurement",
+//     description:
+//       "Take your ruler and measure the height of the plant in centimeters",
+//     experiment: 38782347,
+//     type: "number",
+//     units: "centimeters",
+//     updated: "2020-05-01",
+//     collaborators: [1, 2, 4],
+//     responses: [
+//       {
+//         number: 1,
+//         response: "3",
+//         submitted: "2020-05-02",
+//         student: 4,
+//         editable: true
+//       },
+//       {
+//         number: 2,
+//         response: "3.1",
+//         submitted: "2020-05-03",
+//         student: 1,
+//         editable: true
+//       }
+//     ]
+//   }
+// ];
 
 // let teachers = [{ fname: "Mr", lname: "Teacher", password: "a", id: "a" }];
 //
 // let studentIdCounter = students.length;
 
-let devices = [
-  {
-    name: "SLUdev1",
-    fopd_id: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c",
-    teacher: "a"
-  }
-];
+// let devices = [
+//   {
+//     name: "SLUdev1",
+//     fopd_id: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c",
+//     teacher: "a"
+//   }
+// ];
 
 // let classes = [
 //   {
@@ -806,6 +808,8 @@ export default {
         assignment = assignments[i];
         res = await this.getApiStudentAssignmentResponse(assignment.id,studentId).then(function(response) {
         return response;
+      }).catch(function (error) {
+        throw(error);
       });
         assignment_responses[assignment.id] = res;
     }
@@ -867,6 +871,21 @@ getStudentAssignmentResponses(){
   },
 
   /// FUNCTIONS FOR OBSERVATIONS
+
+    setLocalObservations(){
+    return Promise.resolve(axios.get(`${API_URL}/assignment/${store.state.role}/${store.state.currentUser.id}`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                assignments = response.data.assignments;
+                return true;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+  },
 
   getObservations() {
     let experiment = store.state.currentExperiment.id;
@@ -975,29 +994,52 @@ getStudentAssignmentResponses(){
 
   /// FUNCTIONS FOR DEVICES
 
+    setLocalDevices(){
+      return Promise.resolve(axios.get(`${API_URL}/device/teacher/${store.state.currentTeacher}`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                assignments = response.data.devices;
+                return true;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+    },
   getDevices() {
     return devices.filter(element => element.teacher === store.state.currentTeacher);
   },
-  getDevice(deviceId){
-    let index = devices
-      .map(function(e) {
-        return e.fopd_id;
-      })
-      .indexOf(deviceId);
-    return devices[index]
-  },
+  // getDevice(deviceId){
+  //   let index = devices
+  //     .map(function(e) {
+  //       return e.fopd_id;
+  //     })
+  //     .indexOf(deviceId);
+  //   return devices[index]
+  // },
   updateDeviceName(deviceId, newName) {
-    let device = this.getDevice(deviceId)
-    device.name = newName;
+    return Promise.resolve(axios.put(`${API_URL}/device/${deviceId}/teacher/${store.state.currentTeacher}`, {name: newName})
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.device);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
   },
-  updateDeviceOwner(deviceId, teacherId) {
-    let device = this.getDevice(deviceId)
-    device.name = teacherId;
-  },
-
-  getClimate() {
-    return SampleClimate.climate_file.phases;
-  },
+  // updateDeviceOwner(deviceId, teacherId) {
+  //   let device = this.getDevice(deviceId)
+  //   device.name = teacherId;
+  // },
+  //
+  // getClimate() {
+  //   return SampleClimate.climate_file.phases;
+  // },
   verifyDevice(deviceId) {
     if (deviceId==="bad",deviceId===""||deviceId===null||deviceId===undefined) {
         return false;
@@ -1005,28 +1047,36 @@ getStudentAssignmentResponses(){
     return true;
   },
   registerDevice(values, teacher) {
-      devices.push({
-        name: values.name,
-        fopd_id: values.fopd_id,
-        teacher: teacher
-      });
-  },
-
-  /// FUNCTIONS FOR TEACHERS
-
-  getTeacherInfo() {
-    return Promise.resolve(axios.get(`${API_URL}/teacher/${store.state.currentTeacher}/`)
+      values.teachuer_id = store.state.currentTeacher;
+      return Promise.resolve(axios.post(`${API_URL}/device/`, values)
         .then(function(response) {
             if (response.data.status === "fail") {
                 throw (response.data.message);
             } else {
-                return response.data.teacher;
+                devices.push(response.data.device);
+                return response.data.device;
             }
         }))
     .catch(function(error) {
         throw (error);
     });
   },
+
+  /// FUNCTIONS FOR TEACHERS
+
+  // getTeacherInfo() {
+  //   return Promise.resolve(axios.get(`${API_URL}/teacher/${store.state.currentTeacher}/`)
+  //       .then(function(response) {
+  //           if (response.data.status === "fail") {
+  //               throw (response.data.message);
+  //           } else {
+  //               return response.data.teacher;
+  //           }
+  //       }))
+  //   .catch(function(error) {
+  //       throw (error);
+  //   });
+  // },
     updateTeacher(values){
      return Promise.resolve(axios.put(`${API_URL}/account/teacher/${store.state.currentTeacher}`, values)
         .then(function(response) {

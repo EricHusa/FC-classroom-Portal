@@ -286,6 +286,9 @@ export default {
       this.currClass.student_ids = this.selectedStudents;
       this.currClass = await api.updateClass(this.currClass).then(function(response) {
         return response;
+      }).catch(function (error) {
+        alert(error);
+        return;
       });
       this.setClass(this.currClass.id);
     },

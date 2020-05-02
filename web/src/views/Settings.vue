@@ -189,7 +189,7 @@ export default {
     };
   },
   beforeMount() {
-    this.devices = api.getDevices();
+    this.refreshDeviceList();
     this.currentDevice = this.devices[0];
     this.teacherForm = this.$store.state.currentUser;
   },
@@ -233,12 +233,24 @@ export default {
         throw "New passwords do not match";
       }
     },
-    updateDevice(evt) {
+    async refreshDeviceList(){
+      this.devices = await api.setLocalDevices().then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+      });
+    },
+    async updateDevice(evt) {
       evt.preventDefault();
       this.updateMessage = "Device name updated!";
       this.updateAlert = 3;
-      api.updateDeviceName(this.currentDevice.fopd_id, this.deviceInput);
-      this.devices = api.getDevices();
+      this.currentDevice = await api.updateDeviceName(this.currentDevice.fopd_id, this.deviceInput).then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+        return;
+      });
+      this.refreshDeviceList();
     },
     registerDevice(evt) {
       evt.preventDefault();

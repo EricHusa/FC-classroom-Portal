@@ -119,7 +119,7 @@ export default {
         this.checkNewPassword();
         teacher = await api.registerTeacher(this.forms.register).then(function (response) {
           return response;
-        });
+        })
       }
       catch (error) {
         this.errorMsg = error;
