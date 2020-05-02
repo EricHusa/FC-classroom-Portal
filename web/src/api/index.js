@@ -3,7 +3,8 @@ import ErrorMessages from "../constants/ErrorMessages.ts";
 import store from "../store/index";
 import SampleClimate from "../constants/SampleClimate.ts";
 import SampleClimateData from "../constants/SampleClimateData.ts";
-const API_URL = process.env.API_URL;
+// const API_URL = process.env.API_URL;
+const API_URL = "http://127.0.0.1:5000/api";
 
 //sample database data
 let students = [
@@ -210,32 +211,59 @@ export function getDevice() {
 export default {
   login(role, userData) {
     if (role === "student") {
-      for (let i in students) {
-        let user = students[i];
-        if (user.username === userData.username) {
-          if (
-            user.password === userData.password &&
-            user.teacher === userData.teacher
-          ) {
-            return user;
-          }
-        }
-      }
-      throw ErrorMessages.incorrectCredentials;
+      return Promise.resolve(axios.post(`${API_URL}/auth/teacher/login`, userData)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.message);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
     }
 
     if (role === "teacher") {
-      for (let i in teachers) {
-        let user = teachers[i];
-        if (user.id === userData.username) {
-          if (user.password === userData.password) {
-            return user;
-          } else {
-            throw ErrorMessages.incorrectCredentials;
-          }
-        }
-      }
-      throw ErrorMessages.incorrectCredentials;
+      return Promise.resolve(axios.post(`${API_URL}/auth/teacher/login`, userData)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.message);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+
+
+
+      // let r = axios.get(`${API_URL}/teacher/${userData.id}`);
+      // axios.get(`${API_URL}/teacher/${userData.id}`)
+      // .then(function (response) {
+      //   if(response.data.status==="fail"){
+      //     throw(response.data.message);
+      //   }
+      //   else{
+      //     return(response.data);
+      //   }
+      // })
+      // .catch(function (error) {
+      //   throw(error);
+      // });
+
+      // for (let i in teachers) {
+      //   let user = teachers[i];
+      //   if (user.id === userData.username) {
+      //     if (user.password === userData.password) {
+      //       return user;
+      //     } else {
+      //       throw ErrorMessages.incorrectCredentials;
+      //     }
+      //   }
+      // }
+      // throw ErrorMessages.incorrectCredentials;
     }
   },
 
@@ -288,16 +316,50 @@ export default {
   /// FUNCTIONS FOR CLASSES
 
   getClasses: function() {
-    return classes;
+    return Promise.resolve(axios.post(`${API_URL}/course/teacher/${store.state.currentTeacher}`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.courses);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+    // return classes;
   },
   getClass: function(classId) {
-    return classes.find(c => c.id === classId);
+    return Promise.resolve(axios.post(`${API_URL}/course/${classId}/teacher/${store.state.currentTeacher}`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.course);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+    // return classes.find(c => c.id === classId);
   },
   addClass: function() {
-    classes.push({
-      name: "Class".concat(" ", (classes.length + 1).toString()),
-      id: this.generateId(),
+    let tempClass = {
+      name: "New Class",
+      teacher: store.state.currentUser.username,
       students: []
+    };
+
+    return Promise.resolve(axios.post(`${API_URL}/course/`, tempClass)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.teacher);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
     });
   },
   deleteClass: function(classId) {
@@ -775,11 +837,8 @@ export default {
     return SampleClimate.climate_file.phases;
   },
   verifyDevice(deviceId) {
-    for (let d in devices) {
-      let device = devices[d]
-      if (device.fopd_id === deviceId && device.teacher !== "") {
+    if (deviceId==="bad",deviceId===""||deviceId===null||deviceId===undefined) {
         return false;
-      }
     }
     return true;
   },
@@ -822,16 +881,20 @@ export default {
   registerTeacher(values) {
     let deviceId = values.fopd_id
     if (this.verifyDevice(deviceId)) {
-      let newTeacher = {
-        fname: values.fname,
-        lname: values.lname,
-        password: values.password,
-        id: this.generateUsername()
-      };
-      teachers.push(newTeacher);
-      this.registerDevice({ fopd_id: deviceId, name: deviceId }, newTeacher.id)
-      return newTeacher.id
-    } else {
+      values.username = this.generateUsername();
+      return Promise.resolve(axios.post(`${API_URL}/auth/register/teacher`, values)
+          .then(function (response) {
+            if (response.data.status === "fail") {
+              throw(response.data.message);
+            } else {
+              return (response.data.teacher);
+            }
+          }))
+          .catch(function (error) {
+            throw(error);
+          });
+    }
+    else{
       throw "invalid device ID";
     }
   }

@@ -31,7 +31,7 @@
             <b-tab title="Teacher">
               <b-row
                 class="my-1"
-                v-for="item in options.slice(1)"
+                v-for="item in options"
                 :key="item.key"
               >
                 <label :for="`teacher-login-form-${item.key}`"
@@ -86,7 +86,7 @@ export default {
       password: "",
       errorMsg: "",
       forms: {
-        student: { teacher: "", username: "", password: "" },
+        student: { username: "", password: "" },
         teacher: { username: "", password: "" },
         register: {fopd_id: "", fname: "", lname: "", password: "", repeatPassword: ""}
       },
@@ -104,28 +104,38 @@ export default {
     //     .then(() => this.$router.push("/"));
     //   this.$store.dispatch("dev", "student").then(() => this.$router.push("/"));
     // },
-    register(evt) {
+    getUsername(){
+
+    },
+    async register(evt) {
       // alert(this.$route.query.teacher);
       //this.$store.dispatch("dev", "teacher").then(() => this.$router.push("/"));
       //    this.$store.dispatch('register', { email: this.email, password: this.password })
       //      .then(() => this.$router.push('/')).catch(e => {
       // alert(e);
       evt.preventDefault();
-      try{
-        this.checkNewPassword()
-        let username = api.registerTeacher(this.forms.register);
-        this.forms.teacher.username = username;
-        this.forms.teacher.password = this.forms.register.password;
-        alert("Your username is " + username + ". Please write it down now and then log in")
-      }
-      catch (e) {
-        this.errorMsg = e;
-        this.errorAlert = 5
-      }
-    },
-    login(role) {
+      let teacher;
       try {
-        let user = api.login(role, this.forms[role]);
+        this.checkNewPassword();
+        teacher = await api.registerTeacher(this.forms.register).then(function (response) {
+          return response;
+        });
+      }
+      catch (error) {
+        this.errorMsg = error;
+        this.errorAlert = 5;
+        return;
+      }
+        api.registerDevice({ fopd_id: this.forms.register.fopd_id, name: this.forms.register.fopd_id }, teacher.username);
+        this.forms.teacher.username = teacher.username;
+        this.forms.teacher.password = this.forms.register.password;
+        alert("Your username is " + teacher.username + ". Please write it down now and then log in")
+    },
+    async login(role) {
+      try {
+        let user = await api.login(role, this.forms[role]).then(function(response) {
+        return response;
+      });
         this.$store.state.currentUser = user;
         if(role==="teacher"){
           this.$store.state.currentTeacher = user.id
@@ -133,13 +143,13 @@ export default {
         else{
           this.$store.state.currentTeacher = user.teacher
         }
+        this.$store.state.role = role;
+        this.$router.push("/");
       } catch (error) {
         this.errorMsg = error;
         this.errorAlert = 5;
         return;
       }
-      this.$store.state.role = role;
-      this.$router.push("/");
     },
     checkNewPassword(){
       if(this.forms.register.password !== this.forms.register.repeatPassword){

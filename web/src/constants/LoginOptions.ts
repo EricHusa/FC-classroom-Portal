@@ -1,6 +1,6 @@
 export default {
     login: [
-        { key: "teacher", label: "Teacher", required: true, type: "text" },
+        // { key: "teacher", label: "Teacher", required: true, type: "text" },
         { key: "username", label: "Username", required: true, type: "text" },
         { key: "password", label: "Password", required: true, type: "password" }
       ],
