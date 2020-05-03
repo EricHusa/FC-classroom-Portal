@@ -270,7 +270,6 @@ export default {
   },
   beforeMount() {
     this.loading = true;
-    alert(this.$store.state.currentTeacher);
     this.refreshStudents();
     this.refreshClasses();
     this.refreshDeviceList();

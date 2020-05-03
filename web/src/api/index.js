@@ -696,6 +696,7 @@ export default {
             if (response.data.status === "fail") {
                 throw (response.data.message);
             } else {
+                // alert(JSON.stringify(response.data))
                 assignments = response.data.assignments;
                 return response.data.assignments;
             }

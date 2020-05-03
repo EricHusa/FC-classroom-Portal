@@ -158,7 +158,7 @@ export default {
       updateAlert: 0,
       updateAction: "",
       deleted: null,
-      selectedStudents: [],
+      selectedStudents: [], //delete?
       fields: TableHeaders.experiments
     };
   },

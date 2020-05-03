@@ -75,7 +75,7 @@ export default {
   name: "AssignmentCreator",
   props: {
     studentsList: Array,
-    currentValues: {},
+    currentValues: {}, //delete?
     updating: Boolean
   },
   data() {
@@ -115,7 +115,8 @@ export default {
         this.form[key] = this.currentValues[key];
       }
       this.form.due_date = api.getToday(this.form.due_date);
-      this.form.student_ids = api.getStudentIdList(this.currentValues.students)
+      this.form.student_ids = api.getStudentIdList((api.getAssignment(this.currentValues.id)).students)
+      // alert(JSON.stringify(api.getAssignment(this.currentValues.id)));
     }
   },
   methods: {

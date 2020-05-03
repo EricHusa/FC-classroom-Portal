@@ -4,7 +4,6 @@ export default {
         {name: "Home", path: "/"},
         {name: "School", path: "/school"},
         {name: "Settings", path: "/settings"},
-        {name: "Help", path: "/help"},
         {name: "Sign Out", path: "/login"}
     ],
     student: [
@@ -12,6 +11,5 @@ export default {
         ],
     guest: [
         {name: "Sign In", path: "/login"},
-        {name: "Help", path: "/help"}
     ]
 };
