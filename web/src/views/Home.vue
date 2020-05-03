@@ -280,9 +280,6 @@ export default {
       this.setExpi(null);
     }
     this.refreshAssignmentList();
-    if (this.role == "student") {
-      this.refreshStudentAssignmentResponses();
-    }
     this.loading = false;
   },
   computed: {
@@ -351,6 +348,7 @@ export default {
       this.responses = await api.setLocalStudentAssignmentResponses(this.$store.state.currentUser.id).catch(function (error) {
         alert(error);
       });
+      alert(JSON.stringify(this.responses));
     },
     async refreshAssignmentList(){
       this.assignments = await api.setLocalAssignments().then(function(response) {
@@ -359,6 +357,9 @@ export default {
         alert(error);
         return;
       });
+      if (this.role == "student") {
+      this.refreshStudentAssignmentResponses();
+    }
       this.activeAssignment = {};
     },
     async setAssignment(assignment) {

@@ -106,13 +106,13 @@ export default {
   },
   beforeMount() {
     this.today = api.getToday(new Date());
-    this.startDate = this.today;
-    this.endDate = this.today;
+    this.startDate = "2020-01-23";
+    this.endDate = "2020-01-24";
     this.setChart();
   },
   methods: {
-    setChart(){
-    let chartData = api.getDataArrays(this.dataName);
+    async setChart(){
+    let chartData = await api.getEnvironmentData(this.dataName,this.startDate,this.endDate);
     this.series[0].data = chartData.data;
     this.series[0].name = chartData.name;
 

@@ -2,7 +2,7 @@ import axios from "axios";
 // import ErrorMessages from "../constants/ErrorMessages.ts";
 import store from "../store/index";
 import SampleClimate from "../constants/SampleClimate.ts";
-import SampleClimateData from "../constants/SampleClimateData.ts";
+// import SampleClimateData from "../constants/SampleClimateData.ts";
 // const API_URL = process.env.API_URL;
 const API_URL = "http://127.0.0.1:5000/api";
 
@@ -14,6 +14,8 @@ let assignments = [];
 let assignment_responses = {};
 let observations = [];
 let devices = [];
+
+let sludev = "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c";
 
 //sample database data
 // let students = [
@@ -299,18 +301,17 @@ export default {
     }
     return username;
   },
-  getDataArrays(type) {
-    let data = SampleClimateData.data;
+  getDataArrays(rawData, type) {
     let temp = { units: null, name: type, data: [] };
-    for (let i in data) {
-      let record = data[i];
+    for (let i in rawData) {
+      let record = rawData[i];
       if (record.attribute === type) {
         temp.units = record.units;
         break;
       }
     }
-    for (let i in data) {
-      let record = data[i];
+    for (let i in rawData) {
+      let record = rawData[i];
       if (record.attribute === type) {
         temp.data.push({ x: record.ts, y: record.value });
       }
@@ -320,6 +321,23 @@ export default {
   pullCSV(start, end){
     alert("https://fop1.urbanspacefarms.com:5000/api/get_data_json/" + store.state.currentExperiment.device.id + "/" + start + "/" +end);
   },
+
+  /// FUNCTIONS FOR EXTERNAL API
+    async getEnvironmentData(type, startDate, endDate){
+    let rawData = await Promise.resolve(axios.get(`${API_URL}/external/observations/${sludev}/${startDate}/${endDate}`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return response.data.observations
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+    let dataArrays = this.getDataArrays(rawData, type);
+    return dataArrays;
+    },
 
   /// FUNCTIONS FOR CLASSES
   setLocalClasses: function() {
@@ -801,7 +819,7 @@ export default {
   //   assignment_responses.push(newResponse);
   // },
     getApiStudentAssignmentResponse(assignmentId,studentId){
-      return Promise.resolve(axios.get(`${API_URL}/assignment/${assignmentId}/student/${studentId}`)
+      return Promise.resolve(axios.get(`${API_URL}/assignment/${assignmentId}/response/student/${studentId}`)
         .then(function(response) {
             if (response.data.status === "fail") {
                 throw (response.data.message);

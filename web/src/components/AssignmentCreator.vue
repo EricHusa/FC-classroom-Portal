@@ -115,7 +115,7 @@ export default {
         this.form[key] = this.currentValues[key];
       }
       this.form.due_date = api.getToday(this.form.due_date);
-      this.form.student_ids = api.getStudentIdList((api.getAssignment(this.currentValues.id)).students)
+      this.form.student_ids = api.getStudentIdList((api.getAssignment(this.currentValues.id)).assignees)
       // alert(JSON.stringify(api.getAssignment(this.currentValues.id)));
     }
   },
