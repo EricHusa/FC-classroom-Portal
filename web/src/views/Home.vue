@@ -270,11 +270,10 @@ export default {
   },
   beforeMount() {
     this.loading = true;
-    if(this.role==="teacher") {
-      this.refreshStudents();
-      this.refreshClasses();
-      this.refreshDeviceList();
-    }
+    alert(this.$store.state.currentTeacher);
+    this.refreshStudents();
+    this.refreshClasses();
+    this.refreshDeviceList();
     this.refreshExperimentList();
     if (this.experiments.length > 0) {
       this.setExpi(this.experiments[0].id);

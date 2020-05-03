@@ -217,6 +217,7 @@ export default {
             if (response.data.status === "fail") {
                 throw (response.data.message);
             } else {
+                store.state.currentTeacher = response.data.teacher.id;
                 return (response.data.student);
             }
         }))

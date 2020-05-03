@@ -141,11 +141,11 @@ export default {
       });
         this.$store.state.currentUser = user;
         if(role==="teacher"){
-          this.$store.state.currentTeacher = user.id
+          this.$store.state.currentTeacher = user.id;
       }
-        else{
-          this.$store.state.currentTeacher = user.teacher
-        }
+        // else{
+        //   this.$store.state.currentTeacher = user.teacher.id;
+        // }
         this.$store.state.role = role;
         this.$router.push("/");
       } catch (error) {

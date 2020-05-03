@@ -43,6 +43,7 @@
             <b-form-select
               v-model="experiment.device.id"
               :options="formatDevices"
+              :disabled="checkRole()"
               id="inline-form-input-system"
             ></b-form-select>
           </b-col>
