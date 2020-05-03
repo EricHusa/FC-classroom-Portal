@@ -92,7 +92,7 @@
                   /></b-collapse>
                   <h3>Singular Assignments</h3>
                   <div>
-                    <b-table :fields="assignmentHeaders" :items="addColors">
+                    <b-table :fields="assignmentHeaders" :items="formattedAssignments">
                       <!--                      <template v-slot:cell(action)="data">-->
                       <!--                        <b-icon-->
                       <!--                          :id="`comment-notification-${data.item.id}`"-->
@@ -258,6 +258,7 @@ export default {
       activeResponse: {},
       activeObservation: {},
       studentCheckboxes: [],
+      formattedAssignments: [],
       loading: false,
       experimentForm: {
         title: null,
@@ -287,7 +288,10 @@ export default {
       let rows = this.assignments.map(item => {
         let tmp = item;
         if (this.$store.state.role === "student") {
+          // let student_responses = this.refreshStudentAssignmentResponses();
           let res = this.responses[item.id];
+          // alert("res is: ");
+          // alert(JSON.stringify(res));
           res.submitted === null || res.submitted === undefined
             ? (tmp._rowVariant = "warning")
             : (tmp._rowVariant = "success");
@@ -348,7 +352,8 @@ export default {
       this.responses = await api.setLocalStudentAssignmentResponses(this.$store.state.currentUser.id).catch(function (error) {
         alert(error);
       });
-      alert(JSON.stringify(this.responses));
+      // alert(JSON.stringify(this.responses));
+      // return this.responses;
     },
     async refreshAssignmentList(){
       this.assignments = await api.setLocalAssignments().then(function(response) {
@@ -358,11 +363,13 @@ export default {
         return;
       });
       if (this.role == "student") {
-      this.refreshStudentAssignmentResponses();
+        this.refreshStudentAssignmentResponses();
     }
+      this.formattedAssignments = this.addColors;
       this.activeAssignment = {};
     },
     async setAssignment(assignment) {
+      alert(JSON.stringify(assignment));
       this.activeAssignment = assignment;
       if (this.role == "student") {
         this.activeResponse = api.getStudentAssignmentResponse(

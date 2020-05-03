@@ -62,24 +62,24 @@
             <b-form-group v-for="item in responseList" :key="item.key">
             <b-row class="my-1" >
               <b-col sm="3">
-                <label :for="`response-${item.student}`"
-                  ><b>{{ getStudentName(item.student) }}</b
+                <label :for="`response-${item.student.id}`"
+                  ><b>{{ getStudentName(item.student.id) }}</b
                   >:</label
                 >
               </b-col>
               <b-col sm="8">
                 <b-form-group
-                  :label-for="`response-${item.student}`"
+                  :label-for="`response-${item.student.id}`"
                   :description="`Submitted on ${item.submitted}`">
                 <b-form-textarea
-                  :id="`response-${item.student}`"
+                  :id="`response-${item.student.id}`"
                   :value="item.response"
                   disabled
                 ></b-form-textarea></b-form-group>
               </b-col>
               <b-col sm="1"><b-button @click="selectResponse(item)">+</b-button></b-col>
             </b-row>
-              <b-collapse :visible="commentingOn!==null && commentingOn.student===item.student" class="mt-2">
+              <b-collapse :visible="commentingOn!==null && commentingOn.student===item.student.id" class="mt-2">
             <b-row class="my-1">
               <b-col sm="3">
                 <b-button variant="success" @click="addComment(item)">Set Comment</b-button>

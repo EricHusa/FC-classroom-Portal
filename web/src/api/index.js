@@ -740,8 +740,8 @@ export default {
     }
     return null;
   },
-  createAssignment(values) {
-    return Promise.resolve(axios.post(`${API_URL}/assignment/teacher/${store.state.currentTeacher}`, values)
+  async createAssignment(values) {
+    let assignment = await Promise.resolve(axios.post(`${API_URL}/assignment/teacher/${store.state.currentTeacher}`, values)
         .then(function(response) {
             if (response.data.status === "fail") {
                 throw (response.data.message);
@@ -754,6 +754,13 @@ export default {
         throw (error);
     });
 
+    let resp_values;
+    for (let index in values.student_ids){
+        resp_values = {student_id: values.student_ids[index]};
+        await this.createAssignmentResponse(assignment.id, resp_values);
+    }
+
+    return assignment;
     // assignments.push(values);
     // for(let i in values.assignees) {
     //   this.addAssignmentResponse(values.id,values.assignees[i])
@@ -886,6 +893,22 @@ getStudentAssignmentResponses(){
         throw (error);
     });
   },
+    createAssignmentResponse(assignmentId, values){
+    return Promise.resolve(axios.post(`${API_URL}/assignment/${assignmentId}/response`, values)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return (response.data.assignment_response);
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+    },
+    deleteAssignmentResponse(){
+
+    },
   addCommentToAssignment(assignmentId, responseId, value){
       return Promise.resolve(axios.put(`${API_URL}/assignment/${assignmentId}/response/${responseId}/student/${store.state.currentUser.id}`, {comments: value})
         .then(function(response) {
