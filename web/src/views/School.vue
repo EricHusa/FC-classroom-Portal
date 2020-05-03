@@ -101,7 +101,6 @@
                     v-bind:students="currStudents"
                     v-bind:headers="headers"
                     v-bind:classView="true"
-                    @studentRemoved="removeStudent"
                   />
                   <b-row>
                     <b-col sm="3">
@@ -110,7 +109,7 @@
                         class="m-1"
                         variant="primary"
                         :disabled="classDeleted"
-                        >Add existing students</b-button
+                        >Add students</b-button
                       >
                     </b-col>
                     <b-col sm="9">
@@ -154,19 +153,14 @@
 import StudentList from "../components/StudentList.vue";
 import api from "../api/index.js";
 import NavBar from "../components/NavBar";
+import TableHeaders from "../constants/TableHeaders.ts";
 export default {
   components: { StudentList, NavBar },
   data() {
     return {
       currStudents: api.getStudents(),
       allStudents: api.getStudents(),
-      headers: [
-        { key: "fname", label: "First Name", sortable: true },
-        { key: "lname", label: "Last Name", sortable: true },
-        { key: "username", label: "Username", sortable: true },
-        { key: "password", label: "Password" },
-        { key: "action", label: "Action" }
-      ],
+      headers: TableHeaders.studentList,
       classes: [{}],
       className: "",
       classDeleted: true,
@@ -291,7 +285,7 @@ export default {
         alert(error);
         return;
       });
-      this.refreshClassList();
+      await this.refreshClassList();
       this.setClass(this.currClass.id);
     },
     validate() {

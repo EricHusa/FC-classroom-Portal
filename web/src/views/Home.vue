@@ -285,7 +285,6 @@ export default {
     if (this.role == "student") {
       this.refreshStudentAssignmentResponses();
     }
-    this.refreshObservations();
     this.loading = false;
   },
   computed: {
@@ -329,12 +328,11 @@ export default {
       }
       this.experimentForm.student_ids = api.getStudentIdList(this.activeExperiment.students);
       this.observations = api.getObservations(this.$store.state.currentExperiment);
-    },
+      // this.refreshObservations();
+      },
 
     createExperiment() {
-      // alert(JSON.stringify(this.devices));
-      this.activeExperiment = { title: "New Experiment", device: this.devices[0], student_ids: [], students: [] };
-      alert(JSON.stringify(this.activeExperiment));
+      this.activeExperiment = { title: "New Experiment", device: this.devices[0], student_ids: [], students: [], start_date: api.getToday(new Date()) };
       this.$store.state.currentExperiment = null;
       for (let k in this.experimentForm) {
         this.experimentForm[k] = this.activeExperiment[k];
@@ -405,8 +403,13 @@ export default {
     setObservation(obs) {
       this.activeObservation = obs;
     },
-    refreshObservations(){
-      this.observations = api.getObservations(this.$store.state.currentExperiment);
+    async refreshObservations(){
+      // this.observations = await api.getObservations(this.$store.state.currentExperiment).then(function (response) {
+      //     return response;
+      //   }).catch(function (error) {
+      //   alert(error);
+      //   return;
+      // });
     },
 
     async updateAssignment(values) {

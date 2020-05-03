@@ -7,7 +7,7 @@
       :bordered="true"
     >
       <template v-slot:cell(action)="data">
-        <b-button :hidden="classView" :to="`/student/${data.item.id}`">Update</b-button>
+        <b-button :hidden="false" :to="`/student/${data.item.id}`">Update</b-button>
 <!--        <b-button :hidden="!classView" @click="removeStudent(data.item.id)">Remove</b-button>-->
 <!--        <router-link :to="`/student/${props.item.id}`" tag="button"-->
 <!--          >Update</router-link-->

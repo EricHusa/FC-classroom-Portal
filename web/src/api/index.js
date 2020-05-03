@@ -597,8 +597,12 @@ export default {
             if (response.data.status === "fail") {
                 throw (response.data.message);
             } else {
-                experiments = response.data.experiments;
-                return response.data.experiments;
+                experiments = (response.data.experiments).map(item => {
+                    let tmp = item;
+                    tmp.start_date = ((item.start_date).split(' '))[0];
+                    return tmp;
+                });
+                return experiments;
             }
         }))
     .catch(function(error) {
@@ -874,7 +878,7 @@ getStudentAssignmentResponses(){
   /// FUNCTIONS FOR OBSERVATIONS
 
     setLocalObservations(){
-    return Promise.resolve(axios.get(`${API_URL}/assignment/${store.state.role}/${store.state.currentUser.id}`)
+    return Promise.resolve(axios.get(`${API_URL}/observation/experiment/${store.state.currentExperiment.id}`)
         .then(function(response) {
             if (response.data.status === "fail") {
                 throw (response.data.message);

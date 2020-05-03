@@ -22,6 +22,12 @@ export default {
     { key: "response", label: "Observation", sortable: false },
     { key: "action", label: "Action", sortable: false },
   ],
+  studentList: [
+        { key: "fname", label: "First Name", sortable: true },
+        { key: "lname", label: "Last Name", sortable: true },
+        { key: "username", label: "Username", sortable: true },
+        { key: "action", label: "Action" }
+      ],
   settingsButtons: [{ key: "option", label: "Options", sortable: false }],
   climate: [
     { key: "name", label: "Name", sortable: true },
