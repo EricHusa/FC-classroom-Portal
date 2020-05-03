@@ -185,7 +185,7 @@ export default {
       passwordForm: { oldPass: "", newPass: "", repeatNewPass: "" },
       deviceOptions: CreatorOptions.deviceRegistration.options,
       deviceInput: "",
-      deviceForm: { fopd_id: "", name: "" }
+      deviceForm: { id: "", name: "" }
     };
   },
   beforeMount() {
@@ -244,7 +244,7 @@ export default {
       evt.preventDefault();
       this.updateMessage = "Device name updated!";
       this.updateAlert = 3;
-      this.currentDevice = await api.updateDeviceName(this.currentDevice.fopd_id, this.deviceInput).then(function(response) {
+      this.currentDevice = await api.updateDeviceName(this.currentDevice.id, this.deviceInput).then(function(response) {
         return response;
       }).catch(function (error) {
         alert(error);
@@ -255,7 +255,7 @@ export default {
     registerDevice(evt) {
       evt.preventDefault();
       try {
-        api.registerDevice(this.deviceForm, this.$store.state.currentTeacher);
+        api.registerDevice(this.deviceForm);
       } catch (e) {
         alert(e);
       }

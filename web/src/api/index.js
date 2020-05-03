@@ -1,5 +1,5 @@
 import axios from "axios";
-import ErrorMessages from "../constants/ErrorMessages.ts";
+// import ErrorMessages from "../constants/ErrorMessages.ts";
 import store from "../store/index";
 import SampleClimate from "../constants/SampleClimate.ts";
 import SampleClimateData from "../constants/SampleClimateData.ts";
@@ -231,6 +231,7 @@ export default {
             if (response.data.status === "fail") {
                 throw (response.data.message);
             } else {
+                JSON.stringify(response.data);
                 return (response.data.teacher);
             }
         }))
@@ -339,11 +340,11 @@ export default {
   addClass: function() {
     let tempClass = {
       name: "New Class",
-      teacher: store.state.currentUser.username,
+      teacher_username: store.state.currentUser.username,
       students: []
     };
 
-    return Promise.resolve(axios.post(`${API_URL}/course/`, tempClass)
+    return Promise.resolve(axios.post(`${API_URL}/course`, tempClass)
         .then(function(response) {
             if (response.data.status === "fail") {
                 throw (response.data.message);
@@ -357,7 +358,7 @@ export default {
     });
   },
   deleteClass: function(classId) {
-    return Promise.resolve(axios.delete(`${API_URL}/course/${classId}/teacher/${store.state.currentTeacher}/`)
+    return Promise.resolve(axios.delete(`${API_URL}/course/${classId}/teacher/${store.state.currentTeacher}`)
         .then(function(response) {
             if (response.data.status === "fail") {
                 throw (response.data.message);
@@ -377,7 +378,7 @@ export default {
     // classes.splice(index, 1);
   },
   updateClass: function(course) {
-    return Promise.resolve(axios.put(`${API_URL}/course/${course.id}/teacher/${store.state.currentTeacher}/`, course)
+    return Promise.resolve(axios.put(`${API_URL}/course/${course.id}/teacher/${store.state.currentTeacher}`, course)
         .then(function(response) {
             if (response.data.status === "fail") {
                 throw (response.data.message);
@@ -437,7 +438,7 @@ export default {
                 throw (response.data.message);
             } else {
                 students = response.data.students;
-                return true;
+                return response.data.students;
             }
         }))
     .catch(function(error) {
@@ -488,7 +489,7 @@ export default {
   },
   createStudent(student) {
     student.teacher_username = store.state.currentUser.username;
-    return Promise.resolve(axios.post(`${API_URL}/auth/register/student/`, student)
+    return Promise.resolve(axios.post(`${API_URL}/auth/register/student`, student)
         .then(function(response) {
             if (response.data.status === "fail") {
                 throw (response.data.message);
@@ -512,7 +513,7 @@ export default {
     // return student;
   },
   updateStudent(studentId, values) {
-    return Promise.resolve(axios.put(`${API_URL}/account/student/${studentId}/`, values)
+    return Promise.resolve(axios.put(`${API_URL}/account/student/${studentId}`, values)
         .then(function(response) {
             if (response.data.status === "fail") {
                 throw (response.data.message);
@@ -544,7 +545,7 @@ export default {
   },
 
   deleteStudent: function(studentId) {
-    return Promise.resolve(axios.delete(`${API_URL}/student/${studentId}/`)
+    return Promise.resolve(axios.delete(`${API_URL}/student/${studentId}`)
         .then(function(response) {
             if (response.data.status === "fail") {
                 throw (response.data.message);
@@ -597,7 +598,7 @@ export default {
                 throw (response.data.message);
             } else {
                 experiments = response.data.experiments;
-                return true;
+                return response.data.experiments;
             }
         }))
     .catch(function(error) {
@@ -691,7 +692,7 @@ export default {
                 throw (response.data.message);
             } else {
                 assignments = response.data.assignments;
-                return true;
+                return response.data.assignments;
             }
         }))
     .catch(function(error) {
@@ -879,7 +880,7 @@ getStudentAssignmentResponses(){
                 throw (response.data.message);
             } else {
                 assignments = response.data.assignments;
-                return true;
+                return response.data.assignments;
             }
         }))
     .catch(function(error) {
@@ -887,12 +888,14 @@ getStudentAssignmentResponses(){
     });
   },
 
-  getObservations() {
-    let experiment = store.state.currentExperiment.id;
+  getObservations(experiment) {
+      if(experiment==null||experiment==undefined||experiment=={}) {
+          return [];
+      }
     let obsList = [];
     for (let i in observations) {
       let obs = observations[i];
-      if (obs.experiment === experiment) {
+      if (obs.experiment === experiment.id) {
         obsList.push(obs);
       }
     }
@@ -1001,7 +1004,7 @@ getStudentAssignmentResponses(){
                 throw (response.data.message);
             } else {
                 assignments = response.data.devices;
-                return true;
+                return response.data.devices;
             }
         }))
     .catch(function(error) {
@@ -1037,18 +1040,17 @@ getStudentAssignmentResponses(){
   //   device.name = teacherId;
   // },
   //
-  // getClimate() {
-  //   return SampleClimate.climate_file.phases;
-  // },
+  getClimate() {
+    return SampleClimate.climate_file.phases;
+  },
   verifyDevice(deviceId) {
     if (deviceId==="bad",deviceId===""||deviceId===null||deviceId===undefined) {
         return false;
     }
     return true;
   },
-  registerDevice(values, teacher) {
-      values.teachuer_id = store.state.currentTeacher;
-      return Promise.resolve(axios.post(`${API_URL}/device/`, values)
+  registerDevice(values) {
+      return Promise.resolve(axios.post(`${API_URL}/device`, values)
         .then(function(response) {
             if (response.data.status === "fail") {
                 throw (response.data.message);
@@ -1109,7 +1111,7 @@ getStudentAssignmentResponses(){
   //   }
   // },
   registerTeacher(values) {
-    let deviceId = values.fopd_id
+    let deviceId = values.id;
     if (this.verifyDevice(deviceId)) {
       values.username = this.generateUsername();
       return Promise.resolve(axios.post(`${API_URL}/auth/register/teacher`, values)
@@ -1130,9 +1132,9 @@ getStudentAssignmentResponses(){
   }
 };
 
-export function getRepeatAssignments() {
-  return axios.get(`${API_URL}/repeatAssignments/`);
-}
+// export function getRepeatAssignments() {
+//   return axios.get(`${API_URL}/repeatAssignments/`);
+// }
 
 export function newExperiment(exp, jwt) {
   return axios.post(`${API_URL}/experiments/`, exp, {

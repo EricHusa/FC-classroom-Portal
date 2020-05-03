@@ -300,27 +300,34 @@ export default {
       return rows;
     },
     formatDates() {
-      let rows = this.observations.map(item => {
-        let tmp = item;
-        let d = new Date(item.updated);
-        tmp.updated = d.toDateString();
-        return tmp;
-      });
-      return rows;
+      if (this.observations.length > 0) {
+        let rows = this.observations.map(item => {
+          let tmp = item;
+          let d = new Date(item.updated);
+          tmp.updated = d.toDateString();
+          return tmp;
+        });
+        return rows;
+      }
+      else{
+        return [];
+      }
     }
   },
   methods: {
     setExpi(id = null) {
+      if(id===null){alert("I should stat here"); return;}
       this.activeExperiment = api.getExperiment(id);
       this.$store.state.currentExperiment = this.activeExperiment;
       for (let k in this.experimentForm) {
         this.experimentForm[k] = this.activeExperiment[k];
       }
-      this.observations = api.getObservations();
+      this.observations = api.getObservations(this.$store.state.currentExperiment);
     },
 
     createExperiment() {
-      this.activeExperiment = { title: "New Experiment", device: this.devices[0].fopd_id, student_ids: [] };
+      alert(JSON.stringify(this.devices));
+      this.activeExperiment = { title: "New Experiment", device: this.devices[0].id, student_ids: [] };
       this.$store.state.currentExperiment = null;
       for (let k in this.experimentForm) {
         this.experimentForm[k] = this.activeExperiment[k];
@@ -392,7 +399,7 @@ export default {
       this.activeObservation = obs;
     },
     refreshObservations(){
-      this.observations = api.getObservations();
+      this.observations = api.getObservations(this.$store.state.currentExperiment);
     },
 
     async updateAssignment(values) {

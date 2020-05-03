@@ -9,7 +9,7 @@
     >
       Experiment {{ updateAction }}
     </b-alert>
-    <b-overlay :show="experiment.id===deleted" rounded="sm">
+    <b-overlay :show="Object.keys(experiment).length === 0||experiment.id===deleted" rounded="sm">
       <b-jumbotron
         ><h2>{{ experiment.title }}</h2>
         <hr />
@@ -136,7 +136,7 @@
       <template v-slot:overlay>
         <div class="text-center">
           <b-icon icon="x-circle-fill" font-scale="3"></b-icon>
-          <p id="cancel-label">Please select or create another experiment.</p>
+          <p id="cancel-label">Please select or create an experiment.</p>
         </div>
       </template>
     </b-overlay>
@@ -167,7 +167,7 @@ export default {
       let rows = this.devices.map(item => {
         let tmp = {};
         tmp.text = item.name;
-        tmp.value = item.fopd_id;
+        tmp.value = item.id;
         return tmp;
       });
       return rows;
@@ -195,13 +195,19 @@ export default {
     },
     addFormValues(form){
       let updateValues = form;
-      updateValues.student_ids = api.getStudentIdList(this.experiment.students);
-      updateValues.device = this.experiment.device;
+      if(this.experiment===undefined){
+        updateValues.student_ids = [];
+      }
+      else {
+        updateValues.student_ids = this.experiment.students;
+      }
+      alert(JSON.stringify(this.experiment));
+      updateValues.device_id = this.experiment.device;
       return updateValues
     },
     async createExperiment() {
       let updateValues = this.addFormValues(this.form);
-      if(updateValues.title.length <=0 || updateValues.device === null){
+      if(updateValues.title.length <=0 || updateValues.device_id === null){
         alert("New experiments must have at least a name and device assigned")
         return;
       }

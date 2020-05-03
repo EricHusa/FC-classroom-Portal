@@ -46,18 +46,18 @@ const routes = [
       }
     }
   },
-  {
-    path: "/view_assignment/:id",
-    name: "viewAssignment",
-    component: Assignment,
-    beforeEnter(to, from, next) {
-      if (!store.getters.isAuthenticatedTest) {
-        next("/login");
-      } else {
-        next();
-      }
-    }
-  },
+  // {
+  //   path: "/view_assignment/:id",
+  //   name: "viewAssignment",
+  //   component: Assignment,
+  //   beforeEnter(to, from, next) {
+  //     if (!store.getters.isAuthenticatedTest) {
+  //       next("/login");
+  //     } else {
+  //       next();
+  //     }
+  //   }
+  // },
   {
     path: "/student/:id",
     name: "viewAccount",

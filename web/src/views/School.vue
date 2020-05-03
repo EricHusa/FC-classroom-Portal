@@ -182,15 +182,15 @@ export default {
   },
   computed: {
     formatCheckboxes() {
-      let students = api.getStudentCheckboxes();
-      let rows = students.map(item => {
-        let tmp = item;
-        if (this.currClass.students.includes(item.value)) {
-          tmp.disabled = true;
-        }
-        return tmp;
-      });
-      return rows;
+      return api.getStudentCheckboxes();
+      // let rows = students.map(item => {
+      //   let tmp = item;
+      //   if (this.currClass.students.includes(item.value)) {
+      //     tmp.disabled = true;
+      //   }
+      //   return tmp;
+      // });
+      // return rows;
     }
   },
   methods: {
@@ -207,7 +207,8 @@ export default {
     setClass(id) {
       this.currStudents = api.getStudents(id);
       this.currClass = api.getClass(id);
-      this.selectedStudents = api.getStudentIdList(this.currClass.students);
+      this.selectedStudents = api.getStudentIdList(this.currStudents);
+      // alert(JSON.stringify(this.currClass.students));
       this.classDeleted = false;
     },
     // getClassName(id) {
@@ -230,7 +231,7 @@ export default {
     async updateClassName(thisClass, name) {
       if (name.length > 0) {
         thisClass.name = name;
-        thisClass.student_ids = api.getStudentIdList(thisClass,student);
+        thisClass.student_ids = api.getStudentIdList(thisClass.students);
         try{
         this.currClass = await api.updateClass(thisClass).then(function (response) {
           return response;
@@ -250,7 +251,7 @@ export default {
         )
       ) {
         try{
-        await api.delete(id).then(function (response) {
+        await api.deleteClass(id).then(function (response) {
           return response;
         });
         } catch (err) {
@@ -290,6 +291,7 @@ export default {
         alert(error);
         return;
       });
+      this.refreshClassList();
       this.setClass(this.currClass.id);
     },
     validate() {

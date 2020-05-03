@@ -45,7 +45,7 @@ export default {
     },
     deviceRegistration: {
         options: [
-            {key: "fopd_id", label: "Device ID", required: true, type: "text"},
+            {key: "id", label: "Device ID", required: true, type: "text"},
             {key: "name", label: "Device Name", required: true, type: "text"}
         ]
     }

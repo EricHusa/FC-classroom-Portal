@@ -60,7 +60,7 @@ export default {
         fname: null,
         lname: null,
         username: "",
-        password: ""
+        password: null
       },
       headers: [
         { key: "fname", label: "First Name", sortable: true },
@@ -73,7 +73,11 @@ export default {
   methods: {
     async updateStudent() {
       try {
-        this.student = await api.updateStudent(this.student.id, this.form).then(function (response) {
+        let updateVals = this.form;
+        if(this.form.password===null){
+          delete this.form["password"];
+        }
+        this.student = await api.updateStudent(this.student.id, updateVals).then(function (response) {
           return response;
         });
         await api.setLocalStudents().then(function (response) {
@@ -87,15 +91,16 @@ export default {
       this.updateAlert = 3;
     },
     async deleteStudent() {
-      try{
-      if (confirm("Are you sure you want to delete this student account?")) {
-        await api.deleteStudent(this.student.id).then(function (response) {
-          return response;
-        });
-        await api.setLocalStudents().then(function (response) {
-          return response;
-        });
+      try {
+        if (confirm("Are you sure you want to delete this student account?")) {
+          await api.deleteStudent(this.student.id).then(function (response) {
+            return response;
+          });
+          await api.setLocalStudents().then(function (response) {
+            return response;
+          });
         }
+      }
       catch(e){
         alert(e);
         return
@@ -103,10 +108,9 @@ export default {
         // this.deleteAlert = 3
         this.$router.push("/school");
       }
-    }
   },
   beforeMount: function() {
-    this.studentId = parseInt(this.$route.params.id);
+    this.studentId = this.$route.params.id;
   },
   mounted() {
     this.student = api.getStudent(this.studentId);

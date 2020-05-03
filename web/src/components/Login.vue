@@ -88,7 +88,7 @@ export default {
       forms: {
         student: { username: "", password: "" },
         teacher: { username: "", password: "" },
-        register: {fopd_id: "", fname: "", lname: "", password: "", repeatPassword: ""}
+        register: {id: "", fname: "", lname: "", password: "", repeatPassword: ""}
       },
       options: LoginOptions.login,
       registerOptions: LoginOptions.register,
@@ -126,7 +126,10 @@ export default {
         this.errorAlert = 5;
         return;
       }
-        api.registerDevice({ fopd_id: this.forms.register.fopd_id, name: this.forms.register.fopd_id }, teacher.username);
+        await api.registerDevice({ id: this.forms.register.id, name: this.forms.register.id, teacher_id: teacher.id}).catch(function (error) {
+        alert(error);
+        return;
+      });
         this.forms.teacher.username = teacher.username;
         this.forms.teacher.password = this.forms.register.password;
         alert("Your username is " + teacher.username + ". Please write it down now and then log in")
