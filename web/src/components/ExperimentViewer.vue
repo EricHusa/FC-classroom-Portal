@@ -41,8 +41,7 @@
           </b-col>
           <b-col sm="9">
             <b-form-select
-              :value="experiment.device"
-              v-model="experiment.device"
+              v-model="experiment.device.id"
               :options="formatDevices"
               id="inline-form-input-system"
             ></b-form-select>
@@ -81,7 +80,7 @@
             >
               <b-dropdown-form>
                 <b-form-checkbox-group
-                  v-model="experiment.students"
+                  v-model="form.student_ids"
                   :options="getStudentCheckboxes()"
                   name="flavour-2a"
                   stacked
@@ -158,7 +157,7 @@ export default {
       updateAlert: 0,
       updateAction: "",
       deleted: null,
-      selectedStudents: [1],
+      selectedStudents: [],
       fields: TableHeaders.experiments
     };
   },
@@ -198,11 +197,11 @@ export default {
       if(this.experiment===undefined){
         updateValues.student_ids = [];
       }
-      else {
-        updateValues.student_ids = this.experiment.students;
-      }
-      alert(JSON.stringify(this.experiment));
-      updateValues.device_id = this.experiment.device;
+      // else {
+      //   updateValues.student_ids = this.experiment.students;
+      // }
+      // alert(JSON.stringify(this.experiment));
+      updateValues.device_id = this.experiment.device.id;
       return updateValues
     },
     async createExperiment() {
@@ -232,6 +231,7 @@ export default {
       // this.experiment = api.getExperiment(this.experiment.id);
       this.updateAction = "updated";
       this.updateAlert = 3;
+      this.$emit("experimentsChanged");
     },
     getStudentCheckboxes() {
       if(this.currentClassScope === null) {
@@ -263,6 +263,7 @@ export default {
     this.form.description = this.experiment.description;
     this.form.plant = this.experiment.plant;
     this.form.start_date = this.experiment.start_date;
+    // this.selectedStudents = api.getStudentIdList(this.experiment.students);
   }
 };
 </script>

@@ -74,7 +74,7 @@
             </b-row>
           </b-tab>
 
-          <b-tab title="Assignments" :disabled="$store.state.currentExperiment==null">
+          <b-tab title="Assignments">
             <div>
               <b-row>
                 <b-col sm="6">
@@ -87,6 +87,7 @@
                   <b-collapse id="assignment-creator"
                     ><AssignmentCreator
                           @assignmentCreated="createAssignment"
+                          v-bind:studentsList="studentCheckboxes"
                             v-bind:updating="false"
                   /></b-collapse>
                   <h3>Singular Assignments</h3>
@@ -130,6 +131,7 @@
                           <!--                          <b-card-text>{{data.item.id}}</b-card-text>-->
                           <AssignmentCreator
                             @assignmentCreated="updateAssignment"
+                          v-bind:studentsList="studentCheckboxes"
                             v-bind:currentValues="data.item"
                             v-bind:updating="true"
                           />
@@ -255,6 +257,7 @@ export default {
       activeAssignment: {},
       activeResponse: {},
       activeObservation: {},
+      studentCheckboxes: [],
       loading: false,
       experimentForm: {
         title: null,
@@ -267,8 +270,11 @@ export default {
   },
   beforeMount() {
     this.loading = true;
-    this.refreshStudents();
-    this.refreshClasses();
+    if(this.role==="teacher") {
+      this.refreshStudents();
+      this.refreshClasses();
+      this.refreshDeviceList();
+    }
     this.refreshExperimentList();
     if (this.experiments.length > 0) {
       this.setExpi(this.experiments[0].id);
@@ -279,7 +285,6 @@ export default {
     if (this.role == "student") {
       this.refreshStudentAssignmentResponses();
     }
-    this.refreshDeviceList();
     this.refreshObservations();
     this.loading = false;
   },
@@ -316,18 +321,20 @@ export default {
   },
   methods: {
     setExpi(id = null) {
-      if(id===null){alert("I should stat here"); return;}
+      if(id===null){return;}
       this.activeExperiment = api.getExperiment(id);
       this.$store.state.currentExperiment = this.activeExperiment;
       for (let k in this.experimentForm) {
         this.experimentForm[k] = this.activeExperiment[k];
       }
+      this.experimentForm.student_ids = api.getStudentIdList(this.activeExperiment.students);
       this.observations = api.getObservations(this.$store.state.currentExperiment);
     },
 
     createExperiment() {
-      alert(JSON.stringify(this.devices));
-      this.activeExperiment = { title: "New Experiment", device: this.devices[0].id, student_ids: [] };
+      // alert(JSON.stringify(this.devices));
+      this.activeExperiment = { title: "New Experiment", device: this.devices[0], student_ids: [], students: [] };
+      alert(JSON.stringify(this.activeExperiment));
       this.$store.state.currentExperiment = null;
       for (let k in this.experimentForm) {
         this.experimentForm[k] = this.activeExperiment[k];
@@ -429,6 +436,7 @@ export default {
         }).catch(function (error) {
         alert(error);
       });
+      this.studentCheckboxes = api.getStudentCheckboxes();
     },
     async refreshDeviceList(){
       this.devices = await api.setLocalDevices().then(function(response) {

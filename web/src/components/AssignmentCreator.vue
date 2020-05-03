@@ -74,7 +74,7 @@ import api from "../api/index.js";
 export default {
   name: "AssignmentCreator",
   props: {
-    // students: Array,
+    studentsList: Array,
     currentValues: {},
     updating: Boolean
   },
@@ -82,7 +82,6 @@ export default {
     return {
       createdAlert: 0,
       show: true,
-      studentsList: [],
       form: {
         id: null,
         title: null,
@@ -108,9 +107,9 @@ export default {
     };
   },
   beforeMount: function() {
-    this.studentsList = api.getStudentCheckboxes();
   },
   mounted() {
+    // this.studentsList = api.getStudentCheckboxes();
     if (this.currentValues !== undefined) {
       for (const [key] of Object.entries(this.form)) {
         this.form[key] = this.currentValues[key];

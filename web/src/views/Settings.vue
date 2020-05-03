@@ -6,7 +6,6 @@
         <label>System: </label>
         <b-form-select
           class="mb-2 mr-sm-2 mb-sm-0"
-          :value="currentDevice"
           v-model="currentDevice"
           :options="formatDevices"
           id="inline-form-input-system"
@@ -167,12 +166,13 @@ export default {
   components: { NavBar, DeviceViewer },
   data() {
     return {
-      teacher: this.$store.state.currentTeacher,
-      currentDevice: null,
+      teacher: this.$store.state.currentUser.username,
+      currentDevice: {},
       devices: [],
       updateAlert: 0,
       updateMessage: "",
       sectionTitle: "",
+      currentDeviceId: "",
       headers: TableHeaders.settingsButtons,
       options: [
         { option: "account", label: "Account" },
@@ -182,7 +182,7 @@ export default {
       teacherOptions: CreatorOptions.teacherAccount.options,
       teacherForm: {},
       passwordOptions: CreatorOptions.teacherPassword.options,
-      passwordForm: { oldPass: "", newPass: "", repeatNewPass: "" },
+      passwordForm: {newPass: "", repeatNewPass: "" },
       deviceOptions: CreatorOptions.deviceRegistration.options,
       deviceInput: "",
       deviceForm: { id: "", name: "" }
@@ -190,7 +190,6 @@ export default {
   },
   beforeMount() {
     this.refreshDeviceList();
-    this.currentDevice = this.devices[0];
     this.teacherForm = this.$store.state.currentUser;
   },
   computed: {
@@ -207,7 +206,7 @@ export default {
   methods: {
     onSubmit(evt) {
       evt.preventDefault();
-      // this.$store.state.device = this.currentDevice;
+      alert(JSON.stringify(this.currentDevice));
     },
     resetAlert() {
       this.updateAlert = 0;
@@ -239,6 +238,9 @@ export default {
       }).catch(function (error) {
         alert(error);
       });
+      if(Object.keys(this.currentDevice).length === 0) {
+        this.currentDevice = this.devices[0];
+      }
     },
     async updateDevice(evt) {
       evt.preventDefault();
@@ -250,6 +252,7 @@ export default {
         alert(error);
         return;
       });
+      delete this.currentDevice.teacher;
       this.refreshDeviceList();
     },
     registerDevice(evt) {
@@ -267,7 +270,7 @@ export default {
       evt.preventDefault();
       try {
         this.checkNewPass();
-        await api.updateTeacher(this.teacherForm).then(function (response) {
+        await api.updateTeacher({password: this.passwordForm.newPass}).then(function (response) {
           return response;
         });
       } catch (e) {

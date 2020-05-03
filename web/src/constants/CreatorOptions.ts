@@ -38,7 +38,6 @@ export default {
     },
     teacherPassword: {
         options: [
-            {key: "oldPass", label: "Old Password", required: true, type: "password"},
             {key: "newPass", label: "New Password", required: true, type: "password"},
             {key: "repeatNewPass", label: "Repeat New Password", required: true, type: "password"}
         ]

@@ -212,7 +212,7 @@ export function register(userData) {
 export default {
   login(role, userData) {
     if (role === "student") {
-      return Promise.resolve(axios.post(`${API_URL}/auth/teacher/login`, userData)
+      return Promise.resolve(axios.post(`${API_URL}/auth/student/login`, userData)
         .then(function(response) {
             if (response.data.status === "fail") {
                 throw (response.data.message);
@@ -463,7 +463,7 @@ export default {
     }
     else if(scope === "class"){
       let thisClass = classes.find(c => c.id === scopeId);
-      currentScope = students.filter(element => thisClass.students.includes(element.id));
+      currentScope = thisClass.students;
     }
     else{
       currentScope = students;
@@ -625,7 +625,7 @@ export default {
             if (response.data.status === "fail") {
                 throw (response.data.message);
             } else {
-                experiments.push(response.data.experiment);
+                experiments.unshift(response.data.experiment);
                 return response.data.experiment;
             }
         }))
@@ -717,7 +717,7 @@ export default {
             if (response.data.status === "fail") {
                 throw (response.data.message);
             } else {
-                assignments.push(response.data.assignment);
+                assignments.unshift(response.data.assignment);
                 return response.data.assignment;
             }
         }))
@@ -896,7 +896,7 @@ getStudentAssignmentResponses(){
     for (let i in observations) {
       let obs = observations[i];
       if (obs.experiment === experiment.id) {
-        obsList.push(obs);
+        obsList.unshift(obs);
       }
     }
     return obsList;
@@ -1003,7 +1003,7 @@ getStudentAssignmentResponses(){
             if (response.data.status === "fail") {
                 throw (response.data.message);
             } else {
-                assignments = response.data.devices;
+                devices = response.data.devices;
                 return response.data.devices;
             }
         }))
@@ -1012,16 +1012,16 @@ getStudentAssignmentResponses(){
     });
     },
   getDevices() {
-    return devices.filter(element => element.teacher === store.state.currentTeacher);
+    return devices;
   },
-  // getDevice(deviceId){
-  //   let index = devices
-  //     .map(function(e) {
-  //       return e.fopd_id;
-  //     })
-  //     .indexOf(deviceId);
-  //   return devices[index]
-  // },
+  getDevice(deviceId){
+    let index = devices
+      .map(function(e) {
+        return e.fopd_id;
+      })
+      .indexOf(deviceId);
+    return devices[index]
+  },
   updateDeviceName(deviceId, newName) {
     return Promise.resolve(axios.put(`${API_URL}/device/${deviceId}/teacher/${store.state.currentTeacher}`, {name: newName})
         .then(function(response) {
@@ -1050,13 +1050,16 @@ getStudentAssignmentResponses(){
     return true;
   },
   registerDevice(values) {
+      values.teacher_id = store.state.currentTeacher;
       return Promise.resolve(axios.post(`${API_URL}/device`, values)
         .then(function(response) {
             if (response.data.status === "fail") {
                 throw (response.data.message);
             } else {
-                devices.push(response.data.device);
-                return response.data.device;
+                let device = response.data.device
+                delete device.teacher;
+                devices.push(device);
+                return device;
             }
         }))
     .catch(function(error) {
