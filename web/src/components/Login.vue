@@ -20,6 +20,7 @@
                 <b-form-input
                   :id="`student-login-form-${item.key}`"
                   v-model="forms.student[item.key]"
+                  required
                   class="login-input"
                 ></b-form-input>
               </b-row>
@@ -40,6 +41,7 @@
                 <b-form-input
                   :id="`teacher-login-form-${item.key}`"
                   v-model="forms.teacher[item.key]"
+                  required
                   class="login-input"
                 ></b-form-input>
               </b-row>

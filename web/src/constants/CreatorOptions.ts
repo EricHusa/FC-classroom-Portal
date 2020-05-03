@@ -30,6 +30,12 @@ export default {
             {text: "Numerical responses", value: "number"}
         ]
     },
+  studentCreation: [
+        { key: "fname", label: "First Name", required: false },
+        { key: "lname", label: "Last Name", required: false },
+        { key: "username", label: "Username", required: true },
+        { key: "password", label: "Password", required: true }
+      ],
     teacherAccount: {
         options: [
             {key: "fname", label: "First Name", required: true, type: "text"},

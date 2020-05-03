@@ -17,7 +17,7 @@
                 <b-collapse id="add-student">
                   <b-row
                     class="my-1"
-                    v-for="item in headers.slice(0, 4)"
+                    v-for="item in studentCreationOptions"
                     :key="item"
                   >
                     <b-col sm="3">
@@ -31,6 +31,7 @@
                         :id="`new-student-form-${item.label}`"
                         :placeholder="`${item.label}`"
                         v-model="form[item.key]"
+                        :required="item.required"
                       ></b-form-input>
                     </b-col>
                   </b-row>
@@ -154,6 +155,7 @@ import StudentList from "../components/StudentList.vue";
 import api from "../api/index.js";
 import NavBar from "../components/NavBar";
 import TableHeaders from "../constants/TableHeaders.ts";
+import CreatorOptions from "../constants/CreatorOptions.ts";
 export default {
   components: { StudentList, NavBar },
   data() {
@@ -161,6 +163,7 @@ export default {
       currStudents: api.getStudents(),
       allStudents: api.getStudents(),
       headers: TableHeaders.studentList,
+      studentCreationOptions: CreatorOptions.studentCreation,
       classes: [{}],
       className: "",
       classDeleted: true,

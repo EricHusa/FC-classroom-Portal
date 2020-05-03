@@ -197,6 +197,11 @@ let devices = [];
 //   }
 // ];
 
+axios.defaults.validateStatus = () => {
+
+    return status <= 400;
+};
+
 export function authenticate(userData) {
   return axios.post(`${API_URL}/login/`, userData);
 }
@@ -221,9 +226,9 @@ export default {
                 return (response.data.student);
             }
         }))
-    .catch(function(error) {
-        throw (error);
-    });
+    // .catch(function(error) {
+    //     throw (error);
+    // });
     }
 
     if (role === "teacher") {
@@ -313,7 +318,7 @@ export default {
     return temp;
   },
   pullCSV(start, end){
-    alert("https://fop1.urbanspacefarms.com:5000/api/get_data_json/" + store.state.currentExperiment.device + "/" + start + "/" +end);
+    alert("https://fop1.urbanspacefarms.com:5000/api/get_data_json/" + store.state.currentExperiment.device.id + "/" + start + "/" +end);
   },
 
   /// FUNCTIONS FOR CLASSES
