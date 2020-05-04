@@ -447,8 +447,14 @@ export default {
     // getObservationResponses(){
     //   return [];
     // },
-    setObservation(obs) {
+    async setObservation(obs) {
       this.activeObservation = obs;
+      this.observations = await api.getObservationResponses(this.activeObservation.id).then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+        return;
+      });
       this.observationResponses = this.formatObservationDates;
     },
     async refreshObservations(){

@@ -87,7 +87,7 @@ export default {
   name: "ObservationCreator",
   props: {
     currentValues: {},
-    studentList: []
+    studentsList: Array
   },
   data() {
     return {
