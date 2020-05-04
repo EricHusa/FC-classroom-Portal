@@ -9,7 +9,7 @@
     >
       Experiment {{ updateAction }}
     </b-alert>
-    <b-overlay :show="experiment.id===deleted" rounded="sm">
+    <b-overlay :show="Object.keys(experiment).length === 0||experiment.id===deleted" rounded="sm">
       <b-jumbotron
         ><h2>{{ experiment.title }}</h2>
         <hr />
@@ -41,9 +41,9 @@
           </b-col>
           <b-col sm="9">
             <b-form-select
-              :value="experiment.device"
-              v-model="experiment.device"
+              v-model="experiment.device.id"
               :options="formatDevices"
+              :disabled="checkRole()"
               id="inline-form-input-system"
             ></b-form-select>
           </b-col>
@@ -81,7 +81,7 @@
             >
               <b-dropdown-form>
                 <b-form-checkbox-group
-                  v-model="experiment.students"
+                  v-model="form.student_ids"
                   :options="getStudentCheckboxes()"
                   name="flavour-2a"
                   stacked
@@ -108,18 +108,6 @@
               ></b-col
             >
           </b-row>
-<!--          <b-collapse id="add-students-to-experiment">-->
-<!--            <div style="text-align: center;">-->
-<!--              <b-form-group style="text-align: left; display: inline-block">-->
-<!--                <b-form-checkbox-group-->
-<!--                  v-model="selectedStudents"-->
-<!--                  :options="getStudentCheckboxes()"-->
-<!--                  name="flavour-2a"-->
-<!--                  stacked-->
-<!--                ></b-form-checkbox-group>-->
-<!--              </b-form-group>-->
-<!--            </div>-->
-<!--          </b-collapse>-->
         </b-collapse>
         <b-collapse
           id="experiment-create-section"
@@ -136,7 +124,7 @@
       <template v-slot:overlay>
         <div class="text-center">
           <b-icon icon="x-circle-fill" font-scale="3"></b-icon>
-          <p id="cancel-label">Please select or create another experiment.</p>
+          <p id="cancel-label">Please select or create an experiment.</p>
         </div>
       </template>
     </b-overlay>
@@ -158,7 +146,7 @@ export default {
       updateAlert: 0,
       updateAction: "",
       deleted: null,
-      selectedStudents: [1],
+      selectedStudents: [], //delete?
       fields: TableHeaders.experiments
     };
   },
@@ -167,7 +155,7 @@ export default {
       let rows = this.devices.map(item => {
         let tmp = {};
         tmp.text = item.name;
-        tmp.value = item.fopd_id;
+        tmp.value = item.id;
         return tmp;
       });
       return rows;
@@ -177,9 +165,14 @@ export default {
     checkRole() {
       return this.$store.state.role == "student";
     },
-    deleteExperiment() {
+    async deleteExperiment() {
       if (confirm("Are you sure you want to delete this experiment?")) {
-        api.deleteExperiment(this.experiment.id);
+        await api.deleteExperiment(this.experiment.id).then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
         //this.experiment = { title: "Deleted", deleted: true };
         this.deleted = this.experiment.id
         this.$store.state.currentExperiment = null;
@@ -190,30 +183,44 @@ export default {
     },
     addFormValues(form){
       let updateValues = form;
-      updateValues.students = this.experiment.students;
-      updateValues.device = this.experiment.device;
+      if(this.experiment===undefined){
+        updateValues.student_ids = [];
+      }
+      // else {
+      //   updateValues.student_ids = this.experiment.students;
+      // }
+      // alert(JSON.stringify(this.experiment));
+      updateValues.device_id = this.experiment.device.id;
       return updateValues
     },
-    createExperiment() {
+    async createExperiment() {
       let updateValues = this.addFormValues(this.form);
-      if(updateValues.title.length <=0 || updateValues.device === null){
+      if(updateValues.title.length <=0 || updateValues.device_id === null){
         alert("New experiments must have at least a name and device assigned")
         return;
       }
-      this.experiment = api.createExperiment(
-        updateValues,
-        this.$store.state.currentUser.id
-      );
+      this.experiment = await api.createExperiment(updateValues).then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
       this.updateAction = "created";
       this.updateAlert = 3;
       this.$emit("experimentsChanged", this.experiment.id);
     },
-    updateExperiment() {
+    async updateExperiment() {
       let updateValues = this.addFormValues(this.form);
-      api.updateExperiment(this.experiment.id, updateValues);
-      this.experiment = api.getExperiment(this.experiment.id);
+      this.experiment = await api.updateExperiment(this.experiment.id, updateValues).then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
+      // this.experiment = api.getExperiment(this.experiment.id);
       this.updateAction = "updated";
       this.updateAlert = 3;
+      this.$emit("experimentsChanged");
     },
     getStudentCheckboxes() {
       if(this.currentClassScope === null) {
@@ -225,17 +232,6 @@ export default {
     },
     getClassCheckboxes(){
       return api.getClassCheckboxes();
-    },
-    inExperiment(studentId) {
-      if (this.experiment.students.includes(studentId)) {
-        return "success";
-      } else {
-        return "default";
-      }
-    },
-    changeInvolvement(studentId) {
-      api.changeExperimentInvolvement(this.experiment.id, studentId);
-      this.$refs.dropdown.show(true);
     },
     resetAlert() {
       this.updateAlert = 0;

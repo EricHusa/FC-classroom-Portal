@@ -24,12 +24,19 @@ export default {
                 required: false,
                 type: "text"
             },
+            {key: "units", label: "Units", required: true, type: "text"},
         ],
         types: [
             {text: "Written responses", value: "text"},
             {text: "Numerical responses", value: "number"}
         ]
     },
+  studentCreation: [
+        { key: "fname", label: "First Name", required: false },
+        { key: "lname", label: "Last Name", required: false },
+        { key: "username", label: "Username", required: true },
+        { key: "password", label: "Password", required: true }
+      ],
     teacherAccount: {
         options: [
             {key: "fname", label: "First Name", required: true, type: "text"},
@@ -38,14 +45,13 @@ export default {
     },
     teacherPassword: {
         options: [
-            {key: "oldPass", label: "Old Password", required: true, type: "password"},
             {key: "newPass", label: "New Password", required: true, type: "password"},
             {key: "repeatNewPass", label: "Repeat New Password", required: true, type: "password"}
         ]
     },
     deviceRegistration: {
         options: [
-            {key: "fopd_id", label: "Device ID", required: true, type: "text"},
+            {key: "id", label: "Device ID", required: true, type: "text"},
             {key: "name", label: "Device Name", required: true, type: "text"}
         ]
     }

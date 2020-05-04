@@ -11,6 +11,7 @@
       >
         Observation updated!
       </b-alert>
+      <b-button @click="getStudentCheckboxes">Refresh student list</b-button>
       <b-form class="my-1" @submit="onSubmit" @reset="onReset" v-if="show">
         <b-row v-for="item in options" :key="item.key">
           <b-col sm="3">
@@ -60,7 +61,7 @@
             ><b-form-select
               id="observation-creation-students-input"
               v-model="form.collaborators"
-              :options="studentsList"
+              :options="studentOptions"
               required
               multiple
               description="CTRL + click to select multiple students"
@@ -84,20 +85,22 @@
 import api from "../api/index.js";
 import CreatorOptions from "../constants/CreatorOptions.ts";
 export default {
-  name: "AssignmentCreator",
+  name: "ObservationCreator",
   props: {
-    currentValues: {}
+    currentValues: {},
+    studentsList: Array
   },
   data() {
     return {
       createdAlert: 0,
       show: true,
-      studentsList: [],
+      studentOptions: [],
       updateAlert: 0,
       form: {
         id: null,
         title: null,
         description: null,
+        units: null,
         type: [],
         updated: null,
         collaborators: []
@@ -107,14 +110,16 @@ export default {
     };
   },
   beforeMount: function() {
-    this.studentsList = api.getStudentCheckboxes("experiment", this.$store.state.currentExperiment.id);
+    // this.studentsList = api.getStudentCheckboxes("experiment", this.$store.state.currentExperiment.id);
   },
   mounted() {
     if (this.currentValues !== undefined) {
       for (const [key] of Object.entries(this.form)) {
         this.form[key] = this.currentValues[key];
+        this.form.collaborators = api.getStudentIdList(this.currentValues.collaborators);
       }
     }
+    this.studentOptions = this.studentsList;
   },
   methods: {
     resetForm() {
@@ -123,6 +128,9 @@ export default {
           this.form[key] = null;
         }
       }
+    },
+    getStudentCheckboxes(){
+      this.studentOptions = api.getStudentCheckboxes("experiment", this.$store.state.currentExperiment.id);
     },
     onSubmit(evt) {
       evt.preventDefault();

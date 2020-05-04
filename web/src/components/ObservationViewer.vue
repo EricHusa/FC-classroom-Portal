@@ -36,23 +36,21 @@
         </b-row>
         <h3>Observations Records</h3>
         <div>
-          <b-table :fields="observationHeaders" :items="formatDates">
+          <b-table :fields="observationHeaders" :items="responses">
             <template v-slot:cell(response)="data">
               <b-form-input
-                :id="`observation-response-input-${data.item.number}`"
+                :id="`observation-response-input-${data.item.id}`"
                 :type="observation.type"
-                :disabled="unlocked != data.item.number || !data.item.editable"
+                :disabled="unlocked != data.item.id || !data.item.editable"
                 step="0.01"
                 min="0.00"
-                v-model="
-                  observation.responses[getIndex(data.item.number)].response
-                "
+                v-model="response.response"
               ></b-form-input>
             </template>
             <template v-slot:cell(action)="row">
               <b-button
                 :hidden="role=='teacher' || deleted === observation.id"
-                @click="unlocked = row.item.number"
+                @click="unlocked = row.item.id"
                 >Change</b-button
               >
               <b-button
@@ -63,7 +61,7 @@
                 >Manage</b-button
               >
               <b-button
-                @click="updateObservation(row.item.number, row.item.response)"
+                @click="updateObservation(row.item.id, row.item.response)"
                 variant="success"
                 :hidden="deleted === observation.id"
                 >Update</b-button
@@ -73,19 +71,19 @@
               <b-row>
                 <b-button
                   variant="danger"
-                  @click="deleteReport(data.item.number)"
+                  @click="deleteReport(data.item.id)"
                   :hidden="deleted === observation.id"
                   >Delete report</b-button
                 >
                 <b-button
                   variant="light"
-                  @click="unlockResponse(data.item.number)"
+                  @click="unlockResponse(data.item.id)"
                   :hidden="deleted === observation.id"
                   >Change</b-button
                 >
                 <b-button
                   variant="warning"
-                  @click="changeEditPermission(data.item.number)"
+                  @click="changeEditPermission(data.item.id)"
                   :hidden="deleted === observation.id"
                   >Lock / Unlock</b-button
                 >
@@ -119,12 +117,13 @@ import api from "../api/index.js";
 export default {
   name: "ObservationViewer",
   props: {
-    observation: Object
+    observation: Object,
+    responses: Array
   },
   data() {
     return {
       observationHeaders: TableHeaders.observationResponse,
-      responses: [],
+      // responses: [],
       unlocked: null,
       observationUpdated: 0,
       observationError: 0,
@@ -135,30 +134,30 @@ export default {
     };
   },
   mounted() {
-    if (this.observation !== undefined) {
-      for (let r in this.observation.responses) {
-        let resp = this.observation.responses[r];
-        this.reportInputs[resp.number] = resp.response;
-      }
-      this.responses = this.observation.responses;
-    }
+    // if (this.observation !== undefined) {
+      // for (let r in this.observation.responses) {
+      //   let resp = this.observation.responses[r];
+      //   this.reportInputs[resp.number] = resp.response;
+      // }
+      // this.responses = this.observation.responses;
+    // }
     this.role = this.$store.state.role;
   },
-  computed: {
-    formatDates() {
-      let rows = this.observation.responses.map(item => {
-        let tmp = item;
-        if (item.submitted != null) {
-          let d = new Date(item.submitted);
-          tmp.submitted = d.toDateString();
-        }
-        return tmp;
-      });
-      return rows;
-    }
-  },
+  // computed: {
+  //   formatObservationDates() {
+  //     let rows = this.observation.responses.map(item => {
+  //       let tmp = item;
+  //       if (item.submitted != null) {
+  //         let d = new Date(item.submitted);
+  //         tmp.submitted = d.toDateString();
+  //       }
+  //       return tmp;
+  //     });
+  //     return rows;
+  //   }
+  // },
   methods: {
-    updateObservation(responseNumber, responseVal) {
+    async updateObservation(responseId, responseVal) {
       if (this.observation.type == "number") {
         responseVal = parseFloat(responseVal);
         if (isNaN(responseVal)) {
@@ -168,24 +167,41 @@ export default {
         }
         responseVal = responseVal.toFixed(2);
       }
-      api.updateObservationResponse(
+      await api.updateObservationResponse(
         this.observation.id,
-        responseNumber,
+        responseId,
         this.$store.state.currentUser.id,
         responseVal
-      );
+      ).then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+        return;
+      });
+      this.$emit("observationUpdated");
       this.unlocked = null;
       this.observationUpdated = 3;
     },
-    addObservation() {
-      api.addObservationResponse(this.observation.id);
+    async addObservation() {
+      await api.addObservationResponse(this.observation.id).then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+        return;
+      });
+      this.$emit("observationUpdated");
     },
-    deleteObservation() {
+    async deleteObservation() {
       if (
         confirm("Are you sure you want to permanently delete this observation?")
       ) {
         this.deleted = this.observation.id;
-        api.deleteObservation(this.observation.id);
+        await api.deleteObservation(this.observation.id).then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+        return;
+      });
         this.$emit("observationDeleted")
       }
     },

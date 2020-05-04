@@ -5,7 +5,7 @@ import Home from "../views/Home.vue";
 import Login from "../components/Login.vue";
 import Settings from "../views/Settings.vue";
 import store from "../store";
-import Assignment from "../views/Assignment";
+// import Assignment from "../views/Assignment";
 import School from "../views/School";
 import Student from "../views/Student";
 
@@ -46,18 +46,18 @@ const routes = [
       }
     }
   },
-  {
-    path: "/view_assignment/:id",
-    name: "viewAssignment",
-    component: Assignment,
-    beforeEnter(to, from, next) {
-      if (!store.getters.isAuthenticatedTest) {
-        next("/login");
-      } else {
-        next();
-      }
-    }
-  },
+  // {
+  //   path: "/view_assignment/:id",
+  //   name: "viewAssignment",
+  //   component: Assignment,
+  //   beforeEnter(to, from, next) {
+  //     if (!store.getters.isAuthenticatedTest) {
+  //       next("/login");
+  //     } else {
+  //       next();
+  //     }
+  //   }
+  // },
   {
     path: "/student/:id",
     name: "viewAccount",

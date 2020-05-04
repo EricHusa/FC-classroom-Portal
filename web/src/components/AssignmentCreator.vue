@@ -53,7 +53,7 @@
           <b-col sm="9"
             ><b-form-select
               id="assignment-creation-students-input"
-              v-model="form.assignees"
+              v-model="form.student_ids"
               :options="studentsList"
               required
               multiple
@@ -74,22 +74,21 @@ import api from "../api/index.js";
 export default {
   name: "AssignmentCreator",
   props: {
-    students: Array,
-    currentValues: {},
+    studentsList: Array,
+    currentValues: {}, //delete?
     updating: Boolean
   },
   data() {
     return {
       createdAlert: 0,
       show: true,
-      studentsList: [],
       form: {
         id: null,
         title: null,
         description: null,
         type: [],
         due_date: null,
-        assignees: []
+        student_ids: []
       },
       options: [
         { key: "title", label: "Title", required: true, type: "text" },
@@ -108,14 +107,16 @@ export default {
     };
   },
   beforeMount: function() {
-    this.studentsList = api.getStudentCheckboxes();
   },
   mounted() {
+    // this.studentsList = api.getStudentCheckboxes();
     if (this.currentValues !== undefined) {
       for (const [key] of Object.entries(this.form)) {
         this.form[key] = this.currentValues[key];
       }
       this.form.due_date = api.getToday(this.form.due_date);
+      this.form.student_ids = api.getStudentIdList((api.getAssignment(this.currentValues.id)).assignees)
+      // alert(JSON.stringify(api.getAssignment(this.currentValues.id)));
     }
   },
   methods: {
@@ -124,7 +125,7 @@ export default {
       this.form.description = null;
       this.form.type = null;
       this.form.due_date = null;
-      this.form.assignees = null;
+      this.form.student_ids = [];
     },
     onSubmit(evt) {
       evt.preventDefault();

@@ -2,11 +2,12 @@
   <div>
     <NavBar />
     <div>
+      <b-overlay :show="loading" rounded="sm">
       <b-card no-body>
         <b-tabs card justified>
           <b-tab title="Experiment">
             <b-row>
-              <b-col sm="6">
+              <b-col sm="7">
                 <b-card-group deck>
                   <b-card-group v-for="item in experiments" :key="item.name">
                     <b-card
@@ -62,7 +63,7 @@
                   </b-overlay>
                 </b-card-group>
               </b-col>
-              <b-col sm="6">
+              <b-col sm="5">
                 <ExperimentViewer
                   v-bind:experiment="activeExperiment"
                   v-bind:form="experimentForm"
@@ -73,7 +74,7 @@
             </b-row>
           </b-tab>
 
-          <b-tab title="Assignments" :disabled="$store.state.currentExperiment==null">
+          <b-tab title="Assignments">
             <div>
               <b-row>
                 <b-col sm="6">
@@ -86,25 +87,12 @@
                   <b-collapse id="assignment-creator"
                     ><AssignmentCreator
                           @assignmentCreated="createAssignment"
+                          v-bind:studentsList="studentCheckboxes"
                             v-bind:updating="false"
                   /></b-collapse>
                   <h3>Singular Assignments</h3>
                   <div>
-                    <b-table :fields="assignmentHeaders" :items="addColors">
-                      <!--                      <template v-slot:cell(action)="data">-->
-                      <!--                        <b-icon-->
-                      <!--                          :id="`comment-notification-${data.item.id}`"-->
-                      <!--                          icon="exclamation-circle"-->
-                      <!--                          font-scale="2"-->
-                      <!--                          :hidden="role == 'teacher && responses[data.item.id].comments == null"-->
-                      <!--                        ></b-icon>-->
-                      <!--                        <b-popover-->
-                      <!--                          :target="`comment-notification-${data.item.id}`"-->
-                      <!--                          placement="bottom"-->
-                      <!--                          triggers="hover focus"-->
-                      <!--                          :content="responses[data.item.id].comments"-->
-                      <!--                        ></b-popover>-->
-                      <!--                      </template>-->
+                    <b-table :fields="assignmentHeaders" :items="formattedAssignments">
                       <template v-slot:cell(action)="row">
                         <b-button
                           :hidden="role == 'teacher'"
@@ -126,9 +114,9 @@
                       </template>
                       <template v-slot:row-details="data">
                         <b-card>
-                          <!--                          <b-card-text>{{data.item.id}}</b-card-text>-->
                           <AssignmentCreator
                             @assignmentCreated="updateAssignment"
+                          v-bind:studentsList="studentCheckboxes"
                             v-bind:currentValues="data.item"
                             v-bind:updating="true"
                           />
@@ -143,6 +131,7 @@
                     v-bind:response="activeResponse"
                     v-bind:responseList="responses"
                     @assignmentDeleted="refreshAssignmentList"
+                    @updateResponseList="setAssignment"
                   />
                 </b-col>
               </b-row>
@@ -158,14 +147,17 @@
                     v-b-toggle.observation-creator
                     variant="success"
                     :hidden="role == 'student'"
+                    style="margin-bottom: 0.5rem;"
                     >New Observation</b-button
                   >
                   <b-collapse id="observation-creator"
-                    ><ObservationCreator @observationCreated="createObservation"
+                    ><ObservationCreator
+                          v-bind:studentList="studentExperimentCheckboxes"
+                          @observationCreated="createObservation"
                   /></b-collapse>
                   <h3>Experiment Observations</h3>
                   <div>
-                    <b-table :fields="observationHeaders" :items="formatDates">
+                    <b-table :fields="observationHeaders" :items="formattedObservations">
                       <template v-slot:cell(action)="row">
                         <b-button
                           :hidden="role == 'student'"
@@ -183,6 +175,7 @@
                           <ObservationCreator
                             @observationCreated="updateObservation"
                             v-bind:currentValues="data.item"
+                            v-bind:studentList="studentExperimentCheckboxes"
                           />
                         </b-card>
                       </template>
@@ -190,7 +183,10 @@
                   </div>
                 </b-col>
                 <b-col sm="6">
-                  <ObservationViewer v-bind:observation="activeObservation" @observationDeleted="refreshObservations"/>
+                  <ObservationViewer v-bind:observation="activeObservation"
+                                     v-bind:responses="observationResponses"
+                                     @observationDeleted="refreshObservations"
+                                    @observationUpdated="refreshObservations"/>
                 </b-col>
               </b-row>
             </div>
@@ -211,6 +207,7 @@
           </b-tab>
         </b-tabs>
       </b-card>
+        </b-overlay>
     </div>
   </div>
 </template>
@@ -244,52 +241,50 @@ export default {
       experiments: [],
       assignments: [],
       observations: [],
+      observationResponses: [],
       responses: [],
-      devices: api.getDevices(),
+      devices: [],
       assignmentHeaders: TableHeaders.assignments,
       observationHeaders: TableHeaders.observations,
+      studentExperimentCheckboxes: [],
       activeExperiment: {},
       activeAssignment: {},
       activeResponse: {},
       activeObservation: {},
+      studentCheckboxes: [],
+      formattedAssignments: [],
+      formattedObservations: [],
+      loading: false,
       experimentForm: {
         title: null,
         description: null,
         plant: null,
         start_date: null,
-        students: []
+        student_ids: []
       }
     };
   },
   beforeMount() {
-    this.refreshExperimentList()
+    this.loading = true;
+    this.refreshStudents();
+    this.refreshClasses();
+    this.refreshDeviceList();
+    this.refreshExperimentList();
     if (this.experiments.length > 0) {
       this.setExpi(this.experiments[0].id);
     } else {
       this.setExpi(null);
     }
-    this.assignments = api.getAssignments(
-      this.$store.state.role,
-      this.$store.state.currentUser.id
-    );
-    if (this.role == "student") {
-      this.responses = api.getStudentAssignmentResponses(
-        this.$store.state.currentUser.id
-      );
-    }
-    this.observations = api.getObservations();
+    this.refreshAssignmentList();
+    this.loading = false;
   },
   computed: {
     addColors() {
       let rows = this.assignments.map(item => {
         let tmp = item;
         if (this.$store.state.role === "student") {
-          let pos = this.responses
-            .map(function(r) {
-              return r.assignment;
-            })
-            .indexOf(item.id);
-          this.responses[pos].submitted === null || this.responses[pos].submitted === undefined
+          let res = this.responses[item.id];
+          res.submitted === null || res.submitted === undefined || res.submitted === "None"
             ? (tmp._rowVariant = "warning")
             : (tmp._rowVariant = "success");
         }
@@ -300,81 +295,194 @@ export default {
       return rows;
     },
     formatDates() {
-      let rows = this.observations.map(item => {
+      if (this.observations.length > 0) {
+        let rows = this.observations.map(item => {
+          let tmp = item;
+          let d = new Date(item.updated);
+          tmp.updated = d.toDateString();
+          return tmp;
+        });
+        return rows;
+      }
+      else{
+        return [];
+      }
+    },
+    formatObservationDates() {
+      let rows = this.observationResponses.map(item => {
         let tmp = item;
-        let d = new Date(item.updated);
-        tmp.updated = d.toDateString();
+        if (item.submitted != null) {
+          let d = new Date(item.submitted);
+          tmp.submitted = d.toDateString();
+        }
         return tmp;
       });
       return rows;
     }
   },
   methods: {
-    setExpi(id = null) {
+    async setExpi(id = null) {
+      if(id===null){return;}
       this.activeExperiment = api.getExperiment(id);
       this.$store.state.currentExperiment = this.activeExperiment;
       for (let k in this.experimentForm) {
         this.experimentForm[k] = this.activeExperiment[k];
       }
-      this.observations = api.getObservations();
-    },
+      this.experimentForm.student_ids = api.getStudentIdList(this.activeExperiment.students);
+      this.observations = await api.setLocalObservations().then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+        return;
+      });
+      this.studentExperimentCheckboxes = api.getStudentCheckboxes("experiment", this.$store.state.currentExperiment.id);
+      this.refreshObservations();
+      },
 
     createExperiment() {
-      this.activeExperiment = { title: "New Experiment", device: this.devices[0].fopd_id, students: [] };
+      this.activeExperiment = { title: "New Experiment", device: this.devices[0], student_ids: [], students: [], start_date: api.getToday(new Date()) };
       this.$store.state.currentExperiment = null;
       for (let k in this.experimentForm) {
         this.experimentForm[k] = this.activeExperiment[k];
       }
     },
-    refreshExperimentList(newItem=null){
-      this.experiments = api.getExperiments(
-        this.$store.state.role,
-        this.$store.state.currentUser.id
-      );
+    async refreshExperimentList(newItem=null){
+      this.experiments = await api.setLocalExperiments().then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
       if(newItem !== null){
         this.setExpi(newItem);
       }
     },
-    refreshAssignmentList(){
-      this.assignments = api.getAssignments(this.$store.state.role,this.$store.state.currentUser.id);
+    async refreshStudentAssignmentResponses(){
+      this.responses = await api.setLocalStudentAssignmentResponses(this.$store.state.currentUser.id).catch(function (error) {
+        alert(error);
+      });
+      this.formattedAssignments = this.addColors;
+    },
+    async refreshAssignmentList(){
+      this.assignments = await api.setLocalAssignments().then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+        return;
+      });
+      if (this.role == "student") {
+        this.refreshStudentAssignmentResponses();
+    }
+      else {
+        this.formattedAssignments = this.addColors;
+      }
       this.activeAssignment = {};
     },
-    setAssignment(assignment) {
+    async setAssignment(assignment) {
       this.activeAssignment = assignment;
       if (this.role == "student") {
         this.activeResponse = api.getStudentAssignmentResponse(
-          assignment.id,
-          this.$store.state.currentUser.id
+          assignment.id
         );
       } else {
-        this.responses = api.getTeacherAssignmentResponses(
+        this.responses = await api.getTeacherAssignmentResponses(
           this.activeAssignment.id
-        );
+        ).then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+      });
       }
     },
-    createAssignment(values) {
-      api.createAssignment(values);
-      this.assignments = api.getAssignments(
-        this.$store.state.role,
-        this.$store.state.currentUser.id
-      );
+    async createAssignment(values) {
+      await api.createAssignment(values).then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
+      this.assignments = await api.setLocalAssignments().then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
     },
-    createObservation(values) {
-      api.createObservation(values);
+    async createObservation(values) {
+      await api.createObservation(values).then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
       this.refreshObservations();
     },
-    updateObservation(values) {
-      this.activeObservation = api.updateObservation(values.id, values);
-    },
-    setObservation(obs) {
-      this.activeObservation = obs;
-    },
-    refreshObservations(){
-      this.observations = api.getObservations();
+    async updateObservation(values) {
+      this.activeObservation = await api.updateObservation(values.id, values).then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
+      this.refreshObservations();
     },
 
-    updateAssignment(values) {
-      api.updateAssignment(values.id, values);
+    async setObservation(obs) {
+      this.activeObservation = obs;
+      this.observations = await api.getObservationResponses(this.activeObservation.id).then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+        return;
+      });
+      this.observationResponses = this.formatObservationDates;
+    },
+    async refreshObservations(){
+      this.observations = await api.setLocalObservations().then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+        return;
+      });
+      this.formattedObservations = this.formatDates;
+    },
+
+    async updateAssignment(values) {
+      this.activeAssignment = await api.updateAssignment(values.id, values).then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
+      this.assignments = await api.setLocalAssignments().then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+      });
+    },
+    async refreshClasses(){
+      await api.setLocalClasses().then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
+    },
+    async refreshStudents(){
+      await api.setLocalStudents().then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+      });
+      this.studentCheckboxes = api.getStudentCheckboxes();
+    },
+    async refreshDeviceList(){
+      this.devices = await api.setLocalDevices().then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+        return;
+      });
     },
     getVariant(id, type) {
       if (id == this.activeExperiment.id) {

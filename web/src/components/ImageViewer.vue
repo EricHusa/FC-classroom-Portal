@@ -98,7 +98,8 @@ export default {
     }
   },
   beforeMount: function() {
-    this.imageBase = Fop.api + "/image/" + this.$store.state.currentExperiment.device;
+    // this.imageBase = Fop.api + "/image/" + this.$store.state.currentExperiment.device;
+    this.imageBase = Fop.api + "/image/" + "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c";
     this.image_url_with_ts = this.imageBase + "?ts=" + new Date().getTime();
   }
 };

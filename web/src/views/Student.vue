@@ -60,7 +60,7 @@ export default {
         fname: null,
         lname: null,
         username: "",
-        password: ""
+        password: null
       },
       headers: [
         { key: "fname", label: "First Name", sortable: true },
@@ -71,9 +71,18 @@ export default {
     };
   },
   methods: {
-    updateStudent() {
+    async updateStudent() {
       try {
-        api.updateStudent(this.student.id, this.form);
+        let updateVals = this.form;
+        if(this.form.password===null){
+          delete this.form["password"];
+        }
+        this.student = await api.updateStudent(this.student.id, updateVals).then(function (response) {
+          return response;
+        });
+        await api.setLocalStudents().then(function (response) {
+          return response;
+        });
       }
       catch(e){
         alert(e);
@@ -81,16 +90,26 @@ export default {
       }
       this.updateAlert = 3;
     },
-    deleteStudent() {
-      if (confirm("Are you sure you want to delete this student account?")) {
-        api.deleteStudent(this.student.id);
-        // this.deleteAlert = 3
+    async deleteStudent() {
+      try {
+        if (confirm("Are you sure you want to delete this student account?")) {
+          await api.deleteStudent(this.student.id).then(function (response) {
+            return response;
+          });
+          await api.setLocalStudents().then(function (response) {
+            return response;
+          });
+        }
+      }
+      catch(e){
+        alert(e);
+        return
+      }
         this.$router.push("/school");
       }
-    }
   },
   beforeMount: function() {
-    this.studentId = parseInt(this.$route.params.id);
+    this.studentId = this.$route.params.id;
   },
   mounted() {
     this.student = api.getStudent(this.studentId);

@@ -62,24 +62,24 @@
             <b-form-group v-for="item in responseList" :key="item.key">
             <b-row class="my-1" >
               <b-col sm="3">
-                <label :for="`response-${item.student}`"
-                  ><b>{{ getStudentName(item.student) }}</b
+                <label :for="`response-${item.student.id}`"
+                  ><b>{{ item.student.username }}</b
                   >:</label
                 >
               </b-col>
               <b-col sm="8">
                 <b-form-group
-                  :label-for="`response-${item.student}`"
-                  :description="`Submitted on ${item.submitted}`">
+                  :label-for="`response-${item.student.id}`"
+                  :description="`Submission: ${new Date((item.submitted.split(' ')[0]).replace(/-/g, '/')).toDateString()}`">
                 <b-form-textarea
-                  :id="`response-${item.student}`"
+                  :id="`response-${item.student.id}`"
                   :value="item.response"
                   disabled
                 ></b-form-textarea></b-form-group>
               </b-col>
               <b-col sm="1"><b-button @click="selectResponse(item)">+</b-button></b-col>
             </b-row>
-              <b-collapse :visible="commentingOn!==null && commentingOn.student===item.student" class="mt-2">
+              <b-collapse :visible="commentingOn!==null && commentingOn===item.id" class="mt-2">
             <b-row class="my-1">
               <b-col sm="3">
                 <b-button variant="success" @click="addComment(item)">Set Comment</b-button>
@@ -134,7 +134,7 @@ export default {
     this.role = this.$store.state.role;
   },
   methods: {
-    responseSubmitted(evt) {
+    async responseSubmitted(evt) {
       evt.preventDefault();
       if(this.assignment.type ==="number"){
         if(!/^\d+(\.\d+)?$/.test(this.response.response)){
@@ -144,27 +144,43 @@ export default {
       }
       this.form.response = this.response.response;
       this.form.submitted = api.getToday(new Date());
-      api.updateStudentAssignmentResponse(
+      this.response = await api.updateStudentAssignmentResponse(
         this.assignment.id,
-        this.$store.state.currentUser.id,
+        this.response.id,
         this.form
-      );
+      ).then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
       this.showSuccess = 3;
       this.alertMessage = "Assignment submitted!"
       this.unlocked = null;
     },
     selectResponse(res){
       this.teacherComment = res.comments;
-      this.commentingOn = (this.responseList.filter(response => response.student === res.student))[0];
+      this.commentingOn = res.id;
     },
-    addComment(res){
-      this.commentingOn = api.addCommentToAssignment(res.assignment, res.student, this.teacherComment);
+    async addComment(res){
+      this.commentingOn = await api.addCommentToAssignment(res.assignment.id, res.id, this.teacherComment).then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
       this.showSuccess = 3;
       this.alertMessage = "Comment updated";
       this.commentingOn = null;
+      this.$emit("updateResponseList", this.assignment);
     },
-    deleteAssignment(){
-      api.deleteAssignment(this.assignment.id);
+    async deleteAssignment(){
+      await api.deleteAssignment(this.assignment.id).then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
       this.deleted=true;
       this.$emit("assignmentDeleted")
     },
@@ -174,17 +190,6 @@ export default {
     unlockAnswer(assignmentId) {
       this.unlocked = assignmentId;
     },
-    // checkInput(input, varType){
-    //
-    // },
-    getStudentName(studentId) {
-      if (studentId != null) {
-        let student = api.getStudent(studentId);
-        return student.username + ", " + student.fname + " " + student.lname;
-      } else {
-        return "";
-      }
-    }
   }
 };
 </script>

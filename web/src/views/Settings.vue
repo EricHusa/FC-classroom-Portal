@@ -6,7 +6,6 @@
         <label>System: </label>
         <b-form-select
           class="mb-2 mr-sm-2 mb-sm-0"
-          :value="currentDevice"
           v-model="currentDevice"
           :options="formatDevices"
           id="inline-form-input-system"
@@ -167,12 +166,13 @@ export default {
   components: { NavBar, DeviceViewer },
   data() {
     return {
-      teacher: this.$store.state.currentTeacher,
-      currentDevice: null,
+      teacher: this.$store.state.currentUser.username,
+      currentDevice: {},
       devices: [],
       updateAlert: 0,
       updateMessage: "",
       sectionTitle: "",
+      currentDeviceId: "",
       headers: TableHeaders.settingsButtons,
       options: [
         { option: "account", label: "Account" },
@@ -182,15 +182,14 @@ export default {
       teacherOptions: CreatorOptions.teacherAccount.options,
       teacherForm: {},
       passwordOptions: CreatorOptions.teacherPassword.options,
-      passwordForm: { oldPass: "", newPass: "", repeatNewPass: "" },
+      passwordForm: {newPass: "", repeatNewPass: "" },
       deviceOptions: CreatorOptions.deviceRegistration.options,
       deviceInput: "",
-      deviceForm: { fopd_id: "", name: "" }
+      deviceForm: { id: "", name: "" }
     };
   },
   beforeMount() {
-    this.devices = api.getDevices();
-    this.currentDevice = this.devices[0];
+    this.refreshDeviceList();
     this.teacherForm = this.$store.state.currentUser;
   },
   computed: {
@@ -207,7 +206,7 @@ export default {
   methods: {
     onSubmit(evt) {
       evt.preventDefault();
-      // this.$store.state.device = this.currentDevice;
+      alert(JSON.stringify(this.currentDevice));
     },
     resetAlert() {
       this.updateAlert = 0;
@@ -215,28 +214,51 @@ export default {
     onRowSelected(items) {
       this.sectionTitle = items[0].label;
     },
-    updateAccount(evt) {
+    async updateAccount(evt) {
       evt.preventDefault();
       this.updateMessage = "Account updated!";
       this.updateAlert = 3;
-      api.updateTeacherName(this.teacherForm);
+      try{
+      await api.updateTeacher(this.teacherForm).then(function (response) {
+          return response;
+        });
+      } catch (err) {
+          alert(err);
+          return;
+        }
     },
     checkNewPass() {
       if (this.passwordForm.newPass !== this.passwordForm.repeatNewPass) {
         throw "New passwords do not match";
       }
     },
-    updateDevice(evt) {
+    async refreshDeviceList(){
+      this.devices = await api.setLocalDevices().then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+      });
+      if(Object.keys(this.currentDevice).length === 0) {
+        this.currentDevice = this.devices[0];
+      }
+    },
+    async updateDevice(evt) {
       evt.preventDefault();
       this.updateMessage = "Device name updated!";
       this.updateAlert = 3;
-      api.updateDeviceName(this.currentDevice.fopd_id, this.deviceInput);
-      this.devices = api.getDevices();
+      this.currentDevice = await api.updateDeviceName(this.currentDevice.id, this.deviceInput).then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+        return;
+      });
+      delete this.currentDevice.teacher;
+      this.refreshDeviceList();
     },
     registerDevice(evt) {
       evt.preventDefault();
       try {
-        api.registerDevice(this.deviceForm, this.$store.state.currentTeacher);
+        api.registerDevice(this.deviceForm);
       } catch (e) {
         alert(e);
       }
@@ -244,14 +266,13 @@ export default {
       this.updateAlert = 3;
       this.devices = api.getDevices();
     },
-    updatePassword(evt) {
+    async updatePassword(evt) {
       evt.preventDefault();
       try {
         this.checkNewPass();
-        api.changeTeacherPassword(
-          this.passwordForm.oldPass,
-          this.passwordForm.newPass
-        );
+        await api.updateTeacher({password: this.passwordForm.newPass}).then(function (response) {
+          return response;
+        });
       } catch (e) {
         alert(e);
         return;

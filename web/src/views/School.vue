@@ -17,7 +17,7 @@
                 <b-collapse id="add-student">
                   <b-row
                     class="my-1"
-                    v-for="item in headers.slice(0, 4)"
+                    v-for="item in studentCreationOptions"
                     :key="item"
                   >
                     <b-col sm="3">
@@ -31,6 +31,7 @@
                         :id="`new-student-form-${item.label}`"
                         :placeholder="`${item.label}`"
                         v-model="form[item.key]"
+                        :required="item.required"
                       ></b-form-input>
                     </b-col>
                   </b-row>
@@ -83,7 +84,7 @@
                       ></b-input>
                       <b-button
                         variant="warning"
-                        @click="updateClassName(currClass.id, className)"
+                        @click="updateClassName(currClass, className)"
                         :disabled="classDeleted"
                         >Rename class</b-button
                       >
@@ -101,7 +102,6 @@
                     v-bind:students="currStudents"
                     v-bind:headers="headers"
                     v-bind:classView="true"
-                    @studentRemoved="removeStudent"
                   />
                   <b-row>
                     <b-col sm="3">
@@ -110,7 +110,7 @@
                         class="m-1"
                         variant="primary"
                         :disabled="classDeleted"
-                        >Add existing students</b-button
+                        >Add students</b-button
                       >
                     </b-col>
                     <b-col sm="9">
@@ -128,7 +128,7 @@
                           </b-form-group>
                         </div>
                         <b-button
-                          @click="importStudents"
+                          @click="setStudents"
                           variant="success"
                           :disabled="classDeleted"
                           >Add</b-button
@@ -154,19 +154,16 @@
 import StudentList from "../components/StudentList.vue";
 import api from "../api/index.js";
 import NavBar from "../components/NavBar";
+import TableHeaders from "../constants/TableHeaders.ts";
+import CreatorOptions from "../constants/CreatorOptions.ts";
 export default {
   components: { StudentList, NavBar },
   data() {
     return {
       currStudents: api.getStudents(),
       allStudents: api.getStudents(),
-      headers: [
-        { key: "fname", label: "First Name", sortable: true },
-        { key: "lname", label: "Last Name", sortable: true },
-        { key: "username", label: "Username", sortable: true },
-        { key: "password", label: "Password" },
-        { key: "action", label: "Action" }
-      ],
+      headers: TableHeaders.studentList,
+      studentCreationOptions: CreatorOptions.studentCreation,
       classes: [{}],
       className: "",
       classDeleted: true,
@@ -182,62 +179,84 @@ export default {
   },
   computed: {
     formatCheckboxes() {
-      let students = api.getStudentCheckboxes();
-      let rows = students.map(item => {
-        let tmp = item;
-        if (this.currClass.students.includes(item.value)) {
-          tmp.disabled = true;
-        }
-        return tmp;
-      });
-      return rows;
+      return api.getStudentCheckboxes();
     }
   },
   methods: {
-    addClass() {
-      api.addClass();
-      this.classes = api.getClasses();
+    async addClass() {
+      try{
+      await api.addClass().then(function (response) {
+          return response;
+        });
+      } catch (err) {
+          alert(err);
+          return;
+        }
     },
     setClass(id) {
       this.currStudents = api.getStudents(id);
       this.currClass = api.getClass(id);
+      this.selectedStudents = api.getStudentIdList(this.currStudents);
       this.classDeleted = false;
     },
-    getClassName(id) {
-      if (id === null) {
-        return "";
-      }
-      let c = api.getClass(id);
-      return c.name;
+    async refreshClassList(){
+      try{
+      this.classes = await api.setLocalClasses().then(function (response) {
+          return response;
+        });
+      } catch (err) {
+          alert(err);
+          return;
+        }
     },
-    updateClassName(id, name) {
+    async updateClassName(thisClass, name) {
       if (name.length > 0) {
-        api.updateClass(id, name);
+        thisClass.name = name;
+        thisClass.student_ids = api.getStudentIdList(thisClass.students);
+        try{
+        this.currClass = await api.updateClass(thisClass).then(function (response) {
+          return response;
+        });
+        } catch (err) {
+          alert(err);
+          return;
+        }
+        this.refreshClassList();
       }
       this.className = "";
     },
-    deleteClass(id) {
+    async deleteClass(id) {
       if (
         confirm(
           "Are you sure you want to delete this class? Note that this does not delete accounts in the class"
         )
       ) {
-        api.deleteClass(id);
+        try{
+        await api.deleteClass(id).then(function (response) {
+          return response;
+        });
+        } catch (err) {
+          alert(err);
+          return;
+        }
+        this.refreshClassList();
         this.classDeleted = true;
       }
     },
-    addStudent() {
+    async addStudent() {
       if (!this.validate()) {
         alert("spaces are not allowed in input");
       } else {
         try {
-          api.createStudent(JSON.parse(JSON.stringify(this.form)));
+          await api.createStudent(JSON.parse(JSON.stringify(this.form))).then(function (response) {
+          return response;
+        });
         } catch (err) {
           alert(err);
+          return;
         }
         this.form.fname = null;
         this.form.lname = null;
-        this.form.username = "";
         this.form.username = "";
         this.form.password = "";
       }
@@ -245,16 +264,15 @@ export default {
     getStudentCheckboxes() {
       return api.getStudentCheckboxes();
     },
-    importStudents() {
-      let i;
-      for (i in this.selectedStudents) {
-        api.addStudent(this.selectedStudents[i], this.currClass.id);
-      }
-      this.currStudents = api.getStudents(this.currClass.id);
-      this.selectedStudents = [];
-    },
-    removeStudent(studentId){
-      api.removeStudentFromClass(this.currClass.id, studentId);
+    async setStudents() {
+      this.currClass.student_ids = this.selectedStudents;
+      this.currClass = await api.updateClass(this.currClass).then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+        return;
+      });
+      await this.refreshClassList();
       this.setClass(this.currClass.id);
     },
     validate() {
