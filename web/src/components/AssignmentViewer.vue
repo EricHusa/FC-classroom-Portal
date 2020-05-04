@@ -190,17 +190,6 @@ export default {
     unlockAnswer(assignmentId) {
       this.unlocked = assignmentId;
     },
-    // checkInput(input, varType){
-    //
-    // },
-    getStudentName(studentId) {
-      if (studentId != null) {
-        let student = api.getStudent(studentId);
-        return student.username + ", " + student.fname + " " + student.lname;
-      } else {
-        return "";
-      }
-    }
   }
 };
 </script>

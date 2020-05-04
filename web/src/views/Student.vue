@@ -105,7 +105,6 @@ export default {
         alert(e);
         return
       }
-        // this.deleteAlert = 3
         this.$router.push("/school");
       }
   },

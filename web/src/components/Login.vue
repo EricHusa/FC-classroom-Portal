@@ -42,6 +42,7 @@
                   :id="`teacher-login-form-${item.key}`"
                   v-model="forms.teacher[item.key]"
                   required
+                  :type="item.type"
                   class="login-input"
                 ></b-form-input>
               </b-row>
@@ -98,23 +99,7 @@ export default {
     };
   },
   methods: {
-    // authenticate() {
-    //   // this.$store.dispatch('login', { email: this.email, password: this.password })
-    //   //   .then(() => this.$router.push('/'))
-    //   this.$store
-    //     .dispatch("device", "student")
-    //     .then(() => this.$router.push("/"));
-    //   this.$store.dispatch("dev", "student").then(() => this.$router.push("/"));
-    // },
-    getUsername(){
-
-    },
     async register(evt) {
-      // alert(this.$route.query.teacher);
-      //this.$store.dispatch("dev", "teacher").then(() => this.$router.push("/"));
-      //    this.$store.dispatch('register', { email: this.email, password: this.password })
-      //      .then(() => this.$router.push('/')).catch(e => {
-      // alert(e);
       evt.preventDefault();
       let teacher;
       try {
@@ -145,9 +130,6 @@ export default {
         if(role==="teacher"){
           this.$store.state.currentTeacher = user.id;
       }
-        // else{
-        //   this.$store.state.currentTeacher = user.teacher.id;
-        // }
         this.$store.state.role = role;
         this.$router.push("/");
       } catch (error) {

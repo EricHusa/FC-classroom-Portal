@@ -1,9 +1,5 @@
 import axios from "axios";
-// import ErrorMessages from "../constants/ErrorMessages.ts";
 import store from "../store/index";
-import SampleClimate from "../constants/SampleClimate.ts";
-// import SampleClimateData from "../constants/SampleClimateData.ts";
-// const API_URL = process.env.API_URL;
 const API_URL = "http://127.0.0.1:5000/api";
 
 //Local storage for speed
@@ -18,188 +14,6 @@ let devices = [];
 
 let sludev = "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c";
 
-//sample database data
-// let students = [
-//   {
-//     fname: "Jon",
-//     lname: "Joe",
-//     username: "JJ09",
-//     password: "Peaches",
-//     id: 1,
-//     teacher: "a"
-//   },
-//   {
-//     fname: "Will",
-//     lname: "Billy",
-//     username: "WB02",
-//     password: "Cake",
-//     id: 2,
-//     teacher: "a"
-//   },
-//   {
-//     fname: "Drew",
-//     lname: "Blue",
-//     username: "DB12",
-//     password: "Orange",
-//     id: 3,
-//     teacher: "a"
-//   },
-//   {
-//     fname: "Bob",
-//     lname: "Cob",
-//     username: "b",
-//     password: "c",
-//     id: 4,
-//     teacher: "a"
-//   }
-// ];
-
-// let experiments = [
-//   {
-//     title: "Example Experiment",
-//     description: "This is a sample experiment",
-//     plant: "basil",
-//     start_date: "2020-03-15",
-//     teacher: "a",
-//     students: [1, 4],
-//     id: 38782347,
-//     device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c"
-//   },
-//   {
-//     title: "Another",
-//     description: "Another example experiment",
-//     plant: "tomato",
-//     start_date: "2020-03-18",
-//     teacher: "a",
-//     students: [1, 2, 3],
-//     id: 16847325,
-//     device: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c"
-//   }
-// ];
-
-// let assignments = [
-//   {
-//     id: 35688201,
-//     teacher: "a",
-//     experiment: 38782347,
-//     title: "Predict How Many Days",
-//     description: "Predict how many days it takes the plant to grow 1 inch",
-//     type: "number",
-//     due_date: "2020-05-05",
-//     assignees: [2, 4]
-//   },
-//   {
-//     id: 25674621,
-//     teacher: "a",
-//     experiment: 38782347,
-//     title: "Give yourself a team role",
-//     description: "Tell me what your role on the team is",
-//     type: "text",
-//     due_date: "2020-05-04",
-//     assignees: [1, 2, 3, 4]
-//   }
-// ];
-
-// let assignment_responses = [
-//   {
-//     assignment: 25674621,
-//     student: 1,
-//     response: "I want team Leader",
-//     submitted: "2020-05-03",
-//     comments: "Congratulations, you will be the team's Leader"
-//   },
-//   {
-//     assignment: 25674621,
-//     student: 2,
-//     response: "Gardener",
-//     submitted: "2020-05-03",
-//     comments: "Congratulations, you will be the team's Gardener"
-//   },
-//   {
-//     assignment: 25674621,
-//     student: 3,
-//     response: "Can I be the Record Keeper",
-//     submitted: "2020-05-04",
-//     comments: "Congratulations, you will be the team's Record Keeper"
-//   },
-//   {
-//     assignment: 25674621,
-//     student: 4,
-//     response: "I want to be the team Researcher",
-//     submitted: "2020-05-04",
-//     comments: "Congratulations, you will be the team's Researcher"
-//   },
-//   {
-//     assignment: 35688201,
-//     student: 2,
-//     response: null,
-//     submitted: "",
-//     comments: null
-//   },
-//   {
-//     assignment: 35688201,
-//     student: 4,
-//     response: null,
-//     submitted: "",
-//     comments: null
-//   }
-// ];
-
-// let observations = [
-//   {
-//     id: 12835739,
-//     title: "Height Measurement",
-//     description:
-//       "Take your ruler and measure the height of the plant in centimeters",
-//     experiment: 38782347,
-//     type: "number",
-//     units: "centimeters",
-//     updated: "2020-05-01",
-//     collaborators: [1, 2, 4],
-//     responses: [
-//       {
-//         number: 1,
-//         response: "3",
-//         submitted: "2020-05-02",
-//         student: 4,
-//         editable: true
-//       },
-//       {
-//         number: 2,
-//         response: "3.1",
-//         submitted: "2020-05-03",
-//         student: 1,
-//         editable: true
-//       }
-//     ]
-//   }
-// ];
-
-// let teachers = [{ fname: "Mr", lname: "Teacher", password: "a", id: "a" }];
-//
-// let studentIdCounter = students.length;
-
-// let devices = [
-//   {
-//     name: "SLUdev1",
-//     fopd_id: "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c",
-//     teacher: "a"
-//   }
-// ];
-
-// let classes = [
-//   {
-//     name: "Class 1",
-//     id: 23213931,
-//     students: [1, 2]
-//   },
-//   {
-//     name: "Class 2",
-//     id: 63526050,
-//     students: [3, 4]
-//   }
-// ];
-
 axios.defaults.validateStatus = () => {
 
     return status <= 400;
@@ -213,10 +27,6 @@ export function register(userData) {
   return axios.post(`${API_URL}/register/`, userData);
 }
 
-// export function getDevice() {
-//   return "1199802";
-// }
-
 export default {
   login(role, userData) {
     if (role === "student") {
@@ -229,9 +39,6 @@ export default {
                 return (response.data.student);
             }
         }))
-    // .catch(function(error) {
-    //     throw (error);
-    // });
     }
 
     if (role === "teacher") {
@@ -247,34 +54,6 @@ export default {
     .catch(function(error) {
         throw (error);
     });
-
-
-
-      // let r = axios.get(`${API_URL}/teacher/${userData.id}`);
-      // axios.get(`${API_URL}/teacher/${userData.id}`)
-      // .then(function (response) {
-      //   if(response.data.status==="fail"){
-      //     throw(response.data.message);
-      //   }
-      //   else{
-      //     return(response.data);
-      //   }
-      // })
-      // .catch(function (error) {
-      //   throw(error);
-      // });
-
-      // for (let i in teachers) {
-      //   let user = teachers[i];
-      //   if (user.id === userData.username) {
-      //     if (user.password === userData.password) {
-      //       return user;
-      //     } else {
-      //       throw ErrorMessages.incorrectCredentials;
-      //     }
-      //   }
-      // }
-      // throw ErrorMessages.incorrectCredentials;
     }
   },
 
@@ -287,10 +66,6 @@ export default {
     let yyyy = fullDate.getFullYear();
     fullDate = yyyy + "-" + mm + "-" + dd;
     return fullDate;
-  },
-  generateId: function() {
-    let str = Math.floor(Math.random() * 100000000 + 9999999).toString();
-    return parseInt(str.substring(0, 8));
   },
   generateUsername() {
     let username = "";
@@ -319,9 +94,6 @@ export default {
     }
     return temp;
   },
-  pullCSV(start, end){
-    alert("https://fop1.urbanspacefarms.com:5000/api/get_data_json/" + store.state.currentExperiment.device.id + "/" + start + "/" +end);
-  },
 
   /// FUNCTIONS FOR EXTERNAL API
     async getEnvironmentData(type, startDate, endDate){
@@ -341,6 +113,7 @@ export default {
     },
 
   /// FUNCTIONS FOR CLASSES
+
   setLocalClasses: function() {
     return Promise.resolve(axios.get(`${API_URL}/course/teacher/${store.state.currentTeacher}`)
         .then(function(response) {
@@ -394,13 +167,6 @@ export default {
     .catch(function(error) {
         throw (error);
     });
-
-    // let index = classes
-    //   .map(function(e) {
-    //     return e.id;
-    //   })
-    //   .indexOf(classId);
-    // classes.splice(index, 1);
   },
   updateClass: function(course) {
     return Promise.resolve(axios.put(`${API_URL}/course/${course.id}/teacher/${store.state.currentTeacher}`, course)
@@ -414,32 +180,7 @@ export default {
     .catch(function(error) {
         throw (error);
     });
-
-    // let index = classes
-    //   .map(function(e) {
-    //     return e.id;
-    //   })
-    //   .indexOf(classId);
-    // classes[index].name = val;
   },
-  // async addStudent(studentUsername, course) {
-  //   course.students.push(studentUsername);
-  //   let c = await this.updateClass(course, course.name).then(function(response) {
-  //       return response;
-  //     });
-  //
-  //   // let currentClass = classes.find(c => c.id === classId);
-  //   // currentClass.students.push(studentId);
-  // },
-  // removeStudentFromClass(classId, studentId){
-  //   let index = classes
-  //     .map(function(e) {
-  //       return e.id;
-  //     })
-  //     .indexOf(classId);
-  //   let studentIndex = classes[index].students.indexOf(studentId);
-  //   classes[index].students.splice(studentIndex, 1);
-  // },
   getClassCheckboxes(){
     let newList = [{text: "All Classes", value:null}];
     let modifiedClass = {};
@@ -502,7 +243,6 @@ export default {
       };
       newList.push(modifiedStudent);
     }
-    // alert(JSON.stringify(newList));
     return newList;
   },
   getStudent(studentId) {
@@ -527,16 +267,6 @@ export default {
     .catch(function(error) {
         throw (error);
     });
-
-    // for (let index in students) {
-    //   if (students[index].username === student.username) {
-    //     throw "That username already exists";
-    //   }
-    // }
-    // if (student.username) studentIdCounter += 1;
-    // student.id = studentIdCounter;
-    // students.push(student);
-    // return student;
   },
   updateStudent(studentId, values) {
     return Promise.resolve(axios.put(`${API_URL}/account/student/${studentId}`, values)
@@ -550,24 +280,6 @@ export default {
     .catch(function(error) {
         throw (error);
     });
-
-    // for (let index in students) {
-    //   if (students[index].username === values.username && students[index].id !== studentId) {
-    //     throw "That username already exists";
-    //   }
-    // }
-    //
-    // let index = students
-    //   .map(function(e) {
-    //     return e.id;
-    //   })
-    //   .indexOf(studentId);
-    //
-    // let student = students[index];
-    // student.fname = values.fname;
-    // student.lname = values.lname;
-    // student.username = values.username;
-    // student.password = values.password;
   },
 
   deleteStudent: function(studentId) {
@@ -582,21 +294,6 @@ export default {
     .catch(function(error) {
         throw (error);
     });
-
-    // //Delete student from student list
-    // let index = students
-    //   .map(function(e) {
-    //     return e.id;
-    //   })
-    //   .indexOf(studentId);
-    // students.splice(index, 1);
-    // //Remove student from their classes
-    // for (let i in classes) {
-    //   let c = classes[i];
-    //   if (c.students.includes(studentId)) {
-    //     c.students.splice(c.students.indexOf(studentId), 1);
-    //   }
-    // }
   },
   getStudentDisplayName(studentId) {
     if (store.state.role==="teacher") {
@@ -645,8 +342,6 @@ export default {
         return exp;
       }
     }
-    // let today = this.getToday(new Date());
-    // return { title: "New Experiment", start_date: today };
     return null;
   },
   createExperiment: function(values) {
@@ -662,15 +357,6 @@ export default {
     .catch(function(error) {
         throw (error);
     });
-    // let newExperiment = {};
-    // for (let v in values) {
-    //   newExperiment[v] = values[v];
-    // }
-    // newExperiment.teacher = teacher;
-    // newExperiment.id = this.generateId();
-    //
-    // experiments.push(newExperiment);
-    // return newExperiment;
   },
   updateExperiment: function(experimentId, values) {
     return Promise.resolve(axios.put(`${API_URL}/experiment/${experimentId}/teacher/${store.state.currentTeacher}`, values)
@@ -685,20 +371,6 @@ export default {
         throw (error);
     });
   },
-  // changeExperimentInvolvement: function(expId, studentId) {
-  //   let index = experiments
-  //     .map(function(e) {
-  //       return e.id;
-  //     })
-  //     .indexOf(expId);
-  //
-  //   let exp = experiments[index];
-  //   if (exp.students.includes(studentId)) {
-  //     exp.students.splice(exp.students.indexOf(studentId), 1);
-  //   } else {
-  //     exp.students.push(studentId);
-  //   }
-  // },
   deleteExperiment: function(experimentId) {
     return Promise.resolve(axios.delete(`${API_URL}/experiment/${experimentId}/teacher/${store.state.currentTeacher}`)
         .then(function(response) {
@@ -736,9 +408,6 @@ export default {
         throw (error);
     });
   },
-  getAssignments() {
-    return assignments;
-  },
   getAssignment(assignmentId) {
     for (let a in assignments) {
       let assign = assignments[a];
@@ -769,10 +438,6 @@ export default {
     }
 
     return assignment;
-    // assignments.push(values);
-    // for(let i in values.assignees) {
-    //   this.addAssignmentResponse(values.id,values.assignees[i])
-    // }
   },
   updateAssignment(assignmentId, values) {
       return Promise.resolve(axios.put(`${API_URL}/assignment/${assignmentId}/teacher/${store.state.currentTeacher}`, values)
@@ -786,26 +451,6 @@ export default {
     .catch(function(error) {
         throw (error);
     });
-
-    // for (let a in assignments) {
-    //   let assignment = assignments[a];
-    //   if (assignment.id === assignmentId) {
-    //     assignment.title = values.title;
-    //     assignment.description = values.description;
-    //     assignment.due_date = values.due_date;
-    //     assignment.assignees = values.assignees;
-
-        // let currentResponses = this.getTeacherAssignmentResponses(
-        //   assignment.id
-        // );
-        // let assigneesList = assignment.assignees;
-        // for (let index in assigneesList) {
-        //   if (!currentResponses.find(o => o.student === assigneesList[index])) {
-        //     this.addAssignmentResponse(assignment.id, assigneesList[index]);
-        //   }
-        // }
-    //   }
-    // }
   },
   deleteAssignment(assignmentId){
     return Promise.resolve(axios.delete(`${API_URL}/assignment/${assignmentId}/teacher/${store.state.currentTeacher}`)
@@ -820,19 +465,6 @@ export default {
         throw (error);
     });
   },
-    getAssignmentAssignees(){
-
-    },
-  // addAssignmentResponse(assignmentId, studentId) {
-  //   let newResponse = {
-  //     assignment: assignmentId,
-  //     student: studentId,
-  //     response: null,
-  //     submitted: "",
-  //     comments: null
-  //   };
-  //   assignment_responses.push(newResponse);
-  // },
     getApiStudentAssignmentResponse(assignmentId,studentId){
       return Promise.resolve(axios.get(`${API_URL}/assignment/${assignmentId}/response/student/${studentId}`)
         .then(function(response) {
@@ -860,9 +492,7 @@ export default {
     }
     return assignment_responses;
   },
-getStudentAssignmentResponses(){
-      return assignment_responses;
-    },
+
   getTeacherAssignmentResponses(assignmentId) {
   return Promise.resolve(axios.get(`${API_URL}/assignment/${assignmentId}/response`)
         .then(function(response) {
@@ -875,15 +505,6 @@ getStudentAssignmentResponses(){
     .catch(function(error) {
         throw (error);
     });
-
-    // let studentResponses = [];
-    // for (let i in assignment_responses) {
-    //   let thisAssignment = assignment_responses[i];
-    //   if (thisAssignment.assignment === assignmentId) {
-    //     studentResponses.push(thisAssignment);
-    //   }
-    // }
-    // return studentResponses;
   },
   getStudentAssignmentResponse(assignmentId) {
     return assignment_responses[assignmentId];
@@ -913,9 +534,6 @@ getStudentAssignmentResponses(){
     .catch(function(error) {
         throw (error);
     });
-    },
-    deleteAssignmentResponse(){
-
     },
   addCommentToAssignment(assignmentId, responseId, value){
       return Promise.resolve(axios.put(`${API_URL}/assignment/${assignmentId}/response/${responseId}/teacher/${store.state.currentUser.id}`, {comments: value})
@@ -947,20 +565,6 @@ getStudentAssignmentResponses(){
         throw (error);
     });
   },
-
-  getObservations() {
-    //   if(experiment==null||experiment==undefined||experiment=={}) {
-    //       return [];
-    //   }
-    // let obsList = [];
-    // for (let i in observations) {
-    //   let obs = observations[i];
-    //   if (obs.experiment === experiment.id) {
-    //     obsList.unshift(obs);
-    //   }
-    // }
-    return observations;
-  },
   getObservation(observationId) {
       return Promise.resolve(axios.get(`${API_URL}/observation/${observationId}`)
         .then(function(response) {
@@ -973,14 +577,6 @@ getStudentAssignmentResponses(){
     .catch(function(error) {
         throw (error);
     });
-
-    // let obsList = this.getObservations();
-    // let index = obsList
-    //   .map(function(e) {
-    //     return e.id;
-    //   })
-    //   .indexOf(observationId);
-    // return observations[index];
   },
   updateObservation(observationId, values) {
       return Promise.resolve(axios.put(`${API_URL}/observation/${observationId}`, values)
@@ -994,13 +590,6 @@ getStudentAssignmentResponses(){
     .catch(function(error) {
         throw (error);
     });
-
-    // let obs = this.getObservation(observationId);
-    // obs.title = values.title;
-    // obs.description = values.description;
-    // obs.collaborators = values.collaborators;
-    // obs.updated = values.updated;
-    // return obs;
   },
   createObservation(values) {
     let obs = {};
@@ -1010,8 +599,6 @@ getStudentAssignmentResponses(){
     obs.type = values.type;
     obs.units = values.units;
     obs.student_ids = values.collaborators;
-    // obs.updated = this.getToday(new Date());
-    // obs.responses = [];
 
     let observation = Promise.resolve(axios.post(`${API_URL}/observation`, obs)
         .then(function(response) {
@@ -1040,14 +627,6 @@ getStudentAssignmentResponses(){
     .catch(function(error) {
         throw (error);
     });
-
-    // let obsList = this.getObservations();
-    // let index = obsList
-    //   .map(function(e) {
-    //     return e.id;
-    //   })
-    //   .indexOf(observationId);
-    // observations.splice(index, 1);
   },
     getObservationResponses(observationId){
         return Promise.resolve(axios.get(`${API_URL}/observation/${observationId}/response`)
@@ -1065,8 +644,7 @@ getStudentAssignmentResponses(){
   addObservationResponse(observationId) {
     let res = {
       response: "",
-      editable: true,
-        student_id: ""
+      editable: true
     };
 
     let obsResponse =  Promise.resolve(axios.post(`${API_URL}/observation/${observationId}/response`, res)
@@ -1083,15 +661,6 @@ getStudentAssignmentResponses(){
 
     observation_responses.push(obsResponse);
     return obsResponse;
-    // let obs = this.getObservation(observationId);
-    // obs.responses.push({
-    //   response: null,
-    //   submitted: null,
-    //   student: null,
-    //   editable: true,
-    //   number: obs.responses.length + 1
-    // });
-    // return obs;
   },
   updateObservationResponse(observationId, responseNumber, studentId, value) {
     let obs = this.getObservation(observationId);
@@ -1151,14 +720,6 @@ getStudentAssignmentResponses(){
   getDevices() {
     return devices;
   },
-  getDevice(deviceId){
-    let index = devices
-      .map(function(e) {
-        return e.fopd_id;
-      })
-      .indexOf(deviceId);
-    return devices[index]
-  },
   updateDeviceName(deviceId, newName) {
     return Promise.resolve(axios.put(`${API_URL}/device/${deviceId}/teacher/${store.state.currentTeacher}`, {name: newName})
         .then(function(response) {
@@ -1171,14 +732,6 @@ getStudentAssignmentResponses(){
     .catch(function(error) {
         throw (error);
     });
-  },
-  // updateDeviceOwner(deviceId, teacherId) {
-  //   let device = this.getDevice(deviceId)
-  //   device.name = teacherId;
-  // },
-  //
-  getClimate() {
-    return SampleClimate.climate_file.phases;
   },
   verifyDevice(deviceId) {
     if (deviceId==="bad",deviceId===""||deviceId===null||deviceId===undefined) {
@@ -1206,19 +759,6 @@ getStudentAssignmentResponses(){
 
   /// FUNCTIONS FOR TEACHERS
 
-  // getTeacherInfo() {
-  //   return Promise.resolve(axios.get(`${API_URL}/teacher/${store.state.currentTeacher}/`)
-  //       .then(function(response) {
-  //           if (response.data.status === "fail") {
-  //               throw (response.data.message);
-  //           } else {
-  //               return response.data.teacher;
-  //           }
-  //       }))
-  //   .catch(function(error) {
-  //       throw (error);
-  //   });
-  // },
     updateTeacher(values){
      return Promise.resolve(axios.put(`${API_URL}/account/teacher/${store.state.currentTeacher}`, values)
         .then(function(response) {
@@ -1232,24 +772,6 @@ getStudentAssignmentResponses(){
         throw (error);
     });
 },
-  // updateTeacherName(values) {
-  //   let teacher = this.getTeacherInfo();
-  //   teacher.fname = values.fname;
-  //   teachers.lname = values.lname;
-  // },
-  // changeTeacherPassword(oldPass, newPass) {
-  //   let teacher = this.getTeacherInfo();
-  //   if (teacher.password !== oldPass) {
-  //     throw "Password incorrect";
-  //   } else {
-  //     teacher.password = newPass;
-  //     store.state.currentUser = {
-  //       fname: teacher.fname,
-  //       lname: teacher.lname,
-  //       id: teacher.id
-  //     };
-  //   }
-  // },
   registerTeacher(values) {
     let deviceId = values.id;
     if (this.verifyDevice(deviceId)) {
@@ -1271,10 +793,6 @@ getStudentAssignmentResponses(){
     }
   }
 };
-
-// export function getRepeatAssignments() {
-//   return axios.get(`${API_URL}/repeatAssignments/`);
-// }
 
 export function newExperiment(exp, jwt) {
   return axios.post(`${API_URL}/experiments/`, exp, {

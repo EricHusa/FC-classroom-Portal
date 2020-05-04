@@ -1,9 +1,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
-// imports of AJAX functions will go here
 import { newExperiment, authenticate, register } from "../api";
-import { isValidJwt, EventBus } from "../utils/index.js";
+import { EventBus } from "../utils/index.js";
 
 Vue.use(Vuex);
 
@@ -18,22 +17,11 @@ const state = {
 
 const actions = {
   // asynchronous operations
-  // loadExperiments(context) {
-  //   return getExperiments().then(response => {
-  //     context.commit("setExperiments", { experiments: response.data });
-  //   });
-  // },
-  // loadExperiment(context, { id }) {
-  //   return getExperiment(id).then(response => {
-  //     context.commit("setExperiment", { experiment: response.data });
-  //   });
-  // },
   login(context, userData) {
     context.commit("setUserData", { userData });
     return authenticate(userData)
       .then(response => context.commit("setJwtToken", { jwt: response.data }))
       .catch(error => {
-        //console.log("Error Authenticating: ", error);
         EventBus.emit("failedAuthentication", error);
       });
   },
@@ -54,24 +42,15 @@ const actions = {
     context.commit("setUser");
   },
   device() {
-    // return getDevice().then(response => {
-    //   state.device = response;
-    // });
-  },
-  clearState() {}
+  }
 };
 
 const mutations = {
   // isolated data mutations
-  // setExperiment(state, payload) {
-  //   state.currentExperiment = payload.experiment;
-  // },
   setUserData(state, payload) {
-    //console.log("setUserData payload = ", payload);
     state.userData = payload.userData;
   },
   setJwtToken(state, payload) {
-    //console.log("setJwtToken payload = ", payload);
     localStorage.token = payload.jwt.token;
     state.jwt = payload.jwt;
   },
@@ -85,9 +64,6 @@ const mutations = {
 
 const getters = {
   // reusable data accessors
-  isAuthenticated(state) {
-    return isValidJwt(state.jwt.token);
-  },
   isAuthenticatedTest(state) {
     if (state.role !== "guest") {
       return true;
@@ -97,18 +73,8 @@ const getters = {
   },
   teacherStatus(state) {
     return state.role === "teacher";
-  },
-  getRole(state) {
-    return state.role;
   }
 };
-
-// export default new Vuex.Store({
-//   state,
-//   mutations,
-//   actions,
-//   modules //getters
-// });
 
 const store = new Vuex.Store({
   state,

@@ -180,14 +180,6 @@ export default {
   computed: {
     formatCheckboxes() {
       return api.getStudentCheckboxes();
-      // let rows = students.map(item => {
-      //   let tmp = item;
-      //   if (this.currClass.students.includes(item.value)) {
-      //     tmp.disabled = true;
-      //   }
-      //   return tmp;
-      // });
-      // return rows;
     }
   },
   methods: {
@@ -205,16 +197,8 @@ export default {
       this.currStudents = api.getStudents(id);
       this.currClass = api.getClass(id);
       this.selectedStudents = api.getStudentIdList(this.currStudents);
-      // alert(JSON.stringify(this.currClass.students));
       this.classDeleted = false;
     },
-    // getClassName(id) {
-    //   if (id === null) {
-    //     return "";
-    //   }
-    //   let c = api.getClass(id);
-    //   return c.name;
-    // },
     async refreshClassList(){
       try{
       this.classes = await api.setLocalClasses().then(function (response) {

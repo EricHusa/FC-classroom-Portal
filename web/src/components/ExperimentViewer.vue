@@ -108,18 +108,6 @@
               ></b-col
             >
           </b-row>
-<!--          <b-collapse id="add-students-to-experiment">-->
-<!--            <div style="text-align: center;">-->
-<!--              <b-form-group style="text-align: left; display: inline-block">-->
-<!--                <b-form-checkbox-group-->
-<!--                  v-model="selectedStudents"-->
-<!--                  :options="getStudentCheckboxes()"-->
-<!--                  name="flavour-2a"-->
-<!--                  stacked-->
-<!--                ></b-form-checkbox-group>-->
-<!--              </b-form-group>-->
-<!--            </div>-->
-<!--          </b-collapse>-->
         </b-collapse>
         <b-collapse
           id="experiment-create-section"
@@ -245,17 +233,6 @@ export default {
     getClassCheckboxes(){
       return api.getClassCheckboxes();
     },
-    // inExperiment(studentId) {
-    //   if (this.experiment.students.includes(studentId)) {
-    //     return "success";
-    //   } else {
-    //     return "default";
-    //   }
-    // },
-    // changeInvolvement(studentId) {
-    //   api.changeExperimentInvolvement(this.experiment, studentId);
-    //   this.$refs.dropdown.show(true);
-    // },
     resetAlert() {
       this.updateAlert = 0;
     }
@@ -264,7 +241,6 @@ export default {
     this.form.description = this.experiment.description;
     this.form.plant = this.experiment.plant;
     this.form.start_date = this.experiment.start_date;
-    // this.selectedStudents = api.getStudentIdList(this.experiment.students);
   }
 };
 </script>

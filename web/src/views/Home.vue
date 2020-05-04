@@ -7,7 +7,7 @@
         <b-tabs card justified>
           <b-tab title="Experiment">
             <b-row>
-              <b-col sm="6">
+              <b-col sm="7">
                 <b-card-group deck>
                   <b-card-group v-for="item in experiments" :key="item.name">
                     <b-card
@@ -63,7 +63,7 @@
                   </b-overlay>
                 </b-card-group>
               </b-col>
-              <b-col sm="6">
+              <b-col sm="5">
                 <ExperimentViewer
                   v-bind:experiment="activeExperiment"
                   v-bind:form="experimentForm"
@@ -93,20 +93,6 @@
                   <h3>Singular Assignments</h3>
                   <div>
                     <b-table :fields="assignmentHeaders" :items="formattedAssignments">
-                      <!--                      <template v-slot:cell(action)="data">-->
-                      <!--                        <b-icon-->
-                      <!--                          :id="`comment-notification-${data.item.id}`"-->
-                      <!--                          icon="exclamation-circle"-->
-                      <!--                          font-scale="2"-->
-                      <!--                          :hidden="role == 'teacher && responses[data.item.id].comments == null"-->
-                      <!--                        ></b-icon>-->
-                      <!--                        <b-popover-->
-                      <!--                          :target="`comment-notification-${data.item.id}`"-->
-                      <!--                          placement="bottom"-->
-                      <!--                          triggers="hover focus"-->
-                      <!--                          :content="responses[data.item.id].comments"-->
-                      <!--                        ></b-popover>-->
-                      <!--                      </template>-->
                       <template v-slot:cell(action)="row">
                         <b-button
                           :hidden="role == 'teacher'"
@@ -128,7 +114,6 @@
                       </template>
                       <template v-slot:row-details="data">
                         <b-card>
-                          <!--                          <b-card-text>{{data.item.id}}</b-card-text>-->
                           <AssignmentCreator
                             @assignmentCreated="updateAssignment"
                           v-bind:studentsList="studentCheckboxes"
@@ -298,10 +283,7 @@ export default {
       let rows = this.assignments.map(item => {
         let tmp = item;
         if (this.$store.state.role === "student") {
-          // let student_responses = this.refreshStudentAssignmentResponses();
           let res = this.responses[item.id];
-          // alert("res is: ");
-          // alert(JSON.stringify(res));
           res.submitted === null || res.submitted === undefined || res.submitted === "None"
             ? (tmp._rowVariant = "warning")
             : (tmp._rowVariant = "success");
@@ -380,8 +362,6 @@ export default {
         alert(error);
       });
       this.formattedAssignments = this.addColors;
-      // alert(JSON.stringify(this.responses));
-      // return this.responses;
     },
     async refreshAssignmentList(){
       this.assignments = await api.setLocalAssignments().then(function(response) {
@@ -445,13 +425,8 @@ export default {
         return;
       });
       this.refreshObservations();
-
-
-      //api.updateObservation(values.id, values);
     },
-    // getObservationResponses(){
-    //   return [];
-    // },
+
     async setObservation(obs) {
       this.activeObservation = obs;
       this.observations = await api.getObservationResponses(this.activeObservation.id).then(function(response) {
