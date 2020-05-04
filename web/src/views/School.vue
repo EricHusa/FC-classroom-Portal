@@ -121,7 +121,7 @@
                           >
                             <b-form-checkbox-group
                               v-model="selectedStudents"
-                              :options="formatCheckboxes"
+                              :options="studentList"
                               name="flavour-2a"
                               stacked
                             ></b-form-checkbox-group>
@@ -167,6 +167,7 @@ export default {
       classes: [{}],
       className: "",
       classDeleted: true,
+      studentList: api.getStudentCheckboxes(),
       selectedStudents: [],
       form: {
         fname: null,
@@ -260,6 +261,16 @@ export default {
         this.form.username = "";
         this.form.password = "";
       }
+      this.refreshStudentList();
+      // this.refreshClassList();
+    },
+    async refreshStudentList(){
+      this.allStudents = await api.setLocalStudents().then(function (response) {
+          return response;
+        }).catch(function(error) {
+        throw (error);
+    });
+      this.studentList = api.getStudentCheckboxes();
     },
     getStudentCheckboxes() {
       return api.getStudentCheckboxes();
@@ -293,6 +304,7 @@ export default {
     else{
       this.currClass = {id: null};
     }
+    this.studentList = api.getStudentCheckboxes();
   }
 };
 </script>

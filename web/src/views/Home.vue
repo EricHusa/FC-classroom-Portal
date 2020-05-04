@@ -340,7 +340,7 @@ export default {
       },
 
     createExperiment() {
-      this.activeExperiment = { title: "New Experiment", device: this.devices[0], student_ids: [], students: [], start_date: api.getToday(new Date()) };
+      this.activeExperiment = { title: "New Experiment", device: this.devices[0], student_ids: [], students: [], start_date: api.getToday(new Date()), plant: "" };
       this.$store.state.currentExperiment = null;
       for (let k in this.experimentForm) {
         this.experimentForm[k] = this.activeExperiment[k];

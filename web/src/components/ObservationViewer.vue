@@ -18,7 +18,7 @@
     >
       {{ errMsg }}
     </b-alert>
-    <b-overlay :show="deleted === observation.id" rounded="sm">
+    <b-overlay :show="observation.id === undefined || deleted === observation.id" rounded="sm">
     <b-jumbotron
       ><h2>{{ observation.title }}</h2>
       <code>{{ observation.units }}</code>

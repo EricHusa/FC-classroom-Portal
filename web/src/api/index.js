@@ -740,7 +740,6 @@ export default {
     return true;
   },
   registerDevice(values) {
-      values.teacher_id = store.state.currentTeacher;
       return Promise.resolve(axios.post(`${API_URL}/device`, values)
         .then(function(response) {
             if (response.data.status === "fail") {
