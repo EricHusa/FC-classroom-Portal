@@ -483,9 +483,7 @@ export default {
     let modifiedStudent = {};
     let currentScope;
     if(scope === "experiment") {
-        alert("JELLO?");
       let exp = experiments.find(c => c.id === scopeId);
-      alert(JSON.stringify(exp.students));
       currentScope = students.filter(element => exp.students.includes(element.id));
     }
     else if(scope === "class"){
@@ -765,7 +763,7 @@ export default {
 
     let resp_values;
     for (let index in values.student_ids){
-        resp_values = {student_id: values.student_ids[index], response: "k", comments: "k"};
+        resp_values = {student_id: values.student_ids[index], response: ""};
         await this.createAssignmentResponse(assignment.id, resp_values);
     }
 
@@ -1050,6 +1048,19 @@ getStudentAssignmentResponses(){
     //   .indexOf(observationId);
     // observations.splice(index, 1);
   },
+    getObservationResponses(observationId){
+        return Promise.resolve(axios.get(`${API_URL}/observation/${observationId}/response`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return response.data.observation;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+    },
   addObservationResponse(observationId) {
     let res = {
       response: "",

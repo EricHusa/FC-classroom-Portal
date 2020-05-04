@@ -70,7 +70,7 @@
               <b-col sm="8">
                 <b-form-group
                   :label-for="`response-${item.student.id}`"
-                  :description="`Submitted on ${item.submitted}`">
+                  :description="`Submission: ${new Date((item.submitted.split(' ')[0]).replace(/-/g, '/')).toDateString()}`">
                 <b-form-textarea
                   :id="`response-${item.student.id}`"
                   :value="item.response"
@@ -159,7 +159,6 @@ export default {
       this.unlocked = null;
     },
     selectResponse(res){
-      alert(JSON.stringify(res));
       this.teacherComment = res.comments;
       this.commentingOn = res.id;
     },

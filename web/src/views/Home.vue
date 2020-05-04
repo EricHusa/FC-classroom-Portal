@@ -298,7 +298,7 @@ export default {
           let res = this.responses[item.id];
           // alert("res is: ");
           // alert(JSON.stringify(res));
-          res.submitted === null || res.submitted === undefined
+          res.submitted === null || res.submitted === undefined || res.submitted === "None"
             ? (tmp._rowVariant = "warning")
             : (tmp._rowVariant = "success");
         }
@@ -394,7 +394,6 @@ export default {
       this.activeAssignment = {};
     },
     async setAssignment(assignment) {
-      alert(JSON.stringify(assignment));
       this.activeAssignment = assignment;
       if (this.role == "student") {
         this.activeResponse = api.getStudentAssignmentResponse(
