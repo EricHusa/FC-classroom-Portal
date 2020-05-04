@@ -13,6 +13,7 @@ let experiments = [];
 let assignments = [];
 let assignment_responses = {};
 let observations = [];
+let observation_responses = [];
 let devices = [];
 
 let sludev = "8a0118e3-a6bf-4ace-85c4-a7c824da3f0c";
@@ -482,7 +483,9 @@ export default {
     let modifiedStudent = {};
     let currentScope;
     if(scope === "experiment") {
+        alert("JELLO?");
       let exp = experiments.find(c => c.id === scopeId);
+      alert(JSON.stringify(exp.students));
       currentScope = students.filter(element => exp.students.includes(element.id));
     }
     else if(scope === "class"){
@@ -720,7 +723,13 @@ export default {
                 throw (response.data.message);
             } else {
                 // alert(JSON.stringify(response.data))
-                assignments = response.data.assignments;
+                assignments = (response.data.assignments).map(item => {
+                    let tmp = item;
+                    tmp.due_date = ((item.due_date).split(' '))[0];
+                    return tmp;
+                });
+
+                // assignments = response.data.assignments;
                 return response.data.assignments;
             }
         }))
@@ -756,7 +765,7 @@ export default {
 
     let resp_values;
     for (let index in values.student_ids){
-        resp_values = {student_id: values.student_ids[index]};
+        resp_values = {student_id: values.student_ids[index], response: "k", comments: "k"};
         await this.createAssignmentResponse(assignment.id, resp_values);
     }
 
@@ -910,7 +919,7 @@ getStudentAssignmentResponses(){
 
     },
   addCommentToAssignment(assignmentId, responseId, value){
-      return Promise.resolve(axios.put(`${API_URL}/assignment/${assignmentId}/response/${responseId}/student/${store.state.currentUser.id}`, {comments: value})
+      return Promise.resolve(axios.put(`${API_URL}/assignment/${assignmentId}/response/${responseId}/teacher/${store.state.currentUser.id}`, {comments: value})
         .then(function(response) {
             if (response.data.status === "fail") {
                 throw (response.data.message);
@@ -931,8 +940,8 @@ getStudentAssignmentResponses(){
             if (response.data.status === "fail") {
                 throw (response.data.message);
             } else {
-                assignments = response.data.assignments;
-                return response.data.assignments;
+                observations = response.data.observations;
+                return response.data.observations;
             }
         }))
     .catch(function(error) {
@@ -940,69 +949,136 @@ getStudentAssignmentResponses(){
     });
   },
 
-  getObservations(experiment) {
-      if(experiment==null||experiment==undefined||experiment=={}) {
-          return [];
-      }
-    let obsList = [];
-    for (let i in observations) {
-      let obs = observations[i];
-      if (obs.experiment === experiment.id) {
-        obsList.unshift(obs);
-      }
-    }
-    return obsList;
+  getObservations() {
+    //   if(experiment==null||experiment==undefined||experiment=={}) {
+    //       return [];
+    //   }
+    // let obsList = [];
+    // for (let i in observations) {
+    //   let obs = observations[i];
+    //   if (obs.experiment === experiment.id) {
+    //     obsList.unshift(obs);
+    //   }
+    // }
+    return observations;
   },
   getObservation(observationId) {
-    let obsList = this.getObservations();
-    let index = obsList
-      .map(function(e) {
-        return e.id;
-      })
-      .indexOf(observationId);
-    return observations[index];
+      return Promise.resolve(axios.get(`${API_URL}/observation/${observationId}`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return response.data.observation;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+
+    // let obsList = this.getObservations();
+    // let index = obsList
+    //   .map(function(e) {
+    //     return e.id;
+    //   })
+    //   .indexOf(observationId);
+    // return observations[index];
   },
   updateObservation(observationId, values) {
-    let obs = this.getObservation(observationId);
-    obs.title = values.title;
-    obs.description = values.description;
-    obs.collaborators = values.collaborators;
-    obs.updated = values.updated;
-    return obs;
+      return Promise.resolve(axios.put(`${API_URL}/observation/${observationId}`, values)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return response.data.observation;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+
+    // let obs = this.getObservation(observationId);
+    // obs.title = values.title;
+    // obs.description = values.description;
+    // obs.collaborators = values.collaborators;
+    // obs.updated = values.updated;
+    // return obs;
   },
   createObservation(values) {
     let obs = {};
-    obs.id = this.generateId();
-    obs.experiment = store.state.currentExperiment.id;
+    obs.experiment_id = store.state.currentExperiment.id;
     obs.title = values.title;
     obs.description = values.description;
     obs.type = values.type;
-    obs.collaborators = values.collaborators;
-    obs.updated = this.getToday(new Date());
-    obs.responses = [];
+    obs.units = values.units;
+    obs.student_ids = values.collaborators;
+    // obs.updated = this.getToday(new Date());
+    // obs.responses = [];
 
-    observations.unshift(obs);
-    return obs;
+    let observation = Promise.resolve(axios.post(`${API_URL}/observation`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return response.data.observation;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+
+    observations.unshift(observation);
+    return observation;
   },
   deleteObservation(observationId) {
-    let obsList = this.getObservations();
-    let index = obsList
-      .map(function(e) {
-        return e.id;
-      })
-      .indexOf(observationId);
-    observations.splice(index, 1);
+    return Promise.resolve(axios.delete(`${API_URL}/observation/${observationId}`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return response.data.status;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
+    });
+
+    // let obsList = this.getObservations();
+    // let index = obsList
+    //   .map(function(e) {
+    //     return e.id;
+    //   })
+    //   .indexOf(observationId);
+    // observations.splice(index, 1);
   },
   addObservationResponse(observationId) {
-    let obs = this.getObservation(observationId);
-    obs.responses.push({
-      response: null,
-      submitted: null,
-      student: null,
-      editable: true,
-      number: obs.responses.length + 1
+    let res = {
+      response: "",
+      editable: true
+    }
+
+    let obsResponse =  Promise.resolve(axios.post(`${API_URL}/observation/${observationId}/response`, res)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return response.data.response;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
     });
-    return obs;
+
+    observation_responses.push(obsResponse);
+    return obsResponse;
+    // let obs = this.getObservation(observationId);
+    // obs.responses.push({
+    //   response: null,
+    //   submitted: null,
+    //   student: null,
+    //   editable: true,
+    //   number: obs.responses.length + 1
+    // });
+    // return obs;
   },
   updateObservationResponse(observationId, responseNumber, studentId, value) {
     let obs = this.getObservation(observationId);
@@ -1029,22 +1105,18 @@ getStudentAssignmentResponses(){
       .editable;
     return obs;
   },
-  deleteObservationResponse(observationId, responseNumber) {
-    let obs = this.getObservation(observationId);
-    let responseIndex = obs.responses
-      .map(function(e) {
-        return e.number;
-      })
-      .indexOf(responseNumber);
-    obs.responses.splice(responseIndex, 1);
-
-    obs.responses.map(item => {
-      if (item.number > responseNumber) {
-        item.number -= 1;
-      }
+  deleteObservationResponse(observationId, responseId) {
+    return Promise.resolve(axios.delete(`${API_URL}/observation/${observationId}/response/${responseId}`)
+        .then(function(response) {
+            if (response.data.status === "fail") {
+                throw (response.data.message);
+            } else {
+                return response.data.message;
+            }
+        }))
+    .catch(function(error) {
+        throw (error);
     });
-
-    return obs;
   },
 
   /// FUNCTIONS FOR DEVICES

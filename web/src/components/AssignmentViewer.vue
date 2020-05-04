@@ -63,7 +63,7 @@
             <b-row class="my-1" >
               <b-col sm="3">
                 <label :for="`response-${item.student.id}`"
-                  ><b>{{ getStudentName(item.student.id) }}</b
+                  ><b>{{ item.student.username }}</b
                   >:</label
                 >
               </b-col>
@@ -79,7 +79,7 @@
               </b-col>
               <b-col sm="1"><b-button @click="selectResponse(item)">+</b-button></b-col>
             </b-row>
-              <b-collapse :visible="commentingOn!==null && commentingOn.student===item.student.id" class="mt-2">
+              <b-collapse :visible="commentingOn!==null && commentingOn===item.id" class="mt-2">
             <b-row class="my-1">
               <b-col sm="3">
                 <b-button variant="success" @click="addComment(item)">Set Comment</b-button>
@@ -159,11 +159,12 @@ export default {
       this.unlocked = null;
     },
     selectResponse(res){
+      alert(JSON.stringify(res));
       this.teacherComment = res.comments;
-      this.commentingOn = (this.responseList.filter(response => response.student.id === res.student.id))[0];
+      this.commentingOn = res.id;
     },
     async addComment(res){
-      this.commentingOn = await api.addCommentToAssignment(res.assignment, res.student, this.teacherComment).then(function (response) {
+      this.commentingOn = await api.addCommentToAssignment(res.assignment.id, res.id, this.teacherComment).then(function (response) {
           return response;
         }).catch(function (error) {
         alert(error);

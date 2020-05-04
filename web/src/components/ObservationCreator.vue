@@ -84,15 +84,16 @@
 import api from "../api/index.js";
 import CreatorOptions from "../constants/CreatorOptions.ts";
 export default {
-  name: "AssignmentCreator",
+  name: "ObservationCreator",
   props: {
-    currentValues: {}
+    currentValues: {},
+    studentList: []
   },
   data() {
     return {
       createdAlert: 0,
       show: true,
-      studentsList: [],
+      // studentsList: [],
       updateAlert: 0,
       form: {
         id: null,
@@ -113,6 +114,7 @@ export default {
     if (this.currentValues !== undefined) {
       for (const [key] of Object.entries(this.form)) {
         this.form[key] = this.currentValues[key];
+        this.form.collaborators = api.getStudentIdList(this.currentValues.collaborators);
       }
     }
   },

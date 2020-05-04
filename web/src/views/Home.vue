@@ -169,7 +169,7 @@
                   /></b-collapse>
                   <h3>Experiment Observations</h3>
                   <div>
-                    <b-table :fields="observationHeaders" :items="formatDates">
+                    <b-table :fields="observationHeaders" :items="formattedObservations">
                       <template v-slot:cell(action)="row">
                         <b-button
                           :hidden="role == 'student'"
@@ -187,6 +187,7 @@
                           <ObservationCreator
                             @observationCreated="updateObservation"
                             v-bind:currentValues="data.item"
+                            v-bind:studentList="activeExperiment.students"
                           />
                         </b-card>
                       </template>
@@ -194,7 +195,10 @@
                   </div>
                 </b-col>
                 <b-col sm="6">
-                  <ObservationViewer v-bind:observation="activeObservation" @observationDeleted="refreshObservations"/>
+                  <ObservationViewer v-bind:observation="activeObservation"
+                                     v-bind:responses="observationResponses"
+                                     @observationDeleted="refreshObservations"
+                                    @observationUpdated="refreshObservations"/>
                 </b-col>
               </b-row>
             </div>
@@ -249,6 +253,7 @@ export default {
       experiments: [],
       assignments: [],
       observations: [],
+      observationResponses: [],
       responses: [],
       devices: [],
       assignmentHeaders: TableHeaders.assignments,
@@ -259,6 +264,7 @@ export default {
       activeObservation: {},
       studentCheckboxes: [],
       formattedAssignments: [],
+      formattedObservations: [],
       loading: false,
       experimentForm: {
         title: null,
@@ -315,10 +321,21 @@ export default {
       else{
         return [];
       }
+    },
+    formatObservationDates() {
+      let rows = this.observationResponses.map(item => {
+        let tmp = item;
+        if (item.submitted != null) {
+          let d = new Date(item.submitted);
+          tmp.submitted = d.toDateString();
+        }
+        return tmp;
+      });
+      return rows;
     }
   },
   methods: {
-    setExpi(id = null) {
+    async setExpi(id = null) {
       if(id===null){return;}
       this.activeExperiment = api.getExperiment(id);
       this.$store.state.currentExperiment = this.activeExperiment;
@@ -326,7 +343,12 @@ export default {
         this.experimentForm[k] = this.activeExperiment[k];
       }
       this.experimentForm.student_ids = api.getStudentIdList(this.activeExperiment.students);
-      this.observations = api.getObservations(this.$store.state.currentExperiment);
+      this.observations = await api.setLocalObservations().then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+        return;
+      });
       // this.refreshObservations();
       },
 
@@ -352,6 +374,7 @@ export default {
       this.responses = await api.setLocalStudentAssignmentResponses(this.$store.state.currentUser.id).catch(function (error) {
         alert(error);
       });
+      this.formattedAssignments = this.addColors;
       // alert(JSON.stringify(this.responses));
       // return this.responses;
     },
@@ -365,7 +388,9 @@ export default {
       if (this.role == "student") {
         this.refreshStudentAssignmentResponses();
     }
-      this.formattedAssignments = this.addColors;
+      else {
+        this.formattedAssignments = this.addColors;
+      }
       this.activeAssignment = {};
     },
     async setAssignment(assignment) {
@@ -399,23 +424,42 @@ export default {
         return;
       });
     },
-    createObservation(values) {
-      api.createObservation(values);
+    async createObservation(values) {
+      await api.createObservation(values).then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
       this.refreshObservations();
     },
-    updateObservation(values) {
-      this.activeObservation = api.updateObservation(values.id, values);
+    async updateObservation(values) {
+      this.activeObservation = await api.updateObservation(values.id, values).then(function (response) {
+          return response;
+        }).catch(function (error) {
+        alert(error);
+        return;
+      });
+      this.refreshObservations();
+
+
+      //api.updateObservation(values.id, values);
     },
+    // getObservationResponses(){
+    //   return [];
+    // },
     setObservation(obs) {
       this.activeObservation = obs;
+      this.observationResponses = this.formatObservationDates;
     },
     async refreshObservations(){
-      // this.observations = await api.getObservations(this.$store.state.currentExperiment).then(function (response) {
-      //     return response;
-      //   }).catch(function (error) {
-      //   alert(error);
-      //   return;
-      // });
+      this.observations = await api.setLocalObservations().then(function(response) {
+        return response;
+      }).catch(function (error) {
+        alert(error);
+        return;
+      });
+      this.formattedObservations = this.formatDates;
     },
 
     async updateAssignment(values) {
