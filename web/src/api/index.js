@@ -484,7 +484,7 @@ export default {
     let currentScope;
     if(scope === "experiment") {
       let exp = experiments.find(c => c.id === scopeId);
-      currentScope = students.filter(element => exp.students.includes(element.id));
+      currentScope = exp.students;
     }
     else if(scope === "class"){
       let thisClass = classes.find(c => c.id === scopeId);
@@ -502,6 +502,7 @@ export default {
       };
       newList.push(modifiedStudent);
     }
+    // alert(JSON.stringify(newList));
     return newList;
   },
   getStudent(studentId) {
@@ -1012,7 +1013,7 @@ getStudentAssignmentResponses(){
     // obs.updated = this.getToday(new Date());
     // obs.responses = [];
 
-    let observation = Promise.resolve(axios.post(`${API_URL}/observation`)
+    let observation = Promise.resolve(axios.post(`${API_URL}/observation`, obs)
         .then(function(response) {
             if (response.data.status === "fail") {
                 throw (response.data.message);
@@ -1064,8 +1065,9 @@ getStudentAssignmentResponses(){
   addObservationResponse(observationId) {
     let res = {
       response: "",
-      editable: true
-    }
+      editable: true,
+        student_id: ""
+    };
 
     let obsResponse =  Promise.resolve(axios.post(`${API_URL}/observation/${observationId}/response`, res)
         .then(function(response) {

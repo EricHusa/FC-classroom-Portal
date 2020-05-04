@@ -4,13 +4,13 @@
       <b-col sm="2"></b-col>
       <b-col sm="3">
         <b-form-group label="Start date">
-          <b-form-datepicker v-model="startDate" :max="today" locale="en"></b-form-datepicker>
+          <b-form-datepicker v-model="startDate" max="2020-02-09" locale="en"></b-form-datepicker>
         </b-form-group>
       </b-col>
       <b-col sm="2"></b-col>
       <b-col sm="3">
         <b-form-group label="End date">
-          <b-form-datepicker v-model="endDate" :max="today" locale="en"></b-form-datepicker>
+          <b-form-datepicker v-model="endDate" max="2020-02-09" locale="en"></b-form-datepicker>
         </b-form-group>
       </b-col>
       <b-col sm="2"></b-col>
@@ -125,8 +125,6 @@ export default {
     };
     },
     reloadData(){
-      api.pullCSV(this.startDate, this.endDate);
-      // this.$emit("refresh");
       this.setChart();
     }
   }

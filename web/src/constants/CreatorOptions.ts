@@ -24,6 +24,7 @@ export default {
                 required: false,
                 type: "text"
             },
+            {key: "units", label: "Units", required: true, type: "text"},
         ],
         types: [
             {text: "Written responses", value: "text"},

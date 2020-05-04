@@ -162,10 +162,13 @@
                     v-b-toggle.observation-creator
                     variant="success"
                     :hidden="role == 'student'"
+                    style="margin-bottom: 0.5rem;"
                     >New Observation</b-button
                   >
                   <b-collapse id="observation-creator"
-                    ><ObservationCreator @observationCreated="createObservation"
+                    ><ObservationCreator
+                          v-bind:studentList="studentExperimentCheckboxes"
+                          @observationCreated="createObservation"
                   /></b-collapse>
                   <h3>Experiment Observations</h3>
                   <div>
@@ -187,7 +190,7 @@
                           <ObservationCreator
                             @observationCreated="updateObservation"
                             v-bind:currentValues="data.item"
-                            v-bind:studentList="activeExperiment.students"
+                            v-bind:studentList="studentExperimentCheckboxes"
                           />
                         </b-card>
                       </template>
@@ -258,6 +261,7 @@ export default {
       devices: [],
       assignmentHeaders: TableHeaders.assignments,
       observationHeaders: TableHeaders.observations,
+      studentExperimentCheckboxes: [],
       activeExperiment: {},
       activeAssignment: {},
       activeResponse: {},
@@ -349,7 +353,8 @@ export default {
         alert(error);
         return;
       });
-      // this.refreshObservations();
+      this.studentExperimentCheckboxes = api.getStudentCheckboxes("experiment", this.$store.state.currentExperiment.id);
+      this.refreshObservations();
       },
 
     createExperiment() {
