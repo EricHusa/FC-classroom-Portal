@@ -70,7 +70,7 @@
               <b-col sm="8">
                 <b-form-group
                   :label-for="`response-${item.student.id}`"
-                  :description="`Submission: ${new Date((item.submitted.split(' ')[0]).replace(/-/g, '/')).toDateString()}`">
+                  :description="`Submission: ${item.submitted == 'None' ? 'None' : new Date((item.submitted.split(' ')[0]).replace(/-/g, '/')).toDateString()}`">
                 <b-form-textarea
                   :id="`response-${item.student.id}`"
                   :value="item.response"
@@ -157,6 +157,7 @@ export default {
       this.showSuccess = 3;
       this.alertMessage = "Assignment submitted!"
       this.unlocked = null;
+      this.$emit("studentSubmission");
     },
     selectResponse(res){
       this.teacherComment = res.comments;

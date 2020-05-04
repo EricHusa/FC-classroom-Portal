@@ -132,6 +132,7 @@
                     v-bind:responseList="responses"
                     @assignmentDeleted="refreshAssignmentList"
                     @updateResponseList="setAssignment"
+                    @studentSubmission="refreshStudentAssignmentResponses"
                   />
                 </b-col>
               </b-row>
@@ -401,12 +402,7 @@ export default {
         alert(error);
         return;
       });
-      this.assignments = await api.setLocalAssignments().then(function (response) {
-          return response;
-        }).catch(function (error) {
-        alert(error);
-        return;
-      });
+      this.refreshAssignmentList();
     },
     async createObservation(values) {
       await api.createObservation(values).then(function (response) {
