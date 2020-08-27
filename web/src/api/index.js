@@ -1,3 +1,10 @@
+/*
+  This file is where we connect to the backend, primarily to get datbase data.
+  The base URL is set at the top of the file and is the address the backend makes itself public to.
+  There is also a set of local variables. We use these as a sort of cache so that some data is readily available
+  without having to request it from the database again.
+*/
+
 import axios from "axios";
 import store from "../store/index";
 const API_URL = "http://127.0.0.1:5000/api";
