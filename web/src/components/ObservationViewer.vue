@@ -36,7 +36,7 @@
         </b-row>
         <h3>Observations Records</h3>
         <div>
-          <b-table :fields="observationHeaders" :items="responses">
+          <b-table :fields="observationHeaders" :items="formatObservationDates">
             <template v-slot:cell(response)="data">
               <b-form-input
                 :id="`observation-response-input-${data.item.id}`"
@@ -44,7 +44,7 @@
                 :disabled="unlocked != data.item.id || !data.item.editable"
                 step="0.01"
                 min="0.00"
-                v-model="response.response"
+                v-model="responses[getIndex(data.item.number)].response"
               ></b-form-input>
             </template>
             <template v-slot:cell(action)="row">
@@ -135,27 +135,27 @@ export default {
   },
   mounted() {
     // if (this.observation !== undefined) {
-      // for (let r in this.observation.responses) {
-      //   let resp = this.observation.responses[r];
-      //   this.reportInputs[resp.number] = resp.response;
-      // }
-      // this.responses = this.observation.responses;
+    //   for (let r in this.observation.responses) {
+    //     let resp = this.observation.responses[r];
+    //     this.reportInputs[resp.number] = resp.response;
+    //   }
+    //   this.responses = this.observation.responses;
     // }
     this.role = this.$store.state.role;
   },
-  // computed: {
-  //   formatObservationDates() {
-  //     let rows = this.observation.responses.map(item => {
-  //       let tmp = item;
-  //       if (item.submitted != null) {
-  //         let d = new Date(item.submitted);
-  //         tmp.submitted = d.toDateString();
-  //       }
-  //       return tmp;
-  //     });
-  //     return rows;
-  //   }
-  // },
+  computed: {
+    formatObservationDates() {
+      let rows = this.responses.map(item => {
+        let tmp = item;
+        if (item.submitted != null) {
+          let d = new Date(item.submitted);
+          tmp.submitted = d.toDateString();
+        }
+        return tmp;
+      });
+      return rows;
+    }
+  },
   methods: {
     async updateObservation(responseId, responseVal) {
       if (this.observation.type == "number") {
@@ -210,7 +210,7 @@ export default {
       this.observationError = 0;
     },
     getIndex(responseNumber) {
-      let index = this.observation.responses
+      let index = this.responses
         .map(function(e) {
           return e.number;
         })

@@ -282,6 +282,7 @@ def update_observation(observation_id):
             'message': f'Unable to update observation id `{observation_id}`'
         }), ERROR_CODE
 
+# Create an observation response row
 @observations.route('/api/observation/<observation_id>/response', methods = ['POST'])
 def add_observation_response(observation_id):
     observation = Observation.query.filter_by(public_id = observation_id).first()
@@ -299,20 +300,24 @@ def add_observation_response(observation_id):
             'message': f'No observation information provided'
         }), ERROR_CODE
 
-    student_id = info.get('student_id', None)
+    # student_id = info.get('student_id', None)
     # if not student_id:
     #     return jsonify({
     #         'status': 'fail',
     #         'message': 'No student id provided'
     #     }), ERROR_CODE
 
-    if student_id:
-        student = Student.query.filter_by(public_id = student_id).first()
-        if not student:
-            return jsonify({
-                'status': 'fail',
-                'message': f'Account id `{student_id}` does not exist'
-            }), ERROR_CODE
+    # student = None
+    # if student_id:
+    #     studentLookUp = Student.query.filter_by(public_id = student_id).first()
+    #     if not studentLookUp:
+    #         print("here")
+    #         return jsonify({
+    #             'status': 'fail',
+    #             'message': f'Account id `{student_id}` does not exist'
+    #         }), ERROR_CODE
+    #     else:
+    #         student = studentLookUp
 
     response = ObservationResponse(
         response = info.get('response', ''),
@@ -323,8 +328,8 @@ def add_observation_response(observation_id):
 
     response.observation = observation
 
-    if student_id:
-        response.student = student
+    # if student_id:
+    #     response.student = student
 
     try:
         db.session.add(response)
@@ -335,13 +340,7 @@ def add_observation_response(observation_id):
             'submitted': str(response.submitted),
             'editable': response.editable,
             'id': response.public_id,
-            'number': response.id,
-            'student': {
-                'id': student.public_id,
-                'username': student.username,
-                'fname': student.fname,
-                'lname': student.lname
-            }
+            'number': response.id
         }), SUCCESS_CODE
 
     except Exception as e:
@@ -349,7 +348,7 @@ def add_observation_response(observation_id):
         return jsonify({
             'status': 'fail',
             'message': 'Unable to create observation response',
-            'error': e.message
+            'error': str(e)
         }), ERROR_CODE
 
 def update_observation_response(observation_id, student_id, response_id):
@@ -408,16 +407,11 @@ def get_observation_response_by_id(observation_id, response_id):
             'editable': response.editable,
             'response': response.response,
             'number': response.id,
-            'submitted': str(response.submitted),
-            'student': {
-                'id': response.student.public_id,
-                'fname': response.student.fname,
-                'lname': response.student.lname,
-                'username': response.student.username
-            }
+            'submitted': str(response.submitted)
         }
     }), SUCCESS_CODE
 
+# Get observation responses
 @observations.route('/api/observation/<observation_id>/response', methods = ['GET'])
 def get_all_observation_responses_for_observation(observation_id):
     observation = Observation.query.filter_by(public_id = observation_id).first()
@@ -434,13 +428,7 @@ def get_all_observation_responses_for_observation(observation_id):
             'editable': response.editable,
             'response': response.response,
             'number': response.id,
-            'submitted': str(response.submitted),
-            'student': {
-                'id': response.student.public_id,
-                'fname': response.student.fname,
-                'lname': response.student.lname,
-                'username': response.student.username
-            }
+            'submitted': str(response.submitted)
         })
 
     return jsonify({

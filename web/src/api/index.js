@@ -641,7 +641,7 @@ export default {
             if (response.data.status === "fail") {
                 throw (response.data.message);
             } else {
-                return response.data.observation;
+                return response.data.responses;
             }
         }))
     .catch(function(error) {
