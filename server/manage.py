@@ -1,21 +1,19 @@
-from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
+from flask_script import Manager
 
-from app import app, db
+from fopd import create_app, db
 
-app.config.from_object('config.BaseConfig')  # or app.config.from_object(os.environ['APP_SETTINGS'])
+app = create_app()
+app.app_context().push()
 
-migrate = Migrate(app, db)
 manager = Manager(app)
-manager.add_command('db', MigrateCommand)  # provide a migration utility command
+migrate = Migrate(app, db)
+manager.add_command('db', MigrateCommand)
 
+@manager.command
+def run():
+    app.run(debug = app.config['DEBUG'])
 
-# enable python shell with application context
-@manager.shell
-def shell_ctx():
-    return dict(app=app,
-                db=db)
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     manager.run()
+    

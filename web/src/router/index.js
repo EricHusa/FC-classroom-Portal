@@ -1,3 +1,8 @@
+/*
+  This file handles routing to different web pages, along with verifying auth for pages if needed.
+  Pages are made up of components from the views folder.
+*/
+
 import Vue from "vue";
 import VueRouter from "vue-router";
 // import Router from 'vue-router'
@@ -46,18 +51,6 @@ const routes = [
       }
     }
   },
-  // {
-  //   path: "/view_assignment/:id",
-  //   name: "viewAssignment",
-  //   component: Assignment,
-  //   beforeEnter(to, from, next) {
-  //     if (!store.getters.isAuthenticatedTest) {
-  //       next("/login");
-  //     } else {
-  //       next();
-  //     }
-  //   }
-  // },
   {
     path: "/student/:id",
     name: "viewAccount",
@@ -70,22 +63,6 @@ const routes = [
       }
     }
   }
-
-  // {
-  //   path: "/teacher",
-  //   name: "teacher",
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () =>
-  //     import(/* webpackChunkName: "about" */ "../views/Teacher.vue")
-  // },
-  // {
-  //   path: "/student",
-  //   name: "student",
-  //   component: () =>
-  //     import(/* webpackChunkName: "about" */ "../views/Student.vue")
-  // }
 ];
 
 const router = new VueRouter({

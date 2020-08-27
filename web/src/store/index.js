@@ -1,3 +1,8 @@
+/*
+  This file, the store, is primarily for state keeping. It will retain information about the user and 
+  current session. It may also be used for mutating state variables.
+*/
+
 import Vue from "vue";
 import Vuex from "vuex";
 

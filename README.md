@@ -1,30 +1,46 @@
 # Classroom Portal for Academic Food Computers
 
-## Dev setup
+## Project Description
+
+The portal is a Vue web app that is primarily single page. Each tab and page on the web app is called a "view" (and are stored in the views folder). Views are made up of one or more components (which are stored in the components folder).
+
+The backend is written in Flask and is responsible for having API endpoints available for the web app to call in order to access data from and store data to the database.  
+  
+<hr>
+
+## Dev Setup
 
 ### Backend:
-1). Have a [local Postgres database set up](https://github.com/EricHusa/FC-classroom-Portal/wiki/Local-db-Initialization-and-Workflow)
+1). Set up env  
 
-2). Run Flask server in a terminal:
+    cd server
+    python3 -m venv env
+    source env/bin/activate
 
-**For Python3 on MacOS**:
+2). Install requirements  
+  
+    make python-packages
 
-    $ cd server
-    $ python3 -m venv env
-    $ source env/bin/activate
-    (env)$ pip install -r requirements.txt
-    (env)$ python app.py
+    # or
 
-**For Windows or Hopper (Python2.7), please check the documeentation**
+    pip install -r requirements.txt
+
+3). Have a [local Postgres database set up](https://github.com/EricHusa/FC-classroom-Portal/wiki/Local-db-Initialization-and-Workflow)
+
+4). Run Flask server in a terminal:  
+
+    python app.py
+
+**For Windows or Hopper (Python2.7), please check the documentation**
 >https://flask.palletsprojects.com/en/1.1.x/installation/#create-an-environment
 
-   **It will be live at** [http://localhost:5000/api/](http://localhost:5000) (_note: this points to nothing at the moment_)
+   **It will be live at** [http://localhost:5000/api/](http://localhost:5000) (_note: this points to nothing, but is the base url for api calls_)
 
     Test it by making a call to the test endpoint
     > http://localhost:5000/api/test/itWorks/
-                    
-                  
-                                                                                                                                                                                                                                                                                                                                 
+
+  
+
 ### Frontend
 2. Run the Vue web app in a separate terminal:
 
@@ -35,5 +51,3 @@
     ```
 
     **It will be live at** [http://localhost:8080](http://localhost:8080)
-    
-    _Currently there is no database, so use the student and teacher buttons to login_
