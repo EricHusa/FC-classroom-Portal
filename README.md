@@ -36,9 +36,6 @@ The backend is written in Flask and is responsible for having API endpoints avai
 
    **It will be live at** [http://localhost:5000/api/](http://localhost:5000) (_note: this points to nothing, but is the base url for api calls_)
 
-    Test it by making a call to the test endpoint
-    > http://localhost:5000/api/test/itWorks/
-
   
 
 ### Frontend
