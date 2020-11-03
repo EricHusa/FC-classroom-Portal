@@ -10,4 +10,4 @@ dotenv.load_dotenv(verbose = True, dotenv_path = ENV_PATH)
 class Config:
     DEBUG = os.getenv('DEBUG', True)
     SECRET_KEY = os.getenv('SECRET_KEY', str(uuid.uuid1()))
-    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', 'postgresql://localhost/flasktestdb2')
+    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', 'postgresql://localhost/refactor')

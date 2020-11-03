@@ -2,186 +2,451 @@ from fopd import db
 
 import datetime, uuid
 
-class Teacher(db.Model):
-    __tablename__ = 'teacher'
+### Many to Many association tables
 
-    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
-    username = db.Column(db.String(50), nullable = False, unique = True)
-    password = db.Column(db.String(60), nullable = False)
-    fname = db.Column(db.String(25), default = 'No Name')
-    lname = db.Column(db.String(25), default = 'No Name')
-    public_id = db.Column(db.String(100), unique = True)
+teacher_devices = db.Table('teacher_devices',
+    db.Column('teacher_id', db.String, db.ForeignKey('teacher.id'), nullable = False),
+    db.Column('device_id', db.String, db.ForeignKey('device.id'), nullable = False)
+)
 
-    students = db.relationship('Student', backref = 'teacher', lazy = True, cascade = 'all, delete-orphan')  # or instructor
-    courses = db.relationship('Course', backref = 'teacher', lazy = True, cascade = 'all, delete-orphan')
-    experiments = db.relationship('Experiment', backref = 'teacher', lazy = True, cascade = 'all, delete-orphan')
-    assigned_assignments = db.relationship('Assignment', backref = 'teacher', lazy = True, cascade = 'all, delete-orphan')
-    devices = db.relationship('Device', backref = 'teacher', lazy = True) # do not cascade
+student_courses = db.Table('student_courses',
+    db.Column('student_id', db.String, db.ForeignKey('student.id'), nullable = False),
+    db.Column('course_id', db.String, db.ForeignKey('course.id'), nullable = False)
+)
 
-    def __repr__(self):
-        return f'<Teacher("{self.username}", "{self.public_id}")>'
-
-    # def __eq__(self, other):
-    #     return self._id == other._id and self.public_id == other.public_id
-
-### Many to many
-### Student assignments
 student_assignments = db.Table('student_assignments',
-    db.Column('assignment_id', db.Integer, db.ForeignKey('assignment.id'), nullable = False),
-    db.Column('student_id', db.Integer, db.ForeignKey('student.id'), nullable = False)
+    db.Column('assignment_id', db.String, db.ForeignKey('assignment.id'), nullable = False),
+    db.Column('student_id', db.String, db.ForeignKey('student.id'), nullable = False)
 )
 
 student_experiments = db.Table('student_experiments',
-    db.Column('experiment_id', db.Integer, db.ForeignKey('experiment.id'), nullable = False),
-    db.Column('student_id', db.Integer, db.ForeignKey('student.id'), nullable = False)
+    db.Column('experiment_id', db.String, db.ForeignKey('experiment.id'), nullable = False),
+    db.Column('student_id', db.String, db.ForeignKey('student.id'), nullable = False)
 )
+
+student_observations = db.Table('student_observations',
+    db.Column('observation_id', db.String, db.ForeignKey('observation.id'), nullable = False),
+    db.Column('student_id', db.String, db.ForeignKey('student.id'), nullable = False)
+)
+
+student_measurements = db.Table('student_measurements',
+    db.Column('observation_id', db.String, db.ForeignKey('measurement.id'), nullable = False),
+    db.Column('student_id', db.String, db.ForeignKey('student.id'), nullable = False)
+)
+
+collaborators = db.Table('collaborators', 
+    db.Column('observation_id', db.String, db.ForeignKey('observation.id'), nullable = False),
+    db.Column('student_id', db.String, db.ForeignKey('student.id'), nullable = False)
+)
+
+
+class School(db.Model):
+    __tablename__ = 'school'
+
+    # keys and attributes
+    abbreviation = db.Column(db.String(15), primary_key = True, unique = True)  # primary key
+    name = db.Column(db.String(60), nullable = False, unique = True)
+    signup_code = db.Column(db.String(15), nullable = False)
+    email = db.Column(db.String(30), nullable = False)
+    domain = db.Column(db.String(20))
+    state = db.Column(db.String(20))
+    city = db.Column(db.String(100))
+    address = db.Column(db.String(100))
+
+    # One to Many relationships
+    teachers = db.relationship('Teacher', cascade = 'all, delete-orphan')  # uni
+    students = db.relationship('Student', cascade = 'all, delete-orphan')  # uni
+    devices = db.relationship('Device')  # uni
+
+    def serialize(self):
+        return {
+            'name' : self.name,
+            'abbreviation' : self.abbreviation
+        }
+
+    def serialize_full(self):
+        return {
+            'name' : self.name,
+            'abbreviation' : self.abbreviation,
+            'email' : self.email,
+            'domain' : self.domain,
+            'signup_code' : self.signup_code,
+            'location' : {
+                'state' : self.state,
+                'city' : self.city,
+                'address' : self.address
+            },
+            'devices' : self.serialized_devices()
+        }
+    
+    def serialized_devices(self):
+        return [ device.serialize() for device in self.devices]
+
+    def serialized_students(self):
+        return [ account.serialize() for account in self.students]
+
+
+class Teacher(db.Model):
+    __tablename__ = 'teacher'
+
+    # keys and attributes
+    id = db.Column(db.String(36), primary_key = True, unique = True, default = str(uuid.uuid4()))  # primary key
+    email = db.Column(db.String(30), nullable = False, unique = True)
+    username = db.Column(db.String(30), nullable = False, unique = True)
+    password = db.Column(db.String(60), nullable = False)
+    display_name = db.Column(db.String(50), nullable = False, default = username)
+    fname = db.Column(db.String(25), default = 'Teacher')
+    lname = db.Column(db.String(25))
+
+    # foreign keys
+    school = db.Column(db.String, db.ForeignKey('school.abbreviation'), nullable = False)  # uni
+
+    # One to Many relationships
+    courses = db.relationship('Course', cascade = 'all, delete-orphan')  # uni
+    experiments = db.relationship('Experiment', cascade = 'all, delete-orphan')  # uni
+    assignments = db.relationship('Assignment', cascade = 'all, delete-orphan')  # uni
+
+    # Many to Many relationships
+    devices = db.relationship("Device",secondary=teacher_devices,back_populates="teachers")  # bi
+
+    def serialize(self):
+        return {
+            'id' : self.id,
+            'email' : self.email,
+            'username' : self.username,
+            'fname' : self.fname,
+            'lname' : self.lname,
+            'display_name' : self.display_name
+        }
+    
+    def serialize_partial(self):
+        return {
+            'id' : self.id,
+            'display_name' : self.display_name
+        }
+
+    def serialized_devices(self):
+        return [ device.serialize() for device in self.devices]
+
 
 class Student(db.Model):
     __tablename__ = 'student'
 
-    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
-    username = db.Column(db.String(50), nullable = False, unique = True) #edit
+    # keys and attributes
+    id = db.Column(db.String(36), primary_key = True, unique = True, default = str(uuid.uuid4()))  # primary key
+    username = db.Column(db.String(50), nullable = False)  # Only unique on a per-school basis
     password = db.Column(db.String(60), nullable = False)
-    fname = db.Column(db.String(25), default = 'No Name')
-    lname = db.Column(db.String(25), default = 'No Name')
-    public_id = db.Column(db.String(100), unique = True, default = str(uuid.uuid4()))
+    created = db.Column(db.Date, nullable = False, default = datetime.date.today)
+    display_name = db.Column(db.String(50), nullable = False, default = username)
+    fname = db.Column(db.String(25))
+    lname = db.Column(db.String(25))
 
-    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id'), nullable = False)
-    course_id = db.Column(db.Integer, db.ForeignKey('course.id')) #, nullable = False)  # uncomment later
-    # experiment_id = db.Column(db.Integer, db.ForeignKey('experiment.id')) #, nullable = False) # ask
+    # foreign keys
+    school = db.Column(db.String, db.ForeignKey('school.abbreviation'), nullable = False)
+    teacher_id = db.Column(db.String, db.ForeignKey('teacher.id'), nullable = False)
 
-    assignments = db.relationship('Assignment', secondary = student_assignments, lazy = 'subquery', backref = db.backref('students', lazy = True))
-    assignment_responses = db.relationship('AssignmentResponse', backref = 'student', lazy = True, cascade = 'all, delete-orphan')
-    observation_responses = db.relationship('ObservationResponse', backref = 'student', lazy = True, cascade = 'all, delete-orphan')
-    experiments = db.relationship('Experiment', secondary = student_experiments, lazy = 'subquery', backref = db.backref('students', lazy = True))
-    # experiments = db.relationship('Experiment', backref = )
+    # Many to Many relationships
+    assignments = db.relationship("Assignment",secondary=student_assignments,back_populates="students")  # bi
+    experiments = db.relationship("Experiment",secondary=student_experiments,back_populates="students")  # bi
+    observations = db.relationship("Observation",secondary=student_observations,back_populates="collaborators")  # bi
+    measurements = db.relationship("Measurement",secondary=student_measurements,back_populates="collaborators")  # bi
+    
+    # One to Many relationships
+    assignment_responses = db.relationship('AssignmentResponse', back_populates = 'student', lazy = True, cascade = 'all, delete-orphan')  # bi
+    # observation_responses = db.relationship('ObservationResponse', back_populates = 'student', lazy = True, cascade = 'all, delete-orphan')  # bi
+    # measurement_responses = db.relationship('MeasurementResponse', back_populates = 'student', lazy = True, cascade = 'all, delete-orphan')  # bi
 
-    def __repr__(self):
-        return f'<Student("{self.username}", "{self.fname}", "{self.public_id}")>'
+    def serialize(self):
+        return {
+            'id' : self.id,
+            'username' : self.username,
+            'fname' : self.fname,
+            'lname' : self.lname,
+            'display_name' : self.display_name,
+            'created' : self.created
+        }
 
-    # def __eq__(self, other):
-    #     return self._id == other._id and self.public_id == other.public_id
 
 class Device(db.Model):
     __tablename__ = "device"
 
-    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
-    name = db.Column(db.String(50), nullable = False)
-    public_id = db.Column(db.String(100), unique = True, default = str(uuid.uuid4()))
+    # keys and attributes
+    id = db.Column(db.String(36), primary_key = True, unique = True, default = str(uuid.uuid4()))  # primary key
+    display_name = db.Column(db.String(50), nullable = False)
+    name = db.Column(db.String(50))
 
-    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id')) # can be null
+    # foreign keys
+    school = db.Column(db.String, db.ForeignKey('school.abbreviation'))
 
-    experiments = db.relationship('Experiment', backref = 'device', lazy = True, cascade = 'all, delete-orphan')
+    # One to Many relationships
+    experiments = db.relationship('Experiment', back_populates = 'device', lazy = True, cascade = 'all, delete-orphan')  # bi
 
-    def __repr__(self):
-        return f'<Device("{self.name}")>'
+    # Many to Many relationships
+    teachers = db.relationship("Teacher",secondary=teacher_devices,back_populates="devices")  # bi
+
+    def serialize(self):
+        return {
+            'id' : self.id,
+            'name' : self.name,
+            'display_name': self.display_name
+        }
+
 
 class Course(db.Model):
     __tablename__ = 'course'
 
-    id = db.Column(db.Integer, primary_key = True, autoincrement  = True)
+    # keys and attributes
+    id = db.Column(db.String(36), primary_key = True, unique = True, default = str(uuid.uuid4()))  # primary key
     name = db.Column(db.String(100), nullable = False)
-    public_id = db.Column(db.String(100), unique = True, default = str(uuid.uuid4()))
 
-    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id'), nullable = False)
+    # foreign keys
+    teacher_id = db.Column(db.String, db.ForeignKey('teacher.id'), nullable = False)
 
-    students = db.relationship('Student', backref = 'course', lazy = True) #, cascade = 'all, delete-orphan') ask if cascade
+    # Many to Many relationships
+    students = db.relationship("Student",secondary=student_courses)  # uni
 
-    def __repr__(self):
-        return f'<Course("{self.name}", "{self.public_id}", "{self.students[:4]}")>'
+    def serialize(self):
+        return {
+            'id' : self.id,
+            'name' : self.name,
+            'students' : self.serialized_students()
+        }
+
+    def serialized_students(self):
+        return [ account.serialize() for account in self.students]
 
 
 class Experiment(db.Model):
     __tablename__ = 'experiment'
 
-    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
+    # keys and attributes
+    id = db.Column(db.String(36), primary_key = True, unique = True, default = str(uuid.uuid4()))  # primary key
     title = db.Column(db.String(80), nullable = False)
     description = db.Column(db.Text, nullable = False)
     plant = db.Column(db.String(50), nullable = False)
     start_date = db.Column(db.Date, nullable = False, default = datetime.date.today)
-    public_id = db.Column(db.String(100), unique = True, default = str(uuid.uuid4()))
 
-    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id'), nullable = False)
-    device_id = db.Column(db.Integer, db.ForeignKey('device.id'), nullable = False)
+    # foreign keys
+    teacher_id = db.Column(db.String, db.ForeignKey('teacher.id'), nullable = False)
+    device_id = db.Column(db.String, db.ForeignKey('device.id'))
 
-    observations = db.relationship('Observation', backref = 'experiment', lazy = True, cascade = 'all, delete-orphan')
-    # students = db.relationship('Student', backref = 'experiment', lazy = False)
+    # One to Many relationships
+    observations = db.relationship('Observation')  # uni
+    measurements = db.relationship('Measurement')  # uni
 
-    def __repr__(self):
-        return f'<Experiment("{self.title}", "{self.start_date}", "{self.public_id}", "{self.students[:4]}")>'
+    # Many to One relationships
+    device = db.relationship('Device', back_populates="experiments")  # bi
+
+    # Many to Many relationships
+    students = db.relationship("Student",secondary=student_experiments,back_populates="experiments")  # bi
+
+    def serialize(self):
+        return {
+            'id' : self.id,
+            'title' : self.title,
+            'description' : self.description,
+            'plant' : self.plant,
+            'start_date' : self.start_date,
+            'teacher' : self.teacher_id,
+            'device' : self.device,
+            'students' : self.serialized_students()
+        }
+
+    def serialized_students(self):
+        return [ account.serialize() for account in self.students]
 
 
 class Assignment(db.Model):
     __tablename__ = 'assignment'
 
-    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
+    # keys and attributes
+    id = db.Column(db.String(36), primary_key = True, unique = True, default = str(uuid.uuid4())) # primary key
     title = db.Column(db.String(100), nullable = False)
     description = db.Column(db.Text, nullable = False)
-    type = db.Column(db.String(50), nullable = False)
+    category = db.Column(db.String(20), nullable = False)
     due_date = db.Column(db.Date, nullable = False, default = datetime.date.today)
-    public_id = db.Column(db.String(100), unique = True, default = str(uuid.uuid4()))
+    units = db.Column(db.String(20))
 
-    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id'), nullable = False)
+    # foreign keys
+    teacher_id = db.Column(db.String, db.ForeignKey('teacher.id'), nullable = False)
 
-    responses = db.relationship('AssignmentResponse', backref = 'assignment', lazy = True, cascade = 'all, delete-orphan')
-    # TODO: test many-to-many works
-    def __repr__(self):
-        return f'<Assignment("{self.title}", "{self.type}", "{self.public_id}", "{self.teacher.username}")>'
+    #One to Many relationships
+    responses = db.relationship('AssignmentResponse', back_populates = 'assignment', cascade = 'all, delete-orphan')  # bi
 
-    # def __eq__(self, other):
-    #     return self._id == other._id and self._title == other.title and self.public_id == other.public_id
+    #Many to Many relationships
+    students = db.relationship("Student",secondary=student_assignments,back_populates="assignments")  # bi
+
+    def serialize(self):
+        return {
+            'id' : self.id,
+            'title' : self.title,
+            'description' : self.description,
+            'category' : self.category,
+            'due_date' : self.due_date,
+            'units' : self.units,
+            'teacher' : self.teacher_id,
+            'students' : self.serialized_students()
+        }
 
 
 class AssignmentResponse(db.Model):
     __tablename__ = 'assignment_responses'
+    __table_args__ = (
+        db.PrimaryKeyConstraint('student_id', 'assignment_id'),
+    )
 
-    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
+    # keys and attributes
     response = db.Column(db.Text, default = '')
     submitted = db.Column(db.Date)
     comments = db.Column(db.Text, default = '')
-    public_id = db.Column(db.String(100), unique = True, default = str(uuid.uuid4()))
 
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable = False)
-    assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'), nullable = False)
+    # foreign keys
+    student_id = db.Column(db.String, db.ForeignKey('student.id'), nullable = False)  # makes up composite key
+    assignment_id = db.Column(db.String, db.ForeignKey('assignment.id'), nullable = False)  # makes up composite key
 
-    def __repr__(self):
-        return f'<AssignmentResponse("{self.response}", "{self.student.username}", "{self.public_id}")>'
+    # Many to One relationships
+    student = db.relationship("Student", back_populates='assignment_responses')  # bi
+    assignment = db.relationship("Assignment", back_populates='responses')  # bi
 
+    def serialize(self):
+        assignee = student.serialize()
+        return {
+            'student' : self.assignee,
+            'assignment' : self.assignment_id,
+            'response' : self.response,
+            'submitted' : self.submitted,
+            'comments' : self.comments
+        }
 
-# observation_responses = db.Table('observation_responses', 
-#     db.Column('experiment_id', db.Integer, db.ForeignKey('experiment.id'), nullable = False),
-#     db.Column('observation_id', db.Integer, db.ForeignKey('observation.id'), nullable = False)
-# )
-
-collaborators = db.Table('collaborators', 
-    db.Column('observation_id', db.Integer, db.ForeignKey('observation.id'), nullable = False),
-    db.Column('student_id', db.Integer, db.ForeignKey('student.id'), nullable = False)
-)
 
 class Observation(db.Model):
     __tablename__ = 'observation'
 
-    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
+    # keys and attributes
+    id = db.Column(db.String(36), primary_key = True, unique = True, default = str(uuid.uuid4())) # primary key
     title = db.Column(db.String(50), nullable = False)
-    type = db.Column(db.String(30), nullable = False)
     description = db.Column(db.Text, nullable = False)
-    units = db.Column(db.String(30), nullable = False)
     updated = db.Column(db.Date, nullable = False, default = datetime.date.today)
-    public_id = db.Column(db.String(100), unique = True, default = str(uuid.uuid4()))
 
-    experiment_id = db.Column(db.Integer, db.ForeignKey('experiment.id'), nullable = False)
+    # foreign keys
+    experiment_id = db.Column(db.String, db.ForeignKey('experiment.id'), nullable = False)
 
-    student_collaborators = db.relationship('Student', secondary = collaborators, lazy = 'subquery', backref = db.backref('observations', lazy = True))
-    observation_responses = db.relationship('ObservationResponse', backref = 'observation', lazy = True)
+    # One to Many relationships
+    responses = db.relationship('ObservationResponse', back_populates='observation')  # bi
+
+    # Many to Many relationships
+    collaborators = db.relationship("Student",secondary=student_observations,back_populates="observations")  # bi
+
+    def serialize(self):
+        return {
+            'id' : self.id,
+            'experiment' : self.experiment_id,
+            'tile' : self.title,
+            'description' : self.description,
+            'updated' : self.updated,
+            'collaborators' : self.serialized_collaborators()
+        }
+
+    def serialized_collaborators(self):
+        return [ account.serialize() for account in self.collaborators]
+
+    def serialized_responses(self):
+        return [ resp.serialize() for resp in self.responses]
+
 
 class ObservationResponse(db.Model):
     __tablename__ = 'observation_response'
 
-    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
+    # keys and attributes
+    id = db.Column(db.String(36), primary_key = True, unique = True, default = str(uuid.uuid4()))  # primary key
     response = db.Column(db.Text)
-    submitted = db.Column(db.Date, nullable = True)
+    submitted = db.Column(db.Date)
     editable = db.Column(db.Boolean, nullable = False, default = True)
-    public_id = db.Column(db.String(100), unique = True, default = str(uuid.uuid4()))
+    number = db.Column(db.Integer, nullable = False, default = 1)
+    recorded_by = db.Column(db.String(50))
 
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
-    observation_id = db.Column(db.Integer, db.ForeignKey('observation.id'), nullable = False)
+    # foreign keys
+    observation_id = db.Column(db.String, db.ForeignKey('observation.id'), nullable = False)
+
+    # Many to One relationships
+    observation = db.relationship("Observation", back_populates='responses')  # bi
+
+    def serialize(self):
+        return {
+            'id' : self.id,
+            'observation' : observation_id,
+            'recorder' : self.recorded_by,
+            'submitted' : self.submitted,
+            'response' : self.response,
+            'editable' : self.editable,
+            'number' : self.number
+        }
+
+
+class Measurement(db.Model):
+    __tablename__ = 'measurement'
+
+    # keys and attributes
+    id = db.Column(db.String(36), primary_key = True, unique = True, default = str(uuid.uuid4()))  # primary key
+    title = db.Column(db.String(50), nullable = False)
+    description = db.Column(db.Text, nullable = False)
+    updated = db.Column(db.Date, nullable = False, default = datetime.date.today)
+    units = db.Column(db.String(20), nullable = False)
+    graphics = db.Column(db.Boolean, nullable = False, default = True)
+    public = db.Column(db.Boolean, nullable = False, default = False)
+
+    # foreign keys
+    experiment_id = db.Column(db.String, db.ForeignKey('experiment.id'), nullable = False)
+
+    # One to Many relationships
+    responses = db.relationship('MeasurementResponse', back_populates='measurement')  # bi
+
+    # Many to Many relationships
+    collaborators = db.relationship("Student",secondary=student_measurements,back_populates="measurements")  # bi
+
+    def serialize(self):
+        return {
+            'id' : self.id,
+            'tile' : self.title,
+            'description' : self.description,
+            'updated' : self.updated,
+            'units' : self.units,
+            'graphics' : self.graphics,
+            'public' : self.public,
+            'collaborators' : self.serialized_collaborators()
+        }
+
+    def serialized_collaborators(self):
+        return [ account.serialize() for account in self.collaborators]
+
+    def serialized_responses(self):
+        return [ resp.serialize() for resp in self.responses]
+
+
+class MeasurementResponse(db.Model):
+    __tablename__ = 'measurement_response'
+
+    # keys and attributes
+    id = db.Column(db.String(36), primary_key = True, unique = True, default = str(uuid.uuid4()))  # primary key
+    response = db.Column(db.Float)
+    submitted = db.Column(db.Date)
+    editable = db.Column(db.Boolean, nullable = False, default = True)
+    number = db.Column(db.Integer, nullable = False, default = 1)
+    recorded_by = db.Column(db.String(50))
+
+    # foreign keys
+    measurement_id = db.Column(db.String, db.ForeignKey('measurement.id'), nullable = False)
+
+    # Many to One relationships
+    measurement = db.relationship("Measurement", back_populates='responses')  # bi
+
+    def serialize(self):
+        return {
+            'id' : self.id,
+            'measurement' : measurement.serialize(),
+            'recorder' : self.recorded_by,
+            'submitted' : self.submitted,
+            'response' : self.response,
+            'editable' : self.editable,
+            'number' : self.number
+        }

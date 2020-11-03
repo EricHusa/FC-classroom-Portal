@@ -22,25 +22,35 @@ def create_app(config_object = Config):
     cors.init_app(app, resources={r"*": {"origins": "*"}})
     bcrypt.init_app(app)
 
-    from fopd.students.routes import students
-    from fopd.teachers.routes import teachers
-    from fopd.experiments.routes import experiments
-    from fopd.courses.routes import courses
-    from fopd.assignments.routes import assignments
-    from fopd.assignment_responses.routes import assignment_responses
-    from fopd.devices.routes import devices
-    from fopd.observations.routes import observations
-    from fopd.external.routes import externals
+    from fopd.routes.school import schools
+    from fopd.routes.teacher import teachers
+    from fopd.routes.admin import admins
+    # from fopd.routes.student import students
+    # from fopd.routes.experiment import experiments
+    # from fopd.routes.course import courses
+    # from fopd.routes.assignment import assignments
+    # from fopd.routes.assignment_resp import assignment_responses
+    # from fopd.routes.observation import observations
+    # from fopd.routes.observation_resp import observation_responses
+    # from fopd.routes.measurement import measurements
+    # from fopd.routes.measurement_resp import measurement_responses
+    # from fopd.routes.device import devices
+    # from fopd.routes.external import externals
 
-    app.register_blueprint(students)
+    app.register_blueprint(schools)
     app.register_blueprint(teachers)
-    app.register_blueprint(experiments)
-    app.register_blueprint(courses)
-    app.register_blueprint(assignments)
-    app.register_blueprint(assignment_responses)
-    app.register_blueprint(devices)
-    app.register_blueprint(observations)
-    app.register_blueprint(externals)
+    app.register_blueprint(admins)
+    # app.register_blueprint(students)
+    # app.register_blueprint(experiments)
+    # app.register_blueprint(courses)
+    # app.register_blueprint(assignments)
+    # app.register_blueprint(assignment_responses)
+    # app.register_blueprint(observations)
+    # app.register_blueprint(observation_responses)
+    # app.register_blueprint(measurements)
+    # app.register_blueprint(measurement_responses)
+    # app.register_blueprint(devices)
+    # app.register_blueprint(externals)
 
     return app
 
