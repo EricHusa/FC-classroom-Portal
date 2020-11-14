@@ -116,6 +116,7 @@ def delete_observation(observation_id):
             'message': f'Observation id `{observation_id}` has been deleted'
         }), SUCCESS_CODE
     except Exception as e:
+        print(e)
         return jsonify({
             'status': 'fail',
             'message': f'Unable to delete observation id `{observation_id}`'

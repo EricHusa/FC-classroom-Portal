@@ -262,10 +262,10 @@ class Assignment(db.Model):
     # keys and attributes
     id = db.Column(db.String(36), primary_key = True, unique = True, default = str(uuid.uuid4())) # primary key
     title = db.Column(db.String(100), nullable = False)
-    description = db.Column(db.Text, nullable = False)
     category = db.Column(db.String(20), nullable = False)
-    due_date = db.Column(db.Date, nullable = False, default = datetime.date.today)
+    due_date = db.Column(db.Date, nullable = False)
     units = db.Column(db.String(20))
+    description = db.Column(db.Text)
 
     # foreign keys
     teacher_id = db.Column(db.String, db.ForeignKey('teacher.id'), nullable = False)
@@ -309,9 +309,9 @@ class AssignmentResponse(db.Model):
     assignment = db.relationship("Assignment", back_populates='responses')  # bi
 
     def serialize(self):
-        assignee = student.serialize()
+        assignee = self.student.serialize()
         return {
-            'student' : self.assignee,
+            'student' : assignee,
             'assignment' : self.assignment_id,
             'response' : self.response,
             'submitted' : self.submitted,
@@ -325,7 +325,7 @@ class Observation(db.Model):
     # keys and attributes
     id = db.Column(db.String(36), primary_key = True, unique = True, default = str(uuid.uuid4())) # primary key
     title = db.Column(db.String(50), nullable = False)
-    description = db.Column(db.Text, nullable = False)
+    description = db.Column(db.Text)
     updated = db.Column(db.Date, nullable = False, default = datetime.date.today)
 
     # foreign keys
@@ -360,13 +360,14 @@ class ObservationResponse(db.Model):
     # keys and attributes
     id = db.Column(db.String(36), primary_key = True, unique = True, default = str(uuid.uuid4()))  # primary key
     response = db.Column(db.Text)
-    submitted = db.Column(db.Date)
+    submitted = db.Column(db.Date, default = datetime.date.today)
     editable = db.Column(db.Boolean, nullable = False, default = True)
-    number = db.Column(db.Integer, nullable = False, default = 1)
+    position = db.Column(db.Integer, nullable = False, default = 0)
     recorded_by = db.Column(db.String(50))
 
     # foreign keys
     observation_id = db.Column(db.String, db.ForeignKey('observation.id'), nullable = False)
+    # recorded_by = db.Column(db.String, db.ForeignKey('student.id'), nullable = True)
 
     # Many to One relationships
     observation = db.relationship("Observation", back_populates='responses')  # bi
@@ -374,12 +375,12 @@ class ObservationResponse(db.Model):
     def serialize(self):
         return {
             'id' : self.id,
-            'observation' : observation_id,
+            'observation' : self.observation_id,
             'recorder' : self.recorded_by,
             'submitted' : self.submitted,
             'response' : self.response,
             'editable' : self.editable,
-            'number' : self.number
+            'position' : self.position
         }
 
 
@@ -389,9 +390,9 @@ class Measurement(db.Model):
     # keys and attributes
     id = db.Column(db.String(36), primary_key = True, unique = True, default = str(uuid.uuid4()))  # primary key
     title = db.Column(db.String(50), nullable = False)
-    description = db.Column(db.Text, nullable = False)
+    description = db.Column(db.Text)
     updated = db.Column(db.Date, nullable = False, default = datetime.date.today)
-    units = db.Column(db.String(20), nullable = False)
+    units = db.Column(db.String(20, nullable = False))
     graphics = db.Column(db.Boolean, nullable = False, default = True)
     public = db.Column(db.Boolean, nullable = False, default = False)
 
@@ -431,7 +432,7 @@ class MeasurementResponse(db.Model):
     response = db.Column(db.Float)
     submitted = db.Column(db.Date)
     editable = db.Column(db.Boolean, nullable = False, default = True)
-    number = db.Column(db.Integer, nullable = False, default = 1)
+    position = db.Column(db.Integer, nullable = False, default = 0)
     recorded_by = db.Column(db.String(50))
 
     # foreign keys
@@ -443,10 +444,10 @@ class MeasurementResponse(db.Model):
     def serialize(self):
         return {
             'id' : self.id,
-            'measurement' : measurement.serialize(),
+            'measurement' : self.measurement.serialize(),
             'recorder' : self.recorded_by,
             'submitted' : self.submitted,
             'response' : self.response,
             'editable' : self.editable,
-            'number' : self.number
+            'position' : self.position
         }

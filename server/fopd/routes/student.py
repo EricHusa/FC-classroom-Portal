@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 
 from fopd import db, bcrypt
 # from fopd.models import Student, Teacher
-from fopd.models import Student, Course
+from fopd.models import Student, Course, School
 from sqlalchemy import and_
 
 import uuid, datetime
@@ -123,7 +123,7 @@ output:
 * teacher - serialized newly created Teacher account
 '''
 @students.route('/auth/register/schools/<school_id>/students', methods = ['POST'])
-def register_student_account():
+def register_student_account(school_id):
     # Request checks
     account_info = request.json
     school = School.query.filter_by(abbreviation = school_id).first()
@@ -139,12 +139,15 @@ def register_student_account():
         }), ERROR_CODE
 
     parameters = {}
-    parameter['username'] = account_info.get('username', None)
-    parameter['password'] = account_info.get('password', None)
-    parameter['display_name'] = account_info.get('display_name', None)
-    parameter['fname'] = account_info.get('fname', None)
-    parameter['lname'] = account_info.get('lname', None)
-    parameter['id'] = str(uuid.uuid4())
+    user = account_info.get('username', None)
+    parameters['username'] = user
+    parameters['password'] = account_info.get('password', None)
+    parameters['display_name'] = account_info.get('display_name', None)
+    parameters['fname'] = account_info.get('fname', None)
+    parameters['lname'] = account_info.get('lname', None)
+    parameters['id'] = str(uuid.uuid4())
+
+    
 
     # Verify uniqueness for school
     existing_student = Student.query.filter(and_(username == user, school == school_id)).first()
@@ -191,7 +194,7 @@ output:
 * student - serialized logged in Student account
 '''
 @students.route('/auth/schools/<school_id>/students/login', methods = ['POST'])
-def student_login():
+def student_login(school_id):
     # Request checks
     credentials = request.json
 
@@ -260,7 +263,7 @@ def update_student_account(student_id):
     student = Student.query.filter_by(id == student_id).first()
     if not student:
         return jsonify({
-            'message': f'Invalid username `{username}`'
+            'message': 'Invalid account'
         }), ERROR_CODE
 
 
@@ -277,7 +280,7 @@ def update_student_account(student_id):
 
     pw = update_info.get('password', student.password)
     if pw and student.password != pw:
-        if len(pw < MIN_PASSWORD_LENGTH):
+        if len(pw) < MIN_PASSWORD_LENGTH:
             return jsonify({
                 'message': 'Password must be ' + str(MIN_PASSWORD_LENGTH) + ' characters in length'
             }), ERROR_CODE
@@ -336,6 +339,6 @@ def delete_student_account(student_id):
     except Exception as e:
         print(e)
         return jsonify({
-            'message': 'Unable to delete account
+            'message': 'Unable to delete account'
         }), ERROR_CODE
 

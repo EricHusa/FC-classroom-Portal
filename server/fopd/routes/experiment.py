@@ -12,35 +12,6 @@ SUCCESS_CODE = 200
 
 
 '''
-Get a list of all Experiments belonging to a Teacher.
-
-url parameter:
-* teacher_id - Teacher id
-
-output:
-* message - execution result message
-* experiments - list of serialized Experiment entities
-'''
-@experiments.route('/api/teachers/<teacher_id>/experiments', methods = ['GET'])
-def get_teacher_experiments(teacher_id):
-    # Request checks
-    teacher = Teacher.query.filter_by(id = teacher_id).first()
-    if not teacher:
-        return jsonify({
-            'message': 'Invalid account'
-        }), ERROR_CODE
-
-    # Format output
-    output = [i.serialize() for i in teacher.experiments]
-    message = str(len(output)) + ' experiments found'
-
-    return jsonify({
-        'message': message,
-        'experiments': output
-    })
-
-
-'''
 Get a list of all Experiments belonging to a Student.
 
 url parameter:
@@ -66,7 +37,7 @@ def get_teacher_experiments(student_id):
     return jsonify({
         'message': message,
         'experiments': output
-    })
+    }), SUCCESS_CODE
 
 
 '''
@@ -189,6 +160,7 @@ Update an Experiment
 
 url parameter:
 * teacher_id - Teacher id
+* experiment_id - Experiment id
 
 optional request parameters:
 * title - Title of the Experiment
@@ -202,7 +174,7 @@ output:
 * message - execution result message
 * experiment - serialized newly updated Experiment
 '''
-@experiments.route('/api/teachers/<teacher_id>/experiments', methods = ['PUT'])
+@experiments.route('/api/teachers/<teacher_id>/experiments/<experiment_id>', methods = ['PUT'])
 def update_experiment(teacher_id, experiment_id):
     # Request checks
     teacher = Teacher.query.filter_by(id = teacher_id).first()
@@ -237,6 +209,7 @@ def update_experiment(teacher_id, experiment_id):
     experiment.device_id = experiment_info.get('device_id', experiment.device_id)
     experiment.start_date = experiment_info.get('start_date', experiment.start_date)
 
+
     # Commit to db
     try:
         db.session.add(experiment)
@@ -264,6 +237,7 @@ output:
 '''
 @experiments.route('/api/experiments/<experiment_id>', methods = ['DELETE'])
 def delete_experiment(experiment_id):
+    # Request checks
     experiment = Experiment.query.filter_by(id = experiment_id).first()
     if not experiment:
         return jsonify({

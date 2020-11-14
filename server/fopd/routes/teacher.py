@@ -189,8 +189,7 @@ def update_teacher_password(teacher_id):
         db.session.add(teacher)
         db.session.commit()
         return jsonify({
-            'message': 'Password updated',
-            'teacher': output
+            'message': 'Password updated'
         }), SUCCESS_CODE
     except Exception as e:
         print(e)
